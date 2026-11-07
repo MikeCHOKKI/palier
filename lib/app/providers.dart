@@ -1,0 +1,63 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../core/security/biometric_gate.dart';
+import '../data/database.dart';
+import '../features/backup/data/backup_files.dart';
+import '../features/backup/data/backup_service.dart';
+import '../features/profiles/data/profiles_repository.dart';
+import '../features/profiles/domain/profile.dart';
+
+/// La base SQLite ; remplacée dans `main` (téléphone) et dans les tests (mémoire).
+final databaseProvider = Provider<PalierDatabase>((ref) {
+  throw UnimplementedError('databaseProvider doit être remplacé au démarrage');
+});
+
+final profilesRepositoryProvider = Provider<ProfilesRepository>(
+  (ref) => ProfilesRepository(ref.watch(databaseProvider)),
+);
+
+final backupServiceProvider = Provider<BackupService>((ref) => BackupService(ref.watch(databaseProvider)));
+
+final backupFilesProvider = Provider<BackupFiles>((ref) => const DeviceBackupFiles());
+
+final biometricGateProvider = Provider<BiometricGate>((ref) => DeviceBiometricGate());
+
+/// Les profils de la famille, tenus à jour par la base.
+final profilesProvider = StreamProvider<List<Profile>>((ref) => ref.watch(profilesRepositoryProvider).watchAll());
+
+/// Qui utilise l'application en ce moment.
+class Session {
+  const Session({this.activeProfileId, this.lastProfileId});
+
+  /// Profil ouvert (déverrouillé), ou `null` sur l'écran de choix.
+  final String? activeProfileId;
+
+  /// Dernier profil ouvert : après un verrouillage, on lui redemande son code
+  /// directement plutôt que de repasser par le choix du profil.
+  final String? lastProfileId;
+}
+
+class SessionController extends Notifier<Session> {
+  @override
+  Session build() => const Session();
+
+  void open(String profileId) => state = Session(activeProfileId: profileId, lastProfileId: profileId);
+
+  /// Retour à l'écran de choix, sans viser de profil.
+  void signOut() => state = const Session();
+
+  /// Verrouille le profil ouvert : son code sera redemandé.
+  void lock() => state = Session(lastProfileId: state.activeProfileId ?? state.lastProfileId);
+}
+
+final sessionProvider = NotifierProvider<SessionController, Session>(SessionController.new);
+
+/// Le profil ouvert, ou `null`.
+final activeProfileProvider = Provider<Profile?>((ref) {
+  final id = ref.watch(sessionProvider).activeProfileId;
+  final profiles = ref.watch(profilesProvider).value ?? const [];
+  for (final profile in profiles) {
+    if (profile.id == id) return profile;
+  }
+  return null;
+});

@@ -1,0 +1,64 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../features/profiles/domain/profile.dart';
+import 'providers.dart';
+
+/// Chemins de l'application.
+abstract final class Routes {
+  static const loading = '/chargement';
+  static const welcome = '/bienvenue';
+  static const welcomeProfile = '/bienvenue/profil';
+  static const picker = '/profils';
+  static const pickerNew = '/profils/nouveau';
+  static String unlock(String profileId) => '/profils/$profileId/code';
+
+  static const home = '/accueil';
+  static const expenses = '/depenses';
+  static const sport = '/sport';
+  static const settings = '/reglages';
+  static const settingsProfile = '/reglages/profil';
+  static const settingsLock = '/reglages/verrou';
+  static const settingsLockCode = '/reglages/verrou/code';
+  static const settingsBackup = '/reglages/sauvegarde';
+  static const settingsNewMember = '/reglages/nouveau-membre';
+}
+
+/// Où envoyer la personne, selon les profils et la session ; `null` = rester.
+///
+/// Fonction pure, testée seule : toute la logique d'accès est ici, pas dans
+/// les écrans.
+String? resolveRedirect({
+  required AsyncValue<List<Profile>> profiles,
+  required Session session,
+  required String location,
+}) {
+  String? goTo(String target) => location == target ? null : target;
+
+  if (!profiles.hasValue) return goTo(Routes.loading);
+  final list = profiles.requireValue;
+
+  if (list.isEmpty) {
+    return location == Routes.welcome || location == Routes.welcomeProfile ? null : Routes.welcome;
+  }
+
+  Profile? byId(String? id) {
+    for (final profile in list) {
+      if (profile.id == id) return profile;
+    }
+    return null;
+  }
+
+  final active = byId(session.activeProfileId);
+  if (active == null) {
+    if (location.startsWith(Routes.picker)) return null;
+    final last = byId(session.lastProfileId);
+    return last != null && last.hasPin ? Routes.unlock(last.id) : Routes.picker;
+  }
+
+  final outsideApp =
+      location == Routes.loading || location.startsWith(Routes.welcome) || location.startsWith(Routes.picker);
+  if (outsideApp) return Routes.home;
+  if (location.startsWith(Routes.expenses) && !active.expensesEnabled) return Routes.home;
+  if (location.startsWith(Routes.sport) && !active.sportEnabled) return Routes.home;
+  return null;
+}

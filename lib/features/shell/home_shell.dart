@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../app/providers.dart';
+import '../../l10n/app_localizations.dart';
+
+/// Les onglets du profil ouvert. Un module désactivé n'a pas d'onglet.
+class HomeShell extends ConsumerWidget {
+  const HomeShell({super.key, required this.shell});
+
+  final StatefulNavigationShell shell;
+
+  /// Index des branches déclarées dans le routeur.
+  static const int _home = 0;
+  static const int _expenses = 1;
+  static const int _sport = 2;
+  static const int _settings = 3;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final profile = ref.watch(activeProfileProvider);
+
+    final tabs = <(int, NavigationDestination)>[
+      (
+        _home,
+        NavigationDestination(
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home_rounded),
+          label: l10n.navHome,
+        ),
+      ),
+      if (profile?.expensesEnabled ?? false)
+        (
+          _expenses,
+          NavigationDestination(
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: const Icon(Icons.account_balance_wallet_rounded),
+            label: l10n.navExpenses,
+          ),
+        ),
+      if (profile?.sportEnabled ?? false)
+        (
+          _sport,
+          NavigationDestination(
+            icon: const Icon(Icons.directions_run_outlined),
+            selectedIcon: const Icon(Icons.directions_run_rounded),
+            label: l10n.navSport,
+          ),
+        ),
+      (
+        _settings,
+        NavigationDestination(
+          icon: const Icon(Icons.tune_outlined),
+          selectedIcon: const Icon(Icons.tune_rounded),
+          label: l10n.navSettings,
+        ),
+      ),
+    ];
+
+    final selected = tabs.indexWhere((tab) => tab.$1 == shell.currentIndex);
+
+    return Scaffold(
+      body: shell,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selected < 0 ? 0 : selected,
+        destinations: [for (final tab in tabs) tab.$2],
+        onDestinationSelected: (i) {
+          final branch = tabs[i].$1;
+          // Toucher l'onglet déjà ouvert ramène à sa racine.
+          shell.goBranch(branch, initialLocation: branch == shell.currentIndex);
+        },
+      ),
+    );
+  }
+}
