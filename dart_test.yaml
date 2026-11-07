@@ -1,0 +1,4 @@
+tags:
+  # Captures d'écran de docs/captures : à régénérer à la main, hors CI.
+  captures:
+    skip: "Lancer avec : flutter test --tags captures --run-skipped --update-goldens"
