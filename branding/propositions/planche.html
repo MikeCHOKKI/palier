@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Nom et logo : propositions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#020913;--night:#111827;--indigo:#172D4F;--steel:#0A6A9E;--cyan:#02D1E8;--ink:#E6EEF6;--muted:#8FA3B8}
+*{box-sizing:border-box;margin:0}
+body{width:1500px;background:var(--deep);color:var(--ink);font:400 17px/1.5 Manrope,sans-serif;padding:64px 72px 72px}
+h1{font:600 34px Unbounded;letter-spacing:-.01em}
+.lead{color:var(--muted);margin-top:10px;max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:48px}
+.c{border:1px solid var(--indigo);border-radius:28px;padding:32px;background:linear-gradient(180deg,rgba(23,45,79,.35),rgba(23,45,79,0))}
+.icon{width:100%;aspect-ratio:1;display:block}
+.name{font:600 46px Unbounded;margin-top:26px;letter-spacing:-.01em}
+.name i{font-style:normal;color:var(--cyan)}
+.why{color:var(--muted);margin-top:8px;min-height:78px}
+.row{display:flex;align-items:center;gap:18px;margin-top:22px;padding-top:22px;border-top:1px solid var(--indigo)}
+.tile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.tile .s{width:56px;height:56px}.tile .xs{width:24px;height:24px}
+.light{background:#E9EEF3;border-radius:14px;padding:10px}
+.mono{filter:grayscale(1) contrast(1.4)}
+.word{display:flex;align-items:center;gap:14px;margin-left:auto}
+.word img{width:44px;height:44px}.word span{font:600 26px Unbounded}
+.other{margin-top:44px;color:var(--muted)}.other b{color:var(--ink);font-weight:600}
+</style></head><body>
+<h1>Nom et logo de l’application</h1>
+<p class="lead">Trois pistes aux couleurs Ekim : bleu nuit, bleu acier, cyan. Chaque icône est vue en grand, à la taille d’un écran d’accueil (56 px), en favicon (24 px), sur fond clair et en gris.</p>
+<div class="grid">
+ <div class="c"><img class="icon" src="elan.svg" alt="">
+  <div class="name">Élan<i>.</i></div>
+  <p class="why">Le mouvement qui fait avancer : une trajectoire qui monte, lancée par un point. Court, français, chaleureux pour toute la famille.</p>
+  <div class="row"><div class="tile"><img class="s" src="elan.svg">56 px</div><div class="tile"><img class="xs" src="elan.svg">24 px</div><div class="tile light"><img class="s" src="elan.svg"></div><div class="tile mono"><img class="s" src="elan.svg">gris</div></div></div>
+ <div class="c"><img class="icon" src="palier.svg" alt="">
+  <div class="name">Palier<i>.</i></div>
+  <p class="why">On progresse marche après marche : argent, corps, habitudes. Le point cyan, c’est toi, arrivé un cran plus haut.</p>
+  <div class="row"><div class="tile"><img class="s" src="palier.svg">56 px</div><div class="tile"><img class="xs" src="palier.svg">24 px</div><div class="tile light"><img class="s" src="palier.svg"></div><div class="tile mono"><img class="s" src="palier.svg">gris</div></div></div>
+ <div class="c"><img class="icon" src="cap.svg" alt="">
+  <div class="name">Cap<i>.</i></div>
+  <p class="why">Garder le cap : chacun fixe sa direction, l’application l’y ramène. Le C s’ouvre et la pointe en sort, vers le haut et l’avant.</p>
+  <div class="row"><div class="tile"><img class="s" src="cap.svg">56 px</div><div class="tile"><img class="xs" src="cap.svg">24 px</div><div class="tile light"><img class="s" src="cap.svg"></div><div class="tile mono"><img class="s" src="cap.svg">gris</div></div></div>
+</div>
+<p class="other">Autres noms possibles, sans logo pour l’instant : <b>Pas à pas</b>, <b>Lancée</b>, <b>Boussole</b>, <b>Cime</b>, <b>Ekim Famille</b>.</p>
+</body></html>

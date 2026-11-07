@@ -1,0 +1,41 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Palier, kit de logo</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#020913;--night:#111827;--indigo:#172D4F;--steel:#0A6A9E;--cyan:#02D1E8;--ink:#E6EEF6;--muted:#8FA3B8}
+*{box-sizing:border-box;margin:0}
+body{width:1500px;background:var(--deep);color:var(--ink);font:400 16px/1.5 Manrope,sans-serif;padding:56px 72px}
+h1{font:600 34px Unbounded}h2{font:600 15px Manrope;color:var(--muted);margin:40px 0 16px}
+.r{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap}
+.cap{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.ad{width:180px;height:180px;position:relative;overflow:hidden}
+.ad img{position:absolute;inset:0;width:100%;height:100%}
+.circle{border-radius:50%}.squircle{border-radius:38%}.tear{border-radius:50% 50% 50% 12%}
+.safe{position:absolute;inset:19.4%;border:2px dashed #ff5a5a;border-radius:50%}
+.wall{background:linear-gradient(135deg,#3b6b4a,#c9a46b);padding:28px;border-radius:24px;display:flex;gap:24px}
+.themed{width:120px;height:120px;border-radius:50%;background:#e8dcc4;display:grid;place-items:center}
+.themed img{width:120px;filter:brightness(0) saturate(100%) invert(26%) sepia(19%) saturate(800%) hue-rotate(80deg)}
+.phone{width:220px;height:440px;border-radius:36px;border:8px solid #2a3443;background:var(--night);display:grid;place-items:center}
+.phone img{width:150px}
+.wm{display:flex;align-items:center;gap:18px;padding:28px 36px;border-radius:20px}
+.wm img{height:64px}.wm span{font:600 54px Unbounded;letter-spacing:-.01em}
+.wm.d{background:var(--night)}.wm.l{background:#F4F7FA;color:#111827}
+.sw{display:flex;gap:0;border-radius:16px;overflow:hidden}
+.sw div{width:150px;height:110px;padding:12px;font:600 13px Manrope;display:flex;flex-direction:column;justify-content:flex-end}
+</style></head><body>
+<h1>Palier : kit de logo</h1>
+<h2>Icône Android adaptative : le même avant-plan dans trois masques de téléphone, et la zone sûre de 66 dp en pointillé</h2>
+<div class="r">
+<div><div class="ad circle"><img src="exports/android/android-arriere-plan.png"><img src="exports/android/android-avant-plan.png"></div><p class="cap">rond</p></div>
+<div><div class="ad squircle"><img src="exports/android/android-arriere-plan.png"><img src="exports/android/android-avant-plan.png"></div><p class="cap">carré arrondi</p></div>
+<div><div class="ad tear"><img src="exports/android/android-arriere-plan.png"><img src="exports/android/android-avant-plan.png"></div><p class="cap">goutte</p></div>
+<div><div class="ad"><img src="exports/android/android-arriere-plan.png"><img src="exports/android/android-avant-plan.png"><div class="safe"></div></div><p class="cap">zone sûre</p></div>
+<div class="wall"><div><div class="themed"><img src="exports/android/android-monochrome.png"></div><p class="cap" style="color:#fff">icône à thème (Android 13)</p></div>
+<div><img src="exports/png/palier-icone-48.png" style="width:48px;display:block;margin:36px auto 0"><p class="cap" style="color:#fff">48 px réels</p></div></div>
+<div><div class="phone"><img src="exports/android/demarrage.png"></div><p class="cap">écran de démarrage</p></div>
+</div>
+<h2>Logotype : symbole et nom, sur fond sombre et sur fond clair</h2>
+<div class="r"><div class="wm d"><img src="sources/palier-symbole.svg"><span>Palier</span></div>
+<div class="wm l"><img src="sources/palier-symbole-clair.svg"><span>Palier</span></div></div>
+<h2>Couleurs</h2>
+<div class="sw"><div style="background:#020913;border:1px solid #172D4F">Fond profond<br>#020913</div><div style="background:#111827">Bleu nuit<br>#111827</div><div style="background:#172D4F">Indigo<br>#172D4F</div><div style="background:#0A6A9E">Bleu acier<br>#0A6A9E</div><div style="background:#02D1E8;color:#020913">Cyan<br>#02D1E8</div><div style="background:#0093AB">Cyan sur clair<br>#0093AB</div><div style="background:#F4F7FA;color:#111827">Clair<br>#F4F7FA</div></div>
+</body></html>
