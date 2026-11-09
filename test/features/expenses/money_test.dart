@@ -91,4 +91,21 @@ void main() {
       expect(AmountEntry.fromMinor(1205, PalierCurrency.eur).minor, 1205);
     });
   });
+
+  group('parseMoney', () {
+    test('lit les montants tapés au clavier', () {
+      expect(parseMoney('12 500', PalierCurrency.xof), 12500);
+      expect(parseMoney('', PalierCurrency.xof), 0);
+      expect(parseMoney('12,5', PalierCurrency.eur), 1250);
+      expect(parseMoney('12.05', PalierCurrency.eur), 1205);
+      expect(parseMoney('12,', PalierCurrency.eur), 1200);
+    });
+
+    test('refuse ce qui n’est pas un montant', () {
+      expect(parseMoney('12,5', PalierCurrency.xof), isNull, reason: 'pas de centimes en F CFA');
+      expect(parseMoney('1,234', PalierCurrency.eur), isNull);
+      expect(parseMoney('-500', PalierCurrency.xof), isNull);
+      expect(parseMoney('abc', PalierCurrency.xof), isNull);
+    });
+  });
 }

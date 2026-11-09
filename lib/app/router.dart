@@ -1,8 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/backup/ui/backup_screen.dart';
+import '../features/expenses/ui/accounts_screen.dart';
+import '../features/expenses/ui/categories_screen.dart';
+import '../features/expenses/ui/expenses_screen.dart';
+import '../features/expenses/ui/operation_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/placeholders/coming_soon_screen.dart';
 import '../features/profiles/ui/loading_screen.dart';
@@ -24,7 +28,15 @@ final routerProvider = Provider<GoRouter>((ref) {
     ..listen(profilesProvider, (_, _) => refresh.value++)
     ..listen(sessionProvider, (_, _) => refresh.value++);
 
+  // Les écrans de saisie s'ouvrent en plein écran, au-dessus des onglets : un
+  // écran poussé depuis l'un d'eux reste ainsi visible, au lieu de tomber sous lui
+  // dans la pile de l'onglet.
+  final rootKey = GlobalKey<NavigatorState>(debugLabel: 'racine');
+  GoRoute fullScreen(String path, Widget Function(GoRouterState state) build, {List<RouteBase> routes = const []}) =>
+      GoRoute(path: path, parentNavigatorKey: rootKey, builder: (_, state) => build(state), routes: routes);
+
   final router = GoRouter(
+    navigatorKey: rootKey,
     initialLocation: Routes.loading,
     refreshListenable: refresh,
     redirect: (context, state) => resolveRedirect(
@@ -65,7 +77,35 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen())],
           ),
           StatefulShellBranch(
-            routes: [GoRoute(path: Routes.expenses, builder: (_, _) => const ComingSoonScreen.expenses())],
+            routes: [
+              GoRoute(
+                path: Routes.expenses,
+                builder: (_, _) => const ExpensesScreen(),
+                routes: [
+                  fullScreen('noter', (_) => const OperationScreen()),
+                  fullScreen('operations/:id', (s) => OperationScreen(operationId: s.pathParameters['id'])),
+                  fullScreen(
+                    'comptes',
+                    (_) => const AccountsScreen(),
+                    routes: [
+                      fullScreen(
+                        'nouveau',
+                        (s) => AccountFormScreen(returnsSelection: s.extra == AccountFormScreen.pickExtra),
+                      ),
+                      fullScreen(':id', (s) => AccountFormScreen(accountId: s.pathParameters['id'])),
+                    ],
+                  ),
+                  fullScreen(
+                    'categories',
+                    (_) => const CategoriesScreen(),
+                    routes: [
+                      fullScreen('nouvelle', (_) => const CategoryFormScreen()),
+                      fullScreen(':id', (s) => CategoryFormScreen(categoryId: s.pathParameters['id'])),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
           StatefulShellBranch(
             routes: [GoRoute(path: Routes.sport, builder: (_, _) => const ComingSoonScreen.sport())],

@@ -109,3 +109,16 @@ class AmountEntry {
   @override
   int get hashCode => Object.hash(currency, whole, fraction);
 }
+
+/// Lit un montant tapé au clavier (« 12 500 », « 12,50 », « 12.5 ») en unités
+/// mineures ; vide vaut zéro, `null` si ce n'est pas un montant valide.
+int? parseMoney(String input, PalierCurrency currency) {
+  final cleaned = input.replaceAll(RegExp(r'[\s  ]'), '');
+  if (cleaned.isEmpty) return 0;
+  final match = RegExp(r'^(\d{1,10})(?:[.,](\d*))?$').firstMatch(cleaned);
+  if (match == null) return null;
+  final fraction = match.group(2) ?? '';
+  if (fraction.length > currency.decimals) return null;
+  return int.parse(match.group(1)!) * _scale(currency) +
+      int.parse(fraction.padRight(currency.decimals, '0').padLeft(1, '0'));
+}

@@ -14,6 +14,14 @@ abstract final class Routes {
 
   static const home = '/accueil';
   static const expenses = '/depenses';
+  static const expensesNew = '/depenses/noter';
+  static String expensesOperation(String id) => '/depenses/operations/$id';
+  static const expensesAccounts = '/depenses/comptes';
+  static const expensesAccountNew = '/depenses/comptes/nouveau';
+  static String expensesAccount(String id) => '/depenses/comptes/$id';
+  static const expensesCategories = '/depenses/categories';
+  static const expensesCategoryNew = '/depenses/categories/nouvelle';
+  static String expensesCategory(String id) => '/depenses/categories/$id';
   static const sport = '/sport';
   static const settings = '/reglages';
   static const settingsProfile = '/reglages/profil';
