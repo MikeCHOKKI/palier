@@ -10,6 +10,7 @@ import '../../../app/theme/palier_accent.dart';
 import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../expenses/ui/expenses_providers.dart';
 import '../domain/profile.dart';
 
 /// D'où l'on vient, et donc où l'on va après l'enregistrement.
@@ -117,6 +118,10 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final title = _editing ? l10n.profileEditTitle : l10n.profileNewTitle;
+    // Les montants sont enregistrés dans la devise du profil : la changer après
+    // coup ferait lire 12 500 F CFA comme 125,00 €.
+    final profileId = _editing ? ref.watch(activeProfileIdProvider) : null;
+    final currencyLocked = profileId != null && (ref.watch(hasOperationsProvider(profileId)).value ?? true);
 
     // Le formulaire prend la couleur choisie : on voit tout de suite le rendu.
     return Theme(
@@ -157,8 +162,15 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       ButtonSegment(value: currency, label: Text(currency.symbol)),
                   ],
                   selected: {_draft.currency},
-                  onSelectionChanged: (s) => setState(() => _draft = _draft.copyWith(currency: s.single)),
+                  onSelectionChanged: currencyLocked
+                      ? null
+                      : (s) => setState(() => _draft = _draft.copyWith(currency: s.single)),
                 ),
+                if (currencyLocked)
+                  Padding(
+                    padding: const EdgeInsets.only(top: PalierSpace.sm),
+                    child: Text(l10n.profileCurrencyLocked, style: Theme.of(context).textTheme.bodySmall),
+                  ),
                 _SectionTitle(l10n.profileModulesLabel),
                 LucidCard(
                   padding: EdgeInsets.zero,
