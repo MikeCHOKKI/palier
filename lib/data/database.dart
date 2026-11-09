@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../features/expenses/domain/expense_kinds.dart';
+import 'database.steps.dart';
+
 part 'database.g.dart';
 
 /// Conventions de toutes les tables, pensées pour la synchronisation de la
@@ -42,7 +45,63 @@ class Profiles extends Table with SyncColumns {
   DateTimeColumn get lockedUntil => dateTime().nullable()();
 }
 
-@DriftDatabase(tables: [Profiles])
+/// Un compte d'un profil : espèces, Mobile Money ou banque.
+@DataClassName('AccountRow')
+class Accounts extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+  TextColumn get kind => textEnum<AccountKind>()();
+
+  /// Ce qu'il y avait sur le compte quand on a commencé à le suivre, en unités
+  /// mineures de la devise du profil (le franc pour le F CFA, le centime pour l'euro).
+  IntColumn get openingBalance => integer().withDefault(const Constant(0))();
+
+  /// Ordre d'affichage, du plus petit au plus grand.
+  IntColumn get position => integer().withDefault(const Constant(0))();
+}
+
+/// Une catégorie de dépenses ou de revenus d'un profil.
+@DataClassName('CategoryRow')
+class Categories extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get name => text().withLength(min: 1, max: 32)();
+  TextColumn get kind => textEnum<CategoryKind>()();
+
+  /// Clé d'icône (voir `category_icons.dart`), pas un code de police.
+  TextColumn get icon => text()();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+}
+
+/// Une dépense, un revenu ou un virement entre deux comptes.
+@DataClassName('OperationRow')
+@TableIndex(name: 'operations_profile_date', columns: {#profileId, #occurredAt})
+class Operations extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get kind => textEnum<OperationKind>()();
+
+  /// Montant positif en unités mineures ; le sens vient de [kind]. Un entier,
+  /// jamais un nombre à virgule : pas d'erreur d'arrondi sur les totaux.
+  // La contrainte cite la colonne elle-même : c'est la syntaxe de drift, pas une récursion.
+  // ignore: recursive_getters
+  IntColumn get amount => integer().check(amount.isBiggerThanValue(0))();
+
+  /// Compte débité (dépense, virement) ou crédité (revenu).
+  @ReferenceName('outgoingOperations')
+  TextColumn get accountId => text().references(Accounts, #id)();
+
+  /// Compte crédité par un virement ; `null` sinon.
+  @ReferenceName('incomingTransfers')
+  TextColumn get toAccountId => text().nullable().references(Accounts, #id)();
+
+  /// `null` pour un virement.
+  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get note => text().withLength(max: 120).nullable()();
+
+  /// Moment de l'opération (UTC), que l'on peut dater d'un autre jour que la saisie.
+  DateTimeColumn get occurredAt => dateTime()();
+}
+
+@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations])
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
 
@@ -50,5 +109,20 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: stepByStep(
+      from1To2: (m, schema) async {
+        await m.createTable(schema.accounts);
+        await m.createTable(schema.categories);
+        await m.createTable(schema.operations);
+        await m.createIndex(schema.operationsProfileDate);
+      },
+    ),
+    // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.
+    beforeOpen: (details) => customStatement('PRAGMA foreign_keys = ON'),
+  );
 }
