@@ -74,10 +74,26 @@ class TestApp {
   }
 
   /// Laisse la base et les isolats répondre, puis termine les animations.
-  Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 3; i++) {
+  ///
+  /// Un calcul en cours (code, chiffrement) affiche un indicateur qui tourne sans fin :
+  /// `pumpAndSettle` expirerait. On avance donc image par image tant qu'il est là, avec
+  /// un délai réel pour l'isolat, au lieu d'un nombre fixe de tours qui échouait quand la
+  /// machine était chargée.
+  Future<void> settle(WidgetTester tester, {Duration timeout = const Duration(seconds: 15)}) async {
+    final deadline = DateTime.now().add(timeout);
+    final busy = find.byWidgetPredicate((widget) => widget is ProgressIndicator);
+    for (var calm = 0; calm < 3;) {
       await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+      // Une image d'abord : l'indicateur posé par un setState n'existe qu'après elle.
+      await tester.pump();
+      if (busy.evaluate().isNotEmpty) {
+        if (DateTime.now().isAfter(deadline)) fail('Un calcul tourne encore après $timeout.');
+        await tester.pump(const Duration(milliseconds: 50));
+        calm = 0;
+        continue;
+      }
       await tester.pumpAndSettle();
+      calm++;
     }
   }
 }
