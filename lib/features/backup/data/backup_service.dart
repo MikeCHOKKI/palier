@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../data/database.dart';
+import '../../../data/utc_serializer.dart';
 import '../domain/backup_codec.dart';
 
 /// Les données d'un module (dépenses, sport…) qui partent dans l'export d'un
@@ -50,7 +51,10 @@ class BackupService {
   Future<BackupPreview> open(List<int> bytes, String password) async {
     final payload = await _codec.decrypt(bytes, password);
     try {
-      final profile = ProfileRow.fromJson((payload['profile']! as Map).cast<String, Object?>());
+      final profile = ProfileRow.fromJson(
+        (payload['profile']! as Map).cast<String, Object?>(),
+        serializer: const UtcValueSerializer(),
+      );
       final rawSections = (payload['sections'] as Map?)?.cast<String, Object?>() ?? const {};
       final sections = {
         for (final entry in rawSections.entries)

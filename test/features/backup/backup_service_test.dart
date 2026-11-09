@@ -108,4 +108,19 @@ void main() {
     );
     expect(await newPhone.select(newPhone.profiles).get(), isEmpty);
   });
+
+  test('relit les dates du fichier en UTC, comme le reste de la base', () async {
+    final ama = await profiles.create(const ProfileDraft(name: 'Ama'));
+    final created = (await (phone.select(phone.profiles)..where((p) => p.id.equals(ama.id))).getSingle()).createdAt;
+    final file = await serviceFor(phone).exportProfile(ama.id, password);
+
+    final newPhone = openTestDatabase();
+    addTearDown(newPhone.close);
+    final service = serviceFor(newPhone);
+    await service.import(await service.open(file, password));
+
+    final restored = await (newPhone.select(newPhone.profiles)..where((p) => p.id.equals(ama.id))).getSingle();
+    expect(restored.createdAt.isUtc, isTrue);
+    expect(restored.createdAt.millisecondsSinceEpoch, created.millisecondsSinceEpoch);
+  });
 }
