@@ -4,6 +4,8 @@ import '../core/security/biometric_gate.dart';
 import '../data/database.dart';
 import '../features/backup/data/backup_files.dart';
 import '../features/backup/data/backup_service.dart';
+import '../features/expenses/data/expenses_backup_section.dart';
+import '../features/expenses/data/expenses_repository.dart';
 import '../features/profiles/data/profiles_repository.dart';
 import '../features/profiles/domain/profile.dart';
 
@@ -16,7 +18,17 @@ final profilesRepositoryProvider = Provider<ProfilesRepository>(
   (ref) => ProfilesRepository(ref.watch(databaseProvider)),
 );
 
-final backupServiceProvider = Provider<BackupService>((ref) => BackupService(ref.watch(databaseProvider)));
+final expensesRepositoryProvider = Provider<ExpensesRepository>(
+  (ref) => ExpensesRepository(ref.watch(databaseProvider)),
+);
+
+/// Les modules dont les données partent dans l'export d'un profil.
+List<BackupSection> backupSections(PalierDatabase db) => [ExpensesBackupSection(db)];
+
+final backupServiceProvider = Provider<BackupService>((ref) {
+  final db = ref.watch(databaseProvider);
+  return BackupService(db, sections: backupSections(db));
+});
 
 final backupFilesProvider = Provider<BackupFiles>((ref) => const DeviceBackupFiles());
 

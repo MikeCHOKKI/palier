@@ -46,7 +46,9 @@ class TestApp {
       overrides: [
         databaseProvider.overrideWithValue(db),
         profilesRepositoryProvider.overrideWith((ref) => ProfilesRepository(db, hasher: hasher)),
-        backupServiceProvider.overrideWith((ref) => BackupService(db, codec: const BackupCodec(iterations: 1000))),
+        backupServiceProvider.overrideWith(
+          (ref) => BackupService(db, codec: const BackupCodec(iterations: 1000), sections: backupSections(db)),
+        ),
         biometricGateProvider.overrideWithValue(biometric),
         backupFilesProvider.overrideWithValue(files),
       ],

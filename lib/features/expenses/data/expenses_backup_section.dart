@@ -1,0 +1,59 @@
+import '../../../data/database.dart';
+import '../../../data/utc_serializer.dart';
+import '../../backup/data/backup_service.dart';
+
+/// Comptes, catégories et opérations d'un profil dans son export chiffré.
+///
+/// Chaque ligne porte sa table (`_table`) ; les lignes supprimées partent aussi,
+/// pour qu'une future synchronisation sache ce qui a disparu.
+class ExpensesBackupSection implements BackupSection {
+  ExpensesBackupSection(this._db);
+
+  final PalierDatabase _db;
+
+  static const _tableKey = '_table';
+  static const _utc = UtcValueSerializer();
+
+  @override
+  String get key => 'expenses';
+
+  @override
+  Future<List<Map<String, Object?>>> export(String profileId) async {
+    final accounts = await (_db.select(_db.accounts)..where((a) => a.profileId.equals(profileId))).get();
+    final categories = await (_db.select(_db.categories)..where((c) => c.profileId.equals(profileId))).get();
+    final operations = await (_db.select(_db.operations)..where((o) => o.profileId.equals(profileId))).get();
+    return [
+      for (final row in accounts) {_tableKey: 'accounts', ...row.toJson()},
+      for (final row in categories) {_tableKey: 'categories', ...row.toJson()},
+      for (final row in operations) {_tableKey: 'operations', ...row.toJson()},
+    ];
+  }
+
+  /// Appelée dans la transaction de l'import : remplace tout le module du profil.
+  @override
+  Future<void> restore(String profileId, List<Map<String, Object?>> rows) async {
+    List<Map<String, Object?>> of(String table) => [
+      for (final row in rows)
+        if (row[_tableKey] == table) {...row}..remove(_tableKey),
+    ];
+
+    // Les opérations d'abord : elles pointent vers les comptes et les catégories.
+    await (_db.delete(_db.operations)..where((o) => o.profileId.equals(profileId))).go();
+    await (_db.delete(_db.accounts)..where((a) => a.profileId.equals(profileId))).go();
+    await (_db.delete(_db.categories)..where((c) => c.profileId.equals(profileId))).go();
+
+    // Le profil du fichier fait foi : chaque ligne lui est rattachée.
+    for (final json in of('accounts')) {
+      final row = AccountRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.accounts).insert(row.toCompanion(false));
+    }
+    for (final json in of('categories')) {
+      final row = CategoryRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.categories).insert(row.toCompanion(false));
+    }
+    for (final json in of('operations')) {
+      final row = OperationRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.operations).insert(row.toCompanion(false));
+    }
+  }
+}
