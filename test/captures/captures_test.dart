@@ -3,7 +3,11 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:palier/app/providers.dart';
 import 'package:palier/app/theme/palier_accent.dart';
+import 'package:palier/features/expenses/domain/expense_kinds.dart';
+import 'package:palier/features/expenses/domain/expenses.dart';
+import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 
@@ -80,9 +84,77 @@ void main() {
     await tester.tap(find.text('Sauvegarde'));
     await app.settle(tester);
     await capture(tester, '08-sauvegarde');
+  });
 
+  testWidgets('dépenses, saisie, comptes', (tester) async {
+    final app = await TestApp.pump(tester, seed: family);
+    await tester.tap(find.text('Kofi'));
+    await app.settle(tester);
+    await tester.runAsync(() => _kofiMonth(app));
     await tester.tap(find.text('Dépenses'));
     await app.settle(tester);
     await capture(tester, '09-depenses');
+
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    for (final key in ['3', '5']) {
+      await tester.tap(find.descendant(of: find.byType(AmountPad), matching: find.text(key)));
+      await tester.pump();
+    }
+    await tester.tap(find.descendant(of: find.byType(AmountPad), matching: find.bySemanticsLabel('Trois zéros')));
+    await tester.tap(find.text('Alimentation'));
+    await app.settle(tester);
+    await capture(tester, '10-noter');
+
+    await tester.tap(find.byTooltip('Fermer'));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Comptes et catégories'));
+    await app.settle(tester);
+    await tester.tap(find.text('Comptes').last);
+    await app.settle(tester);
+    await capture(tester, '11-comptes');
   });
+}
+
+/// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un virement.
+Future<void> _kofiMonth(TestApp app) async {
+  final repo = app.container.read(expensesRepositoryProvider);
+  final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
+  await repo.ensureStarterKit(kofi);
+  final cash = (await repo.watchAccounts(kofi).first).single;
+  await repo.updateAccount(cash.id, const AccountDraft(name: 'Espèces', openingBalance: 18000));
+  final momo = await repo.createAccount(
+    kofi,
+    const AccountDraft(name: 'MTN MoMo', kind: AccountKind.mobileMoney, openingBalance: 42500),
+  );
+  final categories = {for (final c in await repo.watchCategories(kofi).first) c.name: c.id};
+  final now = DateTime.now();
+  DateTime at(int daysAgo, int hour) => DateTime(now.year, now.month, now.day - daysAgo, hour);
+
+  Future<void> add(
+    OperationKind kind,
+    int amount,
+    String account,
+    DateTime when, {
+    String? category,
+    String? to,
+    String? note,
+  }) => repo.addOperation(
+    kofi,
+    OperationDraft(
+      kind: kind,
+      amount: amount,
+      accountId: account,
+      toAccountId: to,
+      categoryId: category == null ? null : categories[category],
+      note: note,
+      occurredAt: when,
+    ),
+  );
+
+  await add(OperationKind.income, 150000, momo.id, at(1, 9), category: 'Salaire');
+  await add(OperationKind.transfer, 20000, momo.id, at(1, 12), to: cash.id, note: 'retrait');
+  await add(OperationKind.expense, 12500, cash.id, at(1, 18), category: 'Alimentation', note: 'marché');
+  await add(OperationKind.expense, 1000, momo.id, at(0, 8), category: 'Crédit et data');
+  await add(OperationKind.expense, 700, cash.id, at(0, 9), category: 'Transport', note: 'zem');
 }
