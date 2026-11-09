@@ -6,10 +6,15 @@ plugins {
 
 android {
     namespace = "io.github.mikechokki.palier"
-    compileSdk = flutter.compileSdkVersion
+    // 37 au lieu de flutter.compileSdkVersion (36) : permission_handler_android 14.1.1
+    // refuse de compiler contre une API plus ancienne. targetSdk reste celui de Flutter.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // flutter_local_notifications (reçu par lucid_core_flutter) exige la désucration
+        // de la bibliothèque Java, selon son README.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -46,4 +51,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
