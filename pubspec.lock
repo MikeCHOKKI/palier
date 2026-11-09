@@ -848,10 +848,11 @@ packages:
   lucid_core_flutter:
     dependency: "direct main"
     description:
-      path: "../../lucid_core_flutter"
-      relative: true
-    source: path
-    version: "0.2.0"
+      name: lucid_core_flutter
+      sha256: "900838d70e65e560b8a686ab877193e328a0f96d5800d65f2410ceb3ba4a3ee5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   matcher:
     dependency: transitive
     description:

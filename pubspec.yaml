@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   # Socle partagé : thème, widgets, stockage (https://pub.dev/packages/lucid_core_flutter).
-  lucid_core_flutter: ^0.2.0
+  lucid_core_flutter: ^0.3.1
 
   # État et navigation.
   flutter_riverpod: ^3.5.0
