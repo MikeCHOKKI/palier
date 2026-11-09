@@ -4,13 +4,17 @@ import '../../../app/theme/palier_accent.dart';
 
 /// Devises proposées. Le F CFA (XOF) est la devise par défaut.
 enum PalierCurrency {
-  xof('F CFA'),
-  eur('€'),
-  usd(r'$');
+  xof('F CFA', 0),
+  eur('€', 2),
+  usd(r'$', 2);
 
-  const PalierCurrency(this.symbol);
+  const PalierCurrency(this.symbol, this.decimals);
 
   final String symbol;
+
+  /// Chiffres après la virgule : les montants sont enregistrés en unités
+  /// mineures (le franc CFA n'en a pas, l'euro compte en centimes).
+  final int decimals;
 
   /// Code ISO 4217 enregistré en base.
   String get code => name.toUpperCase();
