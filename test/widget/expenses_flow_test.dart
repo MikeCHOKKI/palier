@@ -114,12 +114,12 @@ void main() {
     expect(paragraph.didExceedMaxLines, isFalse, reason: 'le texte d’aide ne doit pas finir en « … »');
   });
 
-  testWidgets('un virement propose d’ajouter un second compte, qui s’ouvre par-dessus', (tester) async {
+  testWidgets('passer entre ses comptes propose d’ajouter un second compte, qui s’ouvre par-dessus', (tester) async {
     final app = await _openExpenses(tester);
     await tester.tap(find.text('Noter'));
     await app.settle(tester);
 
-    await tester.tap(find.text('Virement'));
+    await tester.tap(find.text('Entre comptes'));
     await app.settle(tester);
     expect(find.textContaining('ajoute d’abord un deuxième compte'), findsOneWidget);
 
@@ -134,10 +134,10 @@ void main() {
     expect(find.text('De'), findsOneWidget);
     expect(find.text('Vers'), findsOneWidget);
     await _pad(tester, ['1', '0', 'Trois zéros']);
-    await tester.tap(find.text('Enregistrer le virement'));
+    await tester.tap(find.text('Enregistrer le mouvement'));
     await app.settle(tester);
 
-    expect(find.text('Virement enregistré.'), findsOneWidget);
+    expect(find.text('Mouvement enregistré.'), findsOneWidget);
     expect(find.text('Espèces → MTN MoMo'), findsOneWidget);
     expect(find.text(formatMoney(10000, _xof)), findsWidgets, reason: 'solde du compte MoMo');
   });

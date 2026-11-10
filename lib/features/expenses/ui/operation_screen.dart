@@ -249,7 +249,11 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
                           showSelectedIcon: false,
                           segments: [
                             for (final kind in OperationKind.values)
-                              ButtonSegment(value: kind, label: Text(l10n.operationKindName(kind))),
+                              ButtonSegment(
+                                value: kind,
+                                // « Entre comptes » passe sur deux lignes : centrées, comme les autres choix.
+                                label: Text(l10n.operationKindName(kind), textAlign: TextAlign.center),
+                              ),
                           ],
                           selected: {_kind},
                           onSelectionChanged: (s) => _setKind(s.single),
