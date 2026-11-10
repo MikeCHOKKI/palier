@@ -218,4 +218,58 @@ void main() {
       expect(accounts.first.balance, 5000);
     });
   });
+
+  group('plafonds', () {
+    late String cash;
+    late Category food;
+    late Category transport;
+
+    setUp(() async {
+      await repo.ensureStarterKit(ama);
+      cash = (await repo.watchAccounts(ama).first).single.id;
+      final expenses = await repo.watchCategories(ama, kind: CategoryKind.expense).first;
+      food = expenses[0];
+      transport = expenses[1];
+    });
+
+    test('un plafond par catégorie, dans l’ordre des catégories', () async {
+      await repo.setBudget(ama, transport.id, 20000);
+      await repo.setBudget(ama, food.id, 60000);
+
+      final budgets = await repo.watchBudgets(ama).first;
+      expect(budgets.map((b) => (b.categoryName, b.amount)), [(food.name, 60000), (transport.name, 20000)]);
+      expect(budgets.first.categoryIcon, food.icon);
+    });
+
+    test('changer, retirer puis remettre un plafond garde une seule ligne', () async {
+      await repo.setBudget(ama, food.id, 60000);
+      await repo.setBudget(ama, food.id, 45000);
+      expect((await repo.watchBudgets(ama).first).single.amount, 45000);
+
+      await repo.removeBudget(food.id);
+      expect(await repo.watchBudgets(ama).first, isEmpty);
+
+      await repo.setBudget(ama, food.id, 50000);
+      expect((await repo.watchBudgets(ama).first).single.amount, 50000);
+      expect(await db.select(db.budgets).get(), hasLength(1));
+    });
+
+    test('une catégorie supprimée emporte son plafond', () async {
+      await repo.setBudget(ama, food.id, 60000);
+      await repo.deleteCategory(food.id);
+      expect(await repo.watchBudgets(ama).first, isEmpty);
+    });
+
+    test('ce qu’une catégorie a coûté sur une période, suppressions exclues', () async {
+      final (from, to) = MonthView.bounds(DateTime(2026, 11));
+      await repo.addOperation(ama, spend(12000, cash, food.id));
+      await repo.addOperation(ama, spend(3000, cash, food.id, at: DateTime.utc(2026, 10, 31, 12)));
+      final removed = await repo.addOperation(ama, spend(500, cash, food.id));
+      await repo.deleteOperation(removed);
+      await repo.addOperation(ama, spend(700, cash, transport.id));
+
+      expect(await repo.spentIn(ama, food.id, from: from, to: to), 12000);
+      expect(await repo.spentIn(ama, 'aucune', from: from, to: to), 0);
+    });
+  });
 }

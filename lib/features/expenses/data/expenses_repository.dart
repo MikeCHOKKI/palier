@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../data/database.dart';
+import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import '../domain/starter_kit.dart';
@@ -12,7 +13,7 @@ class AccountInUseException implements Exception {
   const AccountInUseException();
 }
 
-/// Comptes, catégories et opérations d'un profil.
+/// Comptes, catégories, opérations et plafonds d'un profil.
 class ExpensesRepository {
   ExpensesRepository(this._db, {DateTime Function()? clock, Uuid? uuid})
     : _clock = clock ?? (() => DateTime.now().toUtc()),
@@ -264,6 +265,84 @@ class ExpensesRepository {
     return (_db.update(_db.operations)..where((o) => o.id.equals(id))).write(
       OperationsCompanion(deletedAt: const Value(null), updatedAt: Value(_clock())),
     );
+  }
+
+  // --------------------------------------------------------------- plafonds
+
+  /// Les plafonds du profil, dans l'ordre de leurs catégories. Une catégorie
+  /// supprimée emporte son plafond.
+  Stream<List<Budget>> watchBudgets(String profileId) {
+    final b = _db.budgets;
+    final c = _db.categories;
+    final query = _db.select(b).join([innerJoin(c, c.id.equalsExp(b.categoryId))])
+      ..where(b.profileId.equals(profileId) & b.deletedAt.isNull() & c.deletedAt.isNull())
+      ..orderBy([OrderingTerm.asc(c.position), OrderingTerm.asc(c.createdAt)]);
+    return query.watch().map(
+      (rows) => [
+        for (final row in rows)
+          () {
+            final budget = row.readTable(b);
+            final category = row.readTable(c);
+            return Budget(
+              categoryId: category.id,
+              categoryName: category.name,
+              categoryIcon: category.icon,
+              amount: budget.amount,
+            );
+          }(),
+      ],
+    );
+  }
+
+  /// Pose ou change le plafond d'une catégorie. Une catégorie n'a qu'une ligne :
+  /// un plafond retiré puis remis réutilise la sienne.
+  Future<void> setBudget(String profileId, String categoryId, int amount) {
+    if (amount <= 0) throw ArgumentError.value(amount, 'amount', 'Un plafond est positif');
+    final now = _clock();
+    return _db
+        .into(_db.budgets)
+        .insert(
+          BudgetsCompanion.insert(
+            id: _uuid.v4(),
+            createdAt: now,
+            updatedAt: now,
+            profileId: profileId,
+            categoryId: categoryId,
+            amount: amount,
+          ),
+          onConflict: DoUpdate(
+            (_) => BudgetsCompanion(amount: Value(amount), deletedAt: const Value(null), updatedAt: Value(now)),
+            target: [_db.budgets.categoryId],
+          ),
+        );
+  }
+
+  /// Retire le plafond d'une catégorie (suppression douce).
+  Future<void> removeBudget(String categoryId) {
+    final now = _clock();
+    return (_db.update(_db.budgets)..where((b) => b.categoryId.equals(categoryId))).write(
+      BudgetsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+    );
+  }
+
+  /// Ce que [categoryId] a coûté entre [from] et [to[ : de quoi savoir si une
+  /// dépense vient de franchir un seuil du plafond.
+  Future<int> spentIn(String profileId, String categoryId, {required DateTime from, required DateTime to}) async {
+    final o = _db.operations;
+    final total = o.amount.sum();
+    final row =
+        await (_db.selectOnly(o)
+              ..addColumns([total])
+              ..where(
+                o.profileId.equals(profileId) &
+                    o.categoryId.equals(categoryId) &
+                    o.kind.equalsValue(OperationKind.expense) &
+                    o.deletedAt.isNull() &
+                    o.occurredAt.isBiggerOrEqualValue(from.toUtc()) &
+                    o.occurredAt.isSmallerThanValue(to.toUtc()),
+              ))
+            .getSingle();
+    return row.read(total) ?? 0;
   }
 
   // ------------------------------------------------------------------ outils

@@ -2,7 +2,8 @@ import '../../../data/database.dart';
 import '../../../data/utc_serializer.dart';
 import '../../backup/data/backup_service.dart';
 
-/// Comptes, catégories et opérations d'un profil dans son export chiffré.
+/// Comptes, catégories, opérations et plafonds d'un profil dans son export
+/// chiffré. Un fichier d'avant les plafonds s'importe tel quel, sans plafond.
 ///
 /// Chaque ligne porte sa table (`_table`) ; les lignes supprimées partent aussi,
 /// pour qu'une future synchronisation sache ce qui a disparu.
@@ -22,10 +23,12 @@ class ExpensesBackupSection implements BackupSection {
     final accounts = await (_db.select(_db.accounts)..where((a) => a.profileId.equals(profileId))).get();
     final categories = await (_db.select(_db.categories)..where((c) => c.profileId.equals(profileId))).get();
     final operations = await (_db.select(_db.operations)..where((o) => o.profileId.equals(profileId))).get();
+    final budgets = await (_db.select(_db.budgets)..where((b) => b.profileId.equals(profileId))).get();
     return [
       for (final row in accounts) {_tableKey: 'accounts', ...row.toJson()},
       for (final row in categories) {_tableKey: 'categories', ...row.toJson()},
       for (final row in operations) {_tableKey: 'operations', ...row.toJson()},
+      for (final row in budgets) {_tableKey: 'budgets', ...row.toJson()},
     ];
   }
 
@@ -37,7 +40,8 @@ class ExpensesBackupSection implements BackupSection {
         if (row[_tableKey] == table) {...row}..remove(_tableKey),
     ];
 
-    // Les opérations d'abord : elles pointent vers les comptes et les catégories.
+    // Opérations et plafonds d'abord : ils pointent vers les comptes et les catégories.
+    await (_db.delete(_db.budgets)..where((b) => b.profileId.equals(profileId))).go();
     await (_db.delete(_db.operations)..where((o) => o.profileId.equals(profileId))).go();
     await (_db.delete(_db.accounts)..where((a) => a.profileId.equals(profileId))).go();
     await (_db.delete(_db.categories)..where((c) => c.profileId.equals(profileId))).go();
@@ -54,6 +58,10 @@ class ExpensesBackupSection implements BackupSection {
     for (final json in of('operations')) {
       final row = OperationRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.operations).insert(row.toCompanion(false));
+    }
+    for (final json in of('budgets')) {
+      final row = BudgetRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.budgets).insert(row.toCompanion(false));
     }
   }
 }

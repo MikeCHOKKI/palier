@@ -48,6 +48,7 @@ void main() {
       ),
     );
     await expenses.deleteOperation(deleted);
+    await expenses.setBudget(ama.id, food.id, 60000);
 
     final file = await serviceFor(phone).exportProfile(ama.id, password);
 
@@ -64,6 +65,7 @@ void main() {
     final entries = await restored.watchOperations(ama.id, from: from, to: to).first;
     expect(entries.single.note, 'marché');
     expect(entries.single.occurredAt, DateTime.utc(2026, 11, 9, 10));
+    expect((await restored.watchBudgets(ama.id).first).single.amount, 60000);
   });
 
   test('un import remplace les dépenses du profil au lieu de les additionner', () async {
@@ -75,9 +77,13 @@ void main() {
     final file = await serviceFor(phone).exportProfile(ama.id, password);
 
     await expenses.createAccount(ama.id, const AccountDraft(name: 'Banque', kind: AccountKind.bank));
+    // Un plafond posé après l'export pointe vers une catégorie que l'import remplace.
+    final food = (await expenses.watchCategories(ama.id).first).first;
+    await expenses.setBudget(ama.id, food.id, 60000);
     await serviceFor(phone).import(await serviceFor(phone).open(file, password));
 
     expect((await expenses.watchAccounts(ama.id).first).map((a) => a.name), ['Espèces']);
     expect(await expenses.watchCategories(ama.id).first, hasLength(15));
+    expect(await expenses.watchBudgets(ama.id).first, isEmpty);
   });
 }
