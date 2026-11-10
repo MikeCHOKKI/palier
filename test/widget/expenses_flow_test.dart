@@ -75,6 +75,23 @@ void main() {
     expect(find.text('Enregistrer la dépense'), findsOneWidget);
   });
 
+  testWidgets('ouvrir « Noter » retire le message en cours, qui couvrirait « Enregistrer »', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    await _pad(tester, ['5', 'Trois zéros']);
+    await tester.tap(find.text('Alimentation'));
+    await tester.pump();
+    await tester.tap(find.text('Enregistrer la dépense'));
+    await app.settle(tester);
+    expect(find.byKey(LucidSnack.pillKey), findsOneWidget);
+
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    expect(find.byKey(LucidSnack.pillKey), findsNothing);
+    expect(find.text('Enregistrer la dépense').hitTestable(), findsOneWidget);
+  });
+
   testWidgets('l’œil masque tous les montants, et le téléphone s’en souvient', (tester) async {
     final app = await _openExpenses(tester);
     await tester.tap(find.text('Noter'));

@@ -57,6 +57,11 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     final currency = ref.read(activeProfileProvider)!.currency;
     _amount = AmountEntry.empty(currency);
     _occurredAt = _now();
+    // Un message encore affiché (« Dépense enregistrée. ») se poserait sur le
+    // bouton d'enregistrement de cet écran : on ouvre la saisie sans lui.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
+    });
     if (_editing) {
       _loading = true;
       _load(widget.operationId!);
