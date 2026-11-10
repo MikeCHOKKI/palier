@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
 
@@ -75,23 +74,18 @@ class _PalierAppState extends ConsumerState<PalierApp> {
         }
       });
 
-    return LucidThemeProvider(
+    // Palier n'a qu'un thème, sombre : il sert dans les deux modes, pour que le
+    // passage clair/sombre du téléphone ne ramène pas le thème par défaut du socle.
+    final theme = palierTheme(accent);
+    return LucidApp.router(
+      title: 'Palier',
       themeNotifier: _lucidTheme,
-      child: MaterialApp.router(
-        title: 'Palier',
-        debugShowCheckedModeBanner: false,
-        theme: palierTheme(accent),
-        routerConfig: router,
-        locale: const Locale('fr'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          ...LucidL10n.localizationsDelegates,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-      ),
+      lightTheme: theme,
+      darkTheme: theme,
+      routerConfig: router,
+      locale: const Locale('fr'),
+      additionalLocalizationsDelegates: const [AppLocalizations.delegate],
+      additionalSupportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
