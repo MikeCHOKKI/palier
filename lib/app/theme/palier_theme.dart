@@ -213,6 +213,11 @@ ThemeData palierTheme(PalierAccent accent) {
       contentTextStyle: manrope(size: 15),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(PalierRadius.sm)),
+      // Une croix, et un glissement de côté plutôt que vers le bas (geste peu
+      // naturel au-dessus de la barre de navigation).
+      showCloseIcon: true,
+      closeIconColor: PalierColors.textMid,
+      dismissDirection: DismissDirection.horizontal,
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: PalierColors.surface,

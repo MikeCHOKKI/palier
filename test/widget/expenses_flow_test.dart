@@ -103,6 +103,45 @@ void main() {
     expect(find.text('Transport'), findsOneWidget);
   });
 
+  testWidgets('le message « Annuler » part seul, ou d’une croix', (tester) async {
+    final app = await _openExpenses(tester);
+    final repo = app.container.read(expensesRepositoryProvider);
+    Future<void> addAndDelete() async {
+      await tester.runAsync(() async {
+        final profileId = (await app.profiles.watchAll().first).single.id;
+        final cash = (await repo.watchAccounts(profileId).first).single;
+        final transport = (await repo.watchCategories(profileId).first).firstWhere((c) => c.name == 'Transport');
+        await repo.addOperation(
+          profileId,
+          OperationDraft(
+            kind: OperationKind.expense,
+            amount: 500,
+            accountId: cash.id,
+            categoryId: transport.id,
+            note: null,
+            occurredAt: DateTime.now(),
+          ),
+        );
+      });
+      await app.settle(tester);
+      await tester.tap(find.text('Transport'));
+      await app.settle(tester);
+      await tester.tap(find.byTooltip('Supprimer l’opération'));
+      await app.settle(tester);
+    }
+
+    await addAndDelete();
+    expect(find.text('Annuler'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 7));
+    await app.settle(tester);
+    expect(find.text('Annuler'), findsNothing, reason: 'le message ne reste pas indéfiniment');
+
+    await addAndDelete();
+    await tester.tap(find.byTooltip('Fermer'));
+    await app.settle(tester);
+    expect(find.text('Annuler'), findsNothing, reason: 'la croix ferme le message');
+  });
+
   testWidgets('l’aide du solde de départ se lit en entier sur un téléphone', (tester) async {
     final app = await _openExpenses(tester);
     await tester.tap(find.bySemanticsLabel('Ajouter un compte'));

@@ -166,6 +166,10 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
       SnackBar(
         content: Text(l10n.operationDeleted),
         action: SnackBarAction(label: l10n.operationUndo, onPressed: () => repo.restoreOperation(id)),
+        // Avec un bouton, Flutter garde le message à l'écran jusqu'à ce qu'on le
+        // touche ; six secondes suffisent pour se raviser.
+        persist: false,
+        duration: const Duration(seconds: 6),
       ),
     );
   }
