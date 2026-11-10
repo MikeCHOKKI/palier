@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/backup/ui/backup_screen.dart';
 import '../features/expenses/ui/accounts_screen.dart';
+import '../features/expenses/ui/budgets_screen.dart';
 import '../features/expenses/ui/categories_screen.dart';
 import '../features/expenses/ui/expenses_screen.dart';
 import '../features/expenses/ui/operation_screen.dart';
@@ -102,6 +103,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                       fullScreen('nouvelle', (_) => const CategoryFormScreen()),
                       fullScreen(':id', (s) => CategoryFormScreen(categoryId: s.pathParameters['id'])),
                     ],
+                  ),
+                  fullScreen(
+                    'budgets',
+                    (_) => const BudgetsScreen(),
+                    routes: [fullScreen(':id', (s) => BudgetFormScreen(categoryId: s.pathParameters['id']!))],
                   ),
                 ],
               ),

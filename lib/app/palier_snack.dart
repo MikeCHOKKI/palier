@@ -21,6 +21,10 @@ abstract final class PalierSnack {
         onAction: onUndo,
       );
 
+  /// Fait, mais avec un seuil franchi (plafond de budget).
+  static void warn(ScaffoldMessengerState messenger, String message) =>
+      LucidSnack.showOn(messenger, message: message, icon: Icons.speed_rounded, iconColor: PalierColors.warning);
+
   /// Ce qui n'a pas pu se faire.
   static void problem(ScaffoldMessengerState messenger, String message) =>
       LucidSnack.showOn(messenger, message: message, icon: Icons.error_outline_rounded, iconColor: PalierColors.danger);

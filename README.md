@@ -20,6 +20,10 @@ pas de serveur, pas de publicité.
   <img src="docs/captures/11-comptes.png" width="220" alt="Comptes et soldes">
 </p>
 
+<p align="center">
+  <img src="docs/captures/12-budgets.png" width="220" alt="Budgets du mois et prévision">
+</p>
+
 ## Ce que fait Palier
 
 Chaque membre de la famille a son profil : son prénom, sa couleur, sa devise, les modules qu'il
@@ -28,7 +32,7 @@ suit, et son propre verrou.
 | Lot | Contenu | État |
 |---|---|---|
 | 1. Socle et profils | Profils personnalisés, profil d'enfant, code à 4-6 chiffres avec blocage progressif, empreinte, verrouillage après une minute en arrière-plan, export et import chiffrés | Fait |
-| 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | En cours : saisie, comptes, catégories et soldes faits |
+| 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | En cours : saisie, comptes, catégories, soldes, budgets et prévision faits |
 | 3. Sport | Programme selon les réglages du profil, séances guidées, suivi des progrès | À venir |
 | 4. Progression | Habitudes, objectifs par étapes, bilan de la semaine | À venir |
 | 5. Options Android | Lecture des SMS Mobile Money (désactivée par défaut), nombre de pas | À venir |

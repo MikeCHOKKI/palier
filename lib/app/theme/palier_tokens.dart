@@ -38,6 +38,9 @@ abstract final class PalierColors {
   static const textLow = Color(0xFF8C9DB0);
 
   static const danger = Color(0xFFFF7B7B);
+
+  /// Un seuil qui approche (plafond à 80 %) : ni réussite ni erreur.
+  static const warning = Color(0xFFF2B33D);
   static const success = Color(0xFF3DDC97);
 }
 

@@ -22,6 +22,8 @@ abstract final class Routes {
   static const expensesCategories = '/depenses/categories';
   static const expensesCategoryNew = '/depenses/categories/nouvelle';
   static String expensesCategory(String id) => '/depenses/categories/$id';
+  static const expensesBudgets = '/depenses/budgets';
+  static String expensesBudget(String categoryId) => '/depenses/budgets/$categoryId';
   static const sport = '/sport';
   static const settings = '/reglages';
   static const settingsProfile = '/reglages/profil';

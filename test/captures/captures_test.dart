@@ -112,15 +112,24 @@ void main() {
 
     await tester.tap(find.byTooltip('Fermer'));
     await app.settle(tester);
-    await tester.tap(find.byTooltip('Comptes et catégories'));
+    await tester.tap(find.byTooltip('Comptes, catégories et budgets'));
     await app.settle(tester);
     await tester.tap(find.text('Comptes').last);
     await app.settle(tester);
     await capture(tester, '11-comptes');
+
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Comptes, catégories et budgets'));
+    await app.settle(tester);
+    await tester.tap(find.text('Budgets').last);
+    await app.settle(tester);
+    await capture(tester, '12-budgets');
   });
 }
 
-/// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un virement.
+/// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un
+/// virement, trois plafonds.
 Future<void> _kofiMonth(TestApp app) async {
   final repo = app.container.read(expensesRepositoryProvider);
   final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
@@ -161,4 +170,7 @@ Future<void> _kofiMonth(TestApp app) async {
   await add(OperationKind.expense, 12500, cash.id, at(1, 18), category: 'Alimentation', note: 'marché');
   await add(OperationKind.expense, 1000, momo.id, at(0, 8), category: 'Crédit et data');
   await add(OperationKind.expense, 700, cash.id, at(0, 9), category: 'Transport', note: 'zem');
+  await repo.setBudget(kofi, categories['Alimentation']!, 60000);
+  await repo.setBudget(kofi, categories['Transport']!, 15000);
+  await repo.setBudget(kofi, categories['Crédit et data']!, 5000);
 }

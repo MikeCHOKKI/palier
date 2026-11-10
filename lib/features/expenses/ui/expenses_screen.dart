@@ -14,6 +14,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../profiles/domain/profile.dart';
 import '../domain/expenses.dart';
 import '../domain/money.dart';
+import 'budgets_screen.dart';
 import 'expense_visuals.dart';
 import 'expense_widgets.dart';
 import 'expenses_providers.dart';
@@ -88,6 +89,7 @@ class _Content extends ConsumerWidget {
                     itemBuilder: (_) => [
                       PopupMenuItem(value: Routes.expensesAccounts, child: Text(l10n.expensesManageAccounts)),
                       PopupMenuItem(value: Routes.expensesCategories, child: Text(l10n.expensesManageCategories)),
+                      PopupMenuItem(value: Routes.expensesBudgets, child: Text(l10n.expensesManageBudgets)),
                     ],
                   ),
                 ],
@@ -142,6 +144,8 @@ class _Content extends ConsumerWidget {
               _MonthBar(month: month.month),
               const SizedBox(height: PalierSpace.md),
               _MonthSummary(spent: month.spent, received: month.received, currency: currency),
+              const SizedBox(height: PalierSpace.lg),
+              _BudgetsBlock(currency: currency),
             ],
           ),
         ),
@@ -387,6 +391,62 @@ class _MonthSummary extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Les budgets du mois en un coup d'œil ; un toucher ouvre l'écran Budgets.
+/// Sans plafond, une invitation discrète à en poser.
+class _BudgetsBlock extends ConsumerWidget {
+  const _BudgetsBlock({required this.currency});
+
+  final PalierCurrency currency;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final month = ref.watch(budgetMonthProvider).value;
+    if (month == null) return const SizedBox.shrink();
+    void open() => context.push(Routes.expensesBudgets);
+
+    if (month.isEmpty) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          // Aligné sur le bord de page, comme le texte au-dessus.
+          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: PalierSpace.sm + 4)),
+          onPressed: open,
+          icon: const Icon(Icons.speed_rounded, size: 20),
+          label: Text(l10n.budgetsSet),
+        ),
+      );
+    }
+    return Material(
+      color: PalierColors.surface,
+      borderRadius: BorderRadius.circular(PalierRadius.md),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: open,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(PalierSpace.md, PalierSpace.sm + 4, PalierSpace.sm, PalierSpace.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: Text(l10n.budgetsTitle, style: Theme.of(context).textTheme.labelMedium)),
+                  const Icon(Icons.chevron_right_rounded, color: PalierColors.textLow),
+                ],
+              ),
+              const SizedBox(height: PalierSpace.xs),
+              Padding(
+                padding: const EdgeInsets.only(right: PalierSpace.sm),
+                child: BudgetTotal(month: month, currency: currency),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

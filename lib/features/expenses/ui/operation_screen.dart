@@ -10,6 +10,7 @@ import '../../../app/theme/palier_accent.dart';
 import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import '../domain/money.dart';
@@ -146,19 +147,49 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final repo = ref.read(expensesRepositoryProvider);
     try {
+      final budget = await _budgetOf(profileId, draft);
+      final (from, to) = MonthView.bounds(draft.occurredAt);
+      final before = budget == null ? 0 : await repo.spentIn(profileId, budget.categoryId, from: from, to: to);
       if (_editing) {
         await repo.updateOperation(widget.operationId!, draft);
       } else {
         await repo.addOperation(profileId, draft);
       }
+      final after = budget == null ? 0 : await repo.spentIn(profileId, budget.categoryId, from: from, to: to);
       if (!mounted) return;
       context.pop();
-      PalierSnack.done(messenger, l10n.operationSaved(_kind.name));
+      final alert = budget == null ? null : budgetAlert(before: before, after: after, limit: budget.amount);
+      switch (alert) {
+        case null:
+          PalierSnack.done(messenger, l10n.operationSaved(_kind.name));
+        case BudgetAlert.nearing:
+          PalierSnack.warn(
+            messenger,
+            l10n.budgetAlertNearing(budget!.categoryName, (after * 100 / budget.amount).floor()),
+          );
+        case BudgetAlert.reached:
+          PalierSnack.warn(
+            messenger,
+            after > budget!.amount
+                ? l10n.budgetAlertOver(budget.categoryName)
+                : l10n.budgetAlertReached(budget.categoryName),
+          );
+      }
     } on Object {
       if (!mounted) return;
       setState(() => _saving = false);
       PalierSnack.problem(messenger, l10n.errorGeneric);
     }
+  }
+
+  /// Le plafond de la catégorie d'une dépense, s'il y en a un.
+  Future<Budget?> _budgetOf(String profileId, OperationDraft draft) async {
+    if (draft.kind != OperationKind.expense) return null;
+    final budgets = await ref.read(expensesRepositoryProvider).watchBudgets(profileId).first;
+    for (final budget in budgets) {
+      if (budget.categoryId == draft.categoryId) return budget;
+    }
+    return null;
   }
 
   Future<void> _delete() async {
@@ -266,12 +297,15 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
                           selected: {_kind},
                           onSelectionChanged: (s) => _setKind(s.single),
                         ),
-                        _AmountDisplay(amount: _amount, kind: _kind),
+                        AmountDisplay(
+                          amount: _amount,
+                          color: _kind == OperationKind.income ? PalierColors.success : null,
+                        ),
                         ..._details(l10n, accounts, categories),
                       ],
                     ),
                   ),
-                  _BottomPanel(
+                  AmountPanel(
                     amount: _amount,
                     onAmountChanged: (value) => _update(() => _amount = value),
                     problem: _problem == null ? null : _problemText(l10n, _problem!),
@@ -352,56 +386,6 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
         ),
       ),
     ];
-  }
-}
-
-/// Le montant en grand, au centre : c'est lui que l'on vérifie d'un coup d'œil.
-class _AmountDisplay extends StatelessWidget {
-  const _AmountDisplay({required this.amount, required this.kind});
-
-  final AmountEntry amount;
-  final OperationKind kind;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final color = amount.isZero
-        ? PalierColors.textLow
-        : (kind == OperationKind.income ? PalierColors.success : PalierColors.textHigh);
-    return Semantics(
-      liveRegion: true,
-      label: l10n.amountLabel(formatMoney(amount.minor, amount.currency)),
-      child: ExcludeSemantics(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: PalierSpace.md),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  amount.display,
-                  style: TextStyle(
-                    fontFamily: PalierFonts.display,
-                    fontSize: 44,
-                    fontWeight: FontWeight.w600,
-                    height: 1.1,
-                    color: color,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                ),
-                const SizedBox(width: PalierSpace.sm),
-                Text(
-                  amount.currency.symbol,
-                  style: manrope(size: 18, weight: FontWeight.w600, color: PalierColors.textMid),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -528,64 +512,6 @@ class _TransferNeedsTwoAccounts extends StatelessWidget {
             label: Text(l10n.operationAddAccount),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Pavé, message éventuel et bouton d'enregistrement, posés sur le fond le plus profond.
-class _BottomPanel extends StatelessWidget {
-  const _BottomPanel({
-    required this.amount,
-    required this.onAmountChanged,
-    required this.problem,
-    required this.saveLabel,
-    required this.saving,
-    required this.onSave,
-  });
-
-  final AmountEntry amount;
-  final ValueChanged<AmountEntry> onAmountChanged;
-  final String? problem;
-  final String saveLabel;
-  final bool saving;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: PalierColors.deep,
-        border: Border(top: BorderSide(color: PalierColors.line)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(PalierSpace.page, PalierSpace.sm + 4, PalierSpace.page, PalierSpace.sm + 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AmountPad(value: amount, onChanged: onAmountChanged),
-            if (problem != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: PalierSpace.sm),
-                child: Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    problem!,
-                    style: manrope(size: 14, weight: FontWeight.w600, color: PalierColors.danger),
-                  ),
-                ),
-              ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: saving ? null : onSave,
-                child: saving
-                    ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : Text(saveLabel),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

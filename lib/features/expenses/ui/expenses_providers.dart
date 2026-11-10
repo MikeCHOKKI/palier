@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidPrivacyController;
 
 import '../../../app/providers.dart';
+import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 
@@ -87,3 +88,33 @@ final monthViewProvider = StreamProvider<MonthView>((ref) async* {
 final hasOperationsProvider = FutureProvider.autoDispose.family<bool, String>(
   (ref, profileId) => ref.watch(expensesRepositoryProvider).hasOperations(profileId),
 );
+
+/// Les plafonds du profil ouvert.
+final budgetsProvider = StreamProvider<List<Budget>>((ref) async* {
+  final profileId = ref.watch(activeProfileIdProvider);
+  if (profileId == null) {
+    yield const [];
+    return;
+  }
+  await ref.watch(expensesSetupProvider(profileId).future);
+  yield* ref.watch(expensesRepositoryProvider).watchBudgets(profileId);
+});
+
+/// Les budgets du mois affiché : chaque plafond face à ses dépenses, et la
+/// prévision si c'est le mois en cours.
+final budgetMonthProvider = Provider<AsyncValue<BudgetMonth>>((ref) {
+  final budgets = ref.watch(budgetsProvider);
+  final month = ref.watch(monthViewProvider);
+  if (budgets.hasError) return AsyncValue.error(budgets.error!, budgets.stackTrace!);
+  if (month.hasError) return AsyncValue.error(month.error!, month.stackTrace!);
+  if (!budgets.hasValue || !month.hasValue) return const AsyncValue.loading();
+  final view = month.requireValue;
+  return AsyncValue.data(
+    BudgetMonth(
+      month: view.month,
+      now: ref.watch(clockProvider)(),
+      budgets: budgets.requireValue,
+      entries: [for (final day in view.days) ...day.entries],
+    ),
+  );
+});

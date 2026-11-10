@@ -188,3 +188,112 @@ class _PadKey extends StatelessWidget {
     );
   }
 }
+
+/// Le montant en grand, au centre : c'est lui que l'on vérifie d'un coup d'œil.
+class AmountDisplay extends StatelessWidget {
+  const AmountDisplay({super.key, required this.amount, this.color});
+
+  final AmountEntry amount;
+
+  /// Couleur d'un montant saisi ; par défaut le texte principal.
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final color = amount.isZero ? PalierColors.textLow : (this.color ?? PalierColors.textHigh);
+    return Semantics(
+      liveRegion: true,
+      label: l10n.amountLabel(formatMoney(amount.minor, amount.currency)),
+      child: ExcludeSemantics(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: PalierSpace.md),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  amount.display,
+                  style: TextStyle(
+                    fontFamily: PalierFonts.display,
+                    fontSize: 44,
+                    fontWeight: FontWeight.w600,
+                    height: 1.1,
+                    color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(width: PalierSpace.sm),
+                Text(
+                  amount.currency.symbol,
+                  style: manrope(size: 18, weight: FontWeight.w600, color: PalierColors.textMid),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pavé, message éventuel et bouton d'enregistrement, posés sur le fond le plus profond.
+class AmountPanel extends StatelessWidget {
+  const AmountPanel({
+    super.key,
+    required this.amount,
+    required this.onAmountChanged,
+    required this.problem,
+    required this.saveLabel,
+    required this.saving,
+    required this.onSave,
+  });
+
+  final AmountEntry amount;
+  final ValueChanged<AmountEntry> onAmountChanged;
+  final String? problem;
+  final String saveLabel;
+  final bool saving;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: PalierColors.deep,
+        border: Border(top: BorderSide(color: PalierColors.line)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(PalierSpace.page, PalierSpace.sm + 4, PalierSpace.page, PalierSpace.sm + 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AmountPad(value: amount, onChanged: onAmountChanged),
+            if (problem != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: PalierSpace.sm),
+                child: Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    problem!,
+                    style: manrope(size: 14, weight: FontWeight.w600, color: PalierColors.danger),
+                  ),
+                ),
+              ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: saving ? null : onSave,
+                child: saving
+                    ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : Text(saveLabel),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
