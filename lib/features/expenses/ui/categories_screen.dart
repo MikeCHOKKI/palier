@@ -184,6 +184,7 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
                     LucidTextField(
                       controller: _name,
                       label: l10n.categoryNameLabel,
+                      textCapitalization: TextCapitalization.sentences,
                       autofocus: !_editing,
                       textInputAction: TextInputAction.done,
                       inputFormatters: [LengthLimitingTextInputFormatter(CategoryDraft.maxNameLength)],

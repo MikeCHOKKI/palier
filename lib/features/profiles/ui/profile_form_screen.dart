@@ -137,6 +137,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 LucidTextField(
                   controller: _name,
                   label: l10n.profileNameLabel,
+                  textCapitalization: TextCapitalization.words,
                   autofocus: !_editing,
                   textInputAction: TextInputAction.done,
                   inputFormatters: [LengthLimitingTextInputFormatter(ProfileDraft.maxNameLength)],

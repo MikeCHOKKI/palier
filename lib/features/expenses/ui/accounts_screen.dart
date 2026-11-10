@@ -202,6 +202,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       controller: _name,
                       label: l10n.accountNameLabel,
                       hint: l10n.accountNameHint,
+                      textCapitalization: TextCapitalization.sentences,
                       autofocus: !_editing,
                       textInputAction: TextInputAction.next,
                       inputFormatters: [LengthLimitingTextInputFormatter(AccountDraft.maxNameLength)],
