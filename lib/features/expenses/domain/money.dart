@@ -15,6 +15,9 @@ String formatMoney(int minor, PalierCurrency currency, {bool signed = false, boo
   return withSymbol ? '$number ${currency.symbol}' : number;
 }
 
+/// Un montant masqué : la devise reste, pour reconnaître la ligne.
+String maskedMoney(PalierCurrency currency) => '••• ${currency.symbol}';
+
 int _scale(PalierCurrency currency) {
   var scale = 1;
   for (var i = 0; i < currency.decimals; i++) {

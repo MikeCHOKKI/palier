@@ -34,6 +34,7 @@ class TestApp {
     Future<void> Function(ProfilesRepository repo)? seed,
   }) async {
     SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
     tester.view
       ..physicalSize = size * 3
       ..devicePixelRatio = 3;
@@ -44,6 +45,7 @@ class TestApp {
     final files = FakeBackupFiles();
     final container = ProviderContainer(
       overrides: [
+        preferencesProvider.overrideWithValue(preferences),
         databaseProvider.overrideWithValue(db),
         profilesRepositoryProvider.overrideWith((ref) => ProfilesRepository(db, hasher: hasher)),
         backupServiceProvider.overrideWith(

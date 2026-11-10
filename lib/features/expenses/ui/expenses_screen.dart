@@ -88,15 +88,20 @@ class _Content extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: PalierSpace.lg),
-              Text(l10n.expensesBalanceLabel, style: text.labelMedium),
-              const SizedBox(height: PalierSpace.xs),
+              Row(
+                children: [
+                  Expanded(child: Text(l10n.expensesBalanceLabel, style: text.labelMedium)),
+                  const LucidPrivacyToggle(color: PalierColors.textMid, iconSize: 20),
+                ],
+              ),
               FittedBox(
                 alignment: Alignment.centerLeft,
                 fit: BoxFit.scaleDown,
-                child: Text(
+                child: LucidPrivateText(
                   formatMoney(total, currency),
+                  mask: maskedMoney(currency),
                   style: text.displaySmall!.copyWith(
-                    color: total < 0 ? PalierColors.danger : PalierColors.textHigh,
+                    color: balanceColor(context, total),
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
@@ -230,12 +235,13 @@ class _AccountChip extends StatelessWidget {
                     style: manrope(size: 13, weight: FontWeight.w600, color: PalierColors.textMid),
                   ),
                   const SizedBox(height: 2),
-                  Text(
+                  LucidPrivateText(
                     formatMoney(account.balance, currency),
+                    mask: maskedMoney(currency),
                     style: manrope(
                       size: 15,
                       weight: FontWeight.w700,
-                      color: account.balance < 0 ? PalierColors.danger : PalierColors.textHigh,
+                      color: balanceColor(context, account.balance),
                     ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
                   ),
                 ],
@@ -331,8 +337,9 @@ class _MonthSummary extends StatelessWidget {
       children: [
         Text(label, style: text.labelMedium),
         const SizedBox(height: 2),
-        Text(
+        LucidPrivateText(
           formatMoney(amount, currency),
+          mask: maskedMoney(currency),
           style: manrope(
             size: 17,
             weight: FontWeight.w700,
@@ -397,8 +404,9 @@ class _DayHeader extends StatelessWidget {
             child: Text(label, style: text.labelLarge!.copyWith(color: PalierColors.textMid)),
           ),
           if (net != 0)
-            Text(
+            LucidPrivateText(
               formatMoney(net, currency, signed: true),
+              mask: maskedMoney(currency),
               style: text.labelMedium!.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
             ),
         ],

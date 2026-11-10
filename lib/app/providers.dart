@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/security/biometric_gate.dart';
 import '../data/database.dart';
@@ -10,6 +11,11 @@ import '../features/profiles/data/profiles_repository.dart';
 import '../features/profiles/domain/profile.dart';
 
 /// La base SQLite ; remplacée dans `main` (téléphone) et dans les tests (mémoire).
+/// Les réglages propres à ce téléphone, lus avant le premier affichage.
+final preferencesProvider = Provider<SharedPreferences>(
+  (ref) => throw UnimplementedError('préférences chargées au démarrage, dans main()'),
+);
+
 final databaseProvider = Provider<PalierDatabase>((ref) {
   throw UnimplementedError('databaseProvider doit être remplacé au démarrage');
 });

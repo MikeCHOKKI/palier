@@ -3,11 +3,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidSnack;
 import 'package:palier/app/providers.dart';
+import 'package:palier/app/theme/palier_tokens.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
 import 'package:palier/features/expenses/domain/money.dart';
 import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -51,6 +53,35 @@ void main() {
     expect(find.text('Alimentation'), findsOneWidget);
     expect(find.text(formatMoney(-25000, _xof, signed: true)), findsWidgets);
     expect(find.text(formatMoney(-25000, _xof)), findsWidgets, reason: 'solde total et compte Espèces');
+  });
+
+  testWidgets('l’œil masque tous les montants, et le téléphone s’en souvient', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    await _pad(tester, ['2', '5', 'Trois zéros']);
+    await tester.tap(find.text('Alimentation'));
+    await tester.pump();
+    await tester.tap(find.text('Enregistrer la dépense'));
+    await app.settle(tester);
+    expect(find.text(formatMoney(-25000, _xof)), findsWidgets);
+
+    await tester.tap(find.byTooltip('Masquer les montants'));
+    await app.settle(tester);
+    expect(find.text(formatMoney(-25000, _xof)), findsNothing, reason: 'solde, compte');
+    expect(find.text(formatMoney(-25000, _xof, signed: true)), findsNothing, reason: 'opération, jour');
+    expect(find.text(formatMoney(25000, _xof)), findsNothing, reason: 'sorties du mois');
+    expect(find.text(maskedMoney(_xof)), findsWidgets);
+    final total = tester.widget<Text>(find.text(maskedMoney(_xof)).first);
+    expect(total.style?.color, isNot(PalierColors.danger), reason: 'le rouge trahirait un solde négatif');
+
+    final prefs = await SharedPreferences.getInstance();
+    final profileId = app.container.read(activeProfileProvider)!.id;
+    expect(prefs.getBool('palier.amountsHidden.$profileId'), isTrue);
+
+    await tester.tap(find.byTooltip('Afficher les montants'));
+    await app.settle(tester);
+    expect(find.text(formatMoney(-25000, _xof)), findsWidgets);
   });
 
   testWidgets('une dépense sans catégorie dit ce qui manque', (tester) async {

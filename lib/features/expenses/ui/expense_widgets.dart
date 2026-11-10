@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidPrivacyScope, LucidPrivateText;
 
 import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
@@ -177,8 +178,9 @@ class OperationTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: PalierSpace.md),
-            Text(
+            LucidPrivateText(
               amount,
+              mask: maskedMoney(currency),
               style: manrope(
                 size: 15,
                 weight: FontWeight.w700,
@@ -201,3 +203,8 @@ String dayLabel(AppLocalizations l10n, DateTime day, String Function(DateTime) l
   final label = longFormat(day);
   return label[0].toUpperCase() + label.substring(1);
 }
+
+/// Couleur d'un solde : rouge s'il est négatif, sauf montants masqués (le
+/// rouge dirait encore que le compte est à découvert).
+Color balanceColor(BuildContext context, int balance) =>
+    balance < 0 && !LucidPrivacyScope.isHidden(context) ? PalierColors.danger : PalierColors.textHigh;

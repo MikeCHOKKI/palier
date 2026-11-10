@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
 
+import '../features/expenses/ui/expenses_providers.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
 import 'router.dart';
@@ -77,6 +78,7 @@ class _PalierAppState extends ConsumerState<PalierApp> {
     // Palier n'a qu'un thème, sombre : il sert dans les deux modes, pour que le
     // passage clair/sombre du téléphone ne ramène pas le thème par défaut du socle.
     final theme = palierTheme(accent);
+    final profileId = ref.watch(activeProfileIdProvider);
     return LucidApp.router(
       title: 'Palier',
       themeNotifier: _lucidTheme,
@@ -86,6 +88,10 @@ class _PalierAppState extends ConsumerState<PalierApp> {
       locale: const Locale('fr'),
       additionalLocalizationsDelegates: const [AppLocalizations.delegate],
       additionalSupportedLocales: AppLocalizations.supportedLocales,
+      // L'œil des montants vaut pour tous les écrans du profil ouvert.
+      builder: (context, child) => profileId == null
+          ? child!
+          : LucidPrivacyScope(controller: ref.watch(amountsPrivacyProvider(profileId)), child: child!),
     );
   }
 }

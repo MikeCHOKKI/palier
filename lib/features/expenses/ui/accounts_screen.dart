@@ -50,12 +50,13 @@ class AccountsScreen extends ConsumerWidget {
                   leading: Icon(accountIcon(account.kind)),
                   title: Text(account.name),
                   subtitle: Text(l10n.accountKindName(account.kind)),
-                  trailing: Text(
+                  trailing: LucidPrivateText(
                     formatMoney(account.balance, currency),
+                    mask: maskedMoney(currency),
                     style: manrope(
                       size: 15,
                       weight: FontWeight.w700,
-                      color: account.balance < 0 ? PalierColors.danger : PalierColors.textHigh,
+                      color: balanceColor(context, account.balance),
                     ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
                   ),
                   onTap: () => context.push(Routes.expensesAccount(account.id)),

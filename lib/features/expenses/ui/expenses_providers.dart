@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidPrivacyController;
 
 import '../../../app/providers.dart';
 import '../domain/expense_kinds.dart';
@@ -32,6 +33,17 @@ final categoriesProvider = StreamProvider.family<List<Category>, CategoryKind?>(
   }
   await ref.watch(expensesSetupProvider(profileId).future);
   yield* ref.watch(expensesRepositoryProvider).watchCategories(profileId, kind: kind);
+});
+
+/// L'œil des montants d'un profil, retenu sur ce téléphone : un réglage
+/// d'affichage, pas une donnée du profil (il ne part pas dans les sauvegardes).
+final amountsPrivacyProvider = Provider.family<LucidPrivacyController, String>((ref, profileId) {
+  final preferences = ref.watch(preferencesProvider);
+  final key = 'palier.amountsHidden.$profileId';
+  final controller = LucidPrivacyController(hidden: preferences.getBool(key) ?? false);
+  controller.addListener(() => preferences.setBool(key, controller.hidden));
+  ref.onDispose(controller.dispose);
+  return controller;
 });
 
 /// Le mois affiché (premier jour, heure locale). On ne va pas au-delà du mois en cours.
