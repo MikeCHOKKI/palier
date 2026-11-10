@@ -104,6 +104,44 @@ void main() {
     expect(find.text('Transport'), findsOneWidget);
   });
 
+  testWidgets('glisser une opération : à droite la supprime, à gauche l’ouvre', (tester) async {
+    final app = await _openExpenses(tester);
+    final repo = app.container.read(expensesRepositoryProvider);
+    await tester.runAsync(() async {
+      final profileId = (await app.profiles.watchAll().first).single.id;
+      final cash = (await repo.watchAccounts(profileId).first).single;
+      final transport = (await repo.watchCategories(profileId).first).firstWhere((c) => c.name == 'Transport');
+      await repo.addOperation(
+        profileId,
+        OperationDraft(
+          kind: OperationKind.expense,
+          amount: 500,
+          accountId: cash.id,
+          categoryId: transport.id,
+          note: 'zem',
+          occurredAt: DateTime.now(),
+        ),
+      );
+    });
+    await app.settle(tester);
+
+    await tester.fling(find.text('Transport'), const Offset(-300, 0), 1000);
+    await app.settle(tester);
+    expect(find.text('Modifier'), findsOneWidget, reason: 'vers la gauche : l’écran de modification');
+    expect(find.text('500'), findsOneWidget);
+    await tester.tap(find.byTooltip('Fermer'));
+    await app.settle(tester);
+    expect(find.text('Transport'), findsOneWidget, reason: 'l’opération reste dans la liste');
+
+    await tester.fling(find.text('Transport'), const Offset(300, 0), 1000);
+    await app.settle(tester);
+    expect(find.text('Transport'), findsNothing, reason: 'vers la droite : supprimée');
+    expect(find.text('Opération supprimée.'), findsOneWidget);
+    await tester.tap(find.text('Annuler'));
+    await app.settle(tester);
+    expect(find.text('Transport'), findsOneWidget);
+  });
+
   testWidgets('le message « Annuler » part seul, ou d’un glissement', (tester) async {
     final app = await _openExpenses(tester);
     final repo = app.container.read(expensesRepositoryProvider);

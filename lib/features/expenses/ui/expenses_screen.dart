@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 // Ses push/pop sur BuildContext masqueraient ceux de go_router.
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' hide LucidNavigationExtensions;
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_theme.dart';
@@ -151,11 +152,29 @@ class _Content extends ConsumerWidget {
                     currency: currency,
                   ),
                   for (final entry in day.entries)
-                    OperationTile(
+                    // Glisser n'est qu'un raccourci : le toucher ouvre aussi la ligne.
+                    LucidSwipeActions(
                       key: ValueKey(entry.id),
-                      entry: entry,
-                      currency: currency,
-                      onTap: () => context.push(Routes.expensesOperation(entry.id)),
+                      borderRadius: BorderRadius.circular(PalierRadius.sm),
+                      startAction: LucidSwipeAction(
+                        icon: Icons.delete_outline_rounded,
+                        label: l10n.delete,
+                        color: PalierColors.danger,
+                        removesItem: true,
+                        threshold: 0.4,
+                        onTriggered: () => _delete(context, ref, entry.id),
+                      ),
+                      endAction: LucidSwipeAction(
+                        icon: Icons.edit_outlined,
+                        label: l10n.operationEditTitle,
+                        threshold: 0.25,
+                        onTriggered: () => context.push(Routes.expensesOperation(entry.id)),
+                      ),
+                      child: OperationTile(
+                        entry: entry,
+                        currency: currency,
+                        onTap: () => context.push(Routes.expensesOperation(entry.id)),
+                      ),
                     ),
                 ],
               ),
@@ -163,6 +182,20 @@ class _Content extends ConsumerWidget {
         // Place pour le bouton flottant sous la dernière ligne.
         const SliverToBoxAdapter(child: SizedBox(height: 96)),
       ],
+    );
+  }
+
+  /// Suppression d'un glissement : pas de confirmation, « Annuler » la rattrape.
+  Future<void> _delete(BuildContext context, WidgetRef ref, String id) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(expensesRepositoryProvider);
+    await repo.deleteOperation(id);
+    PalierSnack.deleted(
+      messenger,
+      l10n.operationDeleted,
+      undoLabel: l10n.operationUndo,
+      onUndo: () => repo.restoreOperation(id),
     );
   }
 }
