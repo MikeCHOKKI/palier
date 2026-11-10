@@ -225,12 +225,9 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       label: '${l10n.accountOpeningLabel} (${currency.symbol})',
                       keyboardType: TextInputType.numberWithOptions(decimal: currency.decimals > 0),
                       textInputAction: TextInputAction.done,
+                      helperText: l10n.accountOpeningHelp,
                       validator: (value) =>
                           parseMoney(value ?? '', currency) == null ? l10n.accountOpeningInvalid : null,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: PalierSpace.sm, left: PalierSpace.xs),
-                      child: Text(l10n.accountOpeningHelp, style: Theme.of(context).textTheme.bodySmall),
                     ),
                     const SizedBox(height: PalierSpace.xl),
                     LucidButton(

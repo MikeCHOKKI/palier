@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:palier/app/providers.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
@@ -100,6 +101,17 @@ void main() {
     await tester.tap(find.text('Annuler'));
     await app.settle(tester);
     expect(find.text('Transport'), findsOneWidget);
+  });
+
+  testWidgets('l’aide du solde de départ se lit en entier sur un téléphone', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.bySemanticsLabel('Ajouter un compte'));
+    await app.settle(tester);
+
+    final help = find.textContaining('au moment où tu commences à le suivre');
+    expect(help, findsOneWidget);
+    final paragraph = tester.renderObject<RenderParagraph>(find.descendant(of: help, matching: find.byType(RichText)));
+    expect(paragraph.didExceedMaxLines, isFalse, reason: 'le texte d’aide ne doit pas finir en « … »');
   });
 
   testWidgets('un virement propose d’ajouter un second compte, qui s’ouvre par-dessus', (tester) async {

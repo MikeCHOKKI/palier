@@ -163,6 +163,9 @@ ThemeData palierTheme(PalierAccent accent) {
       hintStyle: manrope(size: 15, color: PalierColors.textLow),
       helperStyle: manrope(size: 13, color: PalierColors.textLow),
       errorStyle: manrope(size: 13, color: PalierColors.danger),
+      // Sans plafond, Material coupe l'aide et l'erreur à une ligne, en « … ».
+      helperMaxLines: 3,
+      errorMaxLines: 3,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(PalierRadius.md),
         borderSide: const BorderSide(color: PalierColors.line),
