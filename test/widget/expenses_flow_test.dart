@@ -55,6 +55,26 @@ void main() {
     expect(find.text(formatMoney(-25000, _xof)), findsWidgets, reason: 'solde total et compte Espèces');
   });
 
+  testWidgets('le message après l’enregistrement laisse « Noter » visible et touchable', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    await _pad(tester, ['5', 'Trois zéros']);
+    await tester.tap(find.text('Alimentation'));
+    await tester.pump();
+    await tester.tap(find.text('Enregistrer la dépense'));
+    await app.settle(tester);
+
+    final pill = tester.getRect(find.byKey(LucidSnack.pillKey));
+    final fab = tester.getRect(find.byType(FloatingActionButton));
+    expect(pill.bottom, lessThanOrEqualTo(fab.top), reason: 'la pastille monte au-dessus du bouton');
+
+    // Le bouton répond encore pendant que le message est affiché.
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    expect(find.text('Enregistrer la dépense'), findsOneWidget);
+  });
+
   testWidgets('l’œil masque tous les montants, et le téléphone s’en souvient', (tester) async {
     final app = await _openExpenses(tester);
     await tester.tap(find.text('Noter'));

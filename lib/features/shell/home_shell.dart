@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../expenses/ui/expenses_screen.dart';
 
 /// Les onglets du profil ouvert. Un module désactivé n'a pas d'onglet.
 class HomeShell extends ConsumerWidget {
@@ -63,6 +64,11 @@ class HomeShell extends ConsumerWidget {
 
     return Scaffold(
       body: shell,
+      // Porté ici pour que les messages du bas passent au-dessus du bouton.
+      floatingActionButton: switch (shell.currentIndex) {
+        _expenses => ExpensesScreen.addButton(context),
+        _ => null,
+      },
       bottomNavigationBar: NavigationBar(
         selectedIndex: selected < 0 ? 0 : selected,
         destinations: [for (final tab in tabs) tab.$2],

@@ -22,6 +22,15 @@ import 'expenses_providers.dart';
 class ExpensesScreen extends ConsumerWidget {
   const ExpensesScreen({super.key});
 
+  /// Le bouton « Noter ». Il vit dans le Scaffold des onglets ([HomeShell]) et
+  /// non dans celui de l'écran : c'est ce Scaffold-là qui affiche les messages
+  /// du bas, et il ne les remonte au-dessus que du bouton qu'il porte lui-même.
+  static Widget addButton(BuildContext context) => FloatingActionButton.extended(
+    onPressed: () => context.push(Routes.expensesNew),
+    icon: const Icon(Icons.add_rounded),
+    label: Text(AppLocalizations.of(context).expensesAdd),
+  );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -32,11 +41,6 @@ class ExpensesScreen extends ConsumerWidget {
     final month = ref.watch(monthViewProvider);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(Routes.expensesNew),
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l10n.expensesAdd),
-      ),
       body: SafeArea(
         child: switch ((accounts, month)) {
           (AsyncValue(error: final Object _), _) ||
