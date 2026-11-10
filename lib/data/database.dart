@@ -101,7 +101,22 @@ class Operations extends Table with SyncColumns {
   DateTimeColumn get occurredAt => dateTime()();
 }
 
-@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations])
+/// Le plafond mensuel d'une catégorie de dépenses. Il vaut pour tous les mois
+/// tant qu'on ne le change pas ; le retirer le supprime en douceur, le remettre
+/// réutilise la même ligne.
+@DataClassName('BudgetRow')
+class Budgets extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+
+  /// Une seule ligne par catégorie, même supprimée : c'est elle qu'on réactive.
+  TextColumn get categoryId => text().unique().references(Categories, #id)();
+
+  /// Plafond par mois, en unités mineures, comme les opérations.
+  // ignore: recursive_getters
+  IntColumn get amount => integer().check(amount.isBiggerThanValue(0))();
+}
+
+@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets])
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
 
@@ -109,7 +124,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -120,6 +135,9 @@ class PalierDatabase extends _$PalierDatabase {
         await m.createTable(schema.categories);
         await m.createTable(schema.operations);
         await m.createIndex(schema.operationsProfileDate);
+      },
+      from2To3: (m, schema) async {
+        await m.createTable(schema.budgets);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

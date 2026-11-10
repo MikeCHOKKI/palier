@@ -93,6 +93,34 @@ void main() {
     expect(await db.select(db.accounts).get(), hasLength(1));
   });
 
+  test('v2 → v3 garde les opérations, et une catégorie reçoit un seul plafond', () async {
+    const at = '2026-11-09T09:00:00.000Z';
+    final schema = await verifier.schemaAt(2);
+    final oldDb = v2.DatabaseAtV2(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind) '
+          "VALUES ('a', '$at', '$at', 'p', 'Espèces', 'cash')",
+      'INSERT INTO categories (id, created_at, updated_at, profile_id, name, kind, icon) '
+          "VALUES ('c', '$at', '$at', 'p', 'Courses', 'expense', 'basket')",
+      'INSERT INTO operations (id, created_at, updated_at, profile_id, kind, amount, account_id, category_id, occurred_at) '
+          "VALUES ('o', '$at', '$at', 'p', 'expense', 2500, 'a', 'c', '$at')",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    expect((await db.select(db.operations).getSingle()).amount, 2500);
+
+    final now = DateTime.utc(2026, 11, 10);
+    BudgetsCompanion budget(String id) =>
+        BudgetsCompanion.insert(id: id, createdAt: now, updatedAt: now, profileId: 'p', categoryId: 'c', amount: 60000);
+    await db.into(db.budgets).insert(budget('b1'));
+    await expectLater(db.into(db.budgets).insert(budget('b2')), throwsA(isA<SqliteException>()));
+  });
+
   test('les clés étrangères sont appliquées', () async {
     final db = PalierDatabase(DatabaseConnection(NativeDatabase.memory()));
     addTearDown(db.close);
