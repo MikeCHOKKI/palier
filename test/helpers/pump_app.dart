@@ -32,6 +32,7 @@ class TestApp {
     WidgetTester tester, {
     Size size = const Size(390, 844),
     Future<void> Function(ProfilesRepository repo)? seed,
+    DateTime? now,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
@@ -53,6 +54,7 @@ class TestApp {
         ),
         biometricGateProvider.overrideWithValue(biometric),
         backupFilesProvider.overrideWithValue(files),
+        if (now != null) clockProvider.overrideWithValue(() => now),
       ],
     );
     final app = TestApp._(db, container, biometric, files);

@@ -13,6 +13,10 @@ import 'package:palier/features/profiles/domain/profile.dart';
 
 import '../helpers/pump_app.dart';
 
+/// Jour figé des captures : la date de l'accueil et le mois des dépenses ne
+/// changent plus d'une génération à l'autre.
+final _day = DateTime(2026, 11, 7, 10);
+
 /// Captures d'écran de docs/captures, au format d'un téléphone (390 × 844).
 /// Profils fictifs : aucune donnée réelle.
 void main() {
@@ -28,12 +32,12 @@ void main() {
   }
 
   testWidgets('bienvenue', (tester) async {
-    await TestApp.pump(tester);
+    await TestApp.pump(tester, now: _day);
     await capture(tester, '01-bienvenue');
   });
 
   testWidgets('nouveau profil', (tester) async {
-    final app = await TestApp.pump(tester);
+    final app = await TestApp.pump(tester, now: _day);
     await tester.tap(find.text('Créer mon profil'));
     await app.settle(tester);
     await tester.enterText(find.byType(TextFormField), 'Ama');
@@ -45,12 +49,12 @@ void main() {
   });
 
   testWidgets('qui es-tu', (tester) async {
-    await TestApp.pump(tester, seed: family);
+    await TestApp.pump(tester, now: _day, seed: family);
     await capture(tester, '03-qui-es-tu');
   });
 
   testWidgets('code', (tester) async {
-    final app = await TestApp.pump(tester, seed: family);
+    final app = await TestApp.pump(tester, now: _day, seed: family);
     await tester.tap(find.text('Ama'));
     await app.settle(tester);
     for (final d in ['1', '3']) {
@@ -61,14 +65,14 @@ void main() {
   });
 
   testWidgets('accueil', (tester) async {
-    final app = await TestApp.pump(tester, seed: family);
+    final app = await TestApp.pump(tester, now: _day, seed: family);
     await tester.tap(find.text('Kofi'));
     await app.settle(tester);
     await capture(tester, '05-accueil');
   });
 
   testWidgets('réglages, verrou, sauvegarde, dépenses', (tester) async {
-    final app = await TestApp.pump(tester, seed: family);
+    final app = await TestApp.pump(tester, now: _day, seed: family);
     await tester.tap(find.text('Kofi'));
     await app.settle(tester);
     await tester.tap(find.text('Réglages'));
@@ -87,7 +91,7 @@ void main() {
   });
 
   testWidgets('dépenses, saisie, comptes', (tester) async {
-    final app = await TestApp.pump(tester, seed: family);
+    final app = await TestApp.pump(tester, now: _day, seed: family);
     await tester.tap(find.text('Kofi'));
     await app.settle(tester);
     await tester.runAsync(() => _kofiMonth(app));
@@ -128,7 +132,7 @@ Future<void> _kofiMonth(TestApp app) async {
     const AccountDraft(name: 'MTN MoMo', kind: AccountKind.mobileMoney, openingBalance: 42500),
   );
   final categories = {for (final c in await repo.watchCategories(kofi).first) c.name: c.id};
-  final now = DateTime.now();
+  final now = _day;
   DateTime at(int daysAgo, int hour) => DateTime(now.year, now.month, now.day - daysAgo, hour);
 
   Future<void> add(

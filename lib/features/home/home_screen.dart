@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
     final profile = ref.watch(activeProfileProvider);
     if (profile == null) return const SizedBox.shrink();
 
-    final today = DateFormat.MMMMEEEEd('fr').format(DateTime.now());
+    final today = DateFormat.MMMMEEEEd('fr').format(ref.watch(clockProvider)());
 
     return SafeArea(
       child: ListView(

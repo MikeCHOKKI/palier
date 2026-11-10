@@ -69,6 +69,7 @@ class _Content extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final dayFormat = DateFormat.MMMMEEEEd('fr');
+    final now = ref.watch(clockProvider)();
     final total = accounts.fold(0, (sum, a) => sum + a.balance);
 
     return CustomScrollView(
@@ -156,7 +157,7 @@ class _Content extends ConsumerWidget {
               sliver: SliverList.list(
                 children: [
                   _DayHeader(
-                    label: dayLabel(l10n, day.day, dayFormat.format),
+                    label: dayLabel(l10n, day.day, dayFormat.format, now: now),
                     net: day.received - day.spent,
                     currency: currency,
                   ),

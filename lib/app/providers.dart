@@ -16,6 +16,10 @@ final preferencesProvider = Provider<SharedPreferences>(
   (ref) => throw UnimplementedError('préférences chargées au démarrage, dans main()'),
 );
 
+/// L'heure du téléphone. Les tests et les captures la figent : un écran qui
+/// affiche « aujourd'hui » ou le mois en cours ne change plus d'un jour à l'autre.
+final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
 final databaseProvider = Provider<PalierDatabase>((ref) {
   throw UnimplementedError('databaseProvider doit être remplacé au démarrage');
 });

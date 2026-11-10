@@ -195,8 +195,7 @@ class OperationTile extends StatelessWidget {
 }
 
 /// « Aujourd'hui », « Hier », ou « Samedi 7 novembre ».
-String dayLabel(AppLocalizations l10n, DateTime day, String Function(DateTime) longFormat) {
-  final now = DateTime.now();
+String dayLabel(AppLocalizations l10n, DateTime day, String Function(DateTime) longFormat, {required DateTime now}) {
   final today = DateTime(now.year, now.month, now.day);
   if (day == today) return l10n.expensesToday;
   if (day == today.subtract(const Duration(days: 1))) return l10n.expensesYesterday;

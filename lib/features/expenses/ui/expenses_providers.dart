@@ -51,8 +51,8 @@ class SelectedMonth extends Notifier<DateTime> {
   @override
   DateTime build() => _thisMonth();
 
-  static DateTime _thisMonth() {
-    final now = DateTime.now();
+  DateTime _thisMonth() {
+    final now = ref.read(clockProvider)();
     return DateTime(now.year, now.month);
   }
 

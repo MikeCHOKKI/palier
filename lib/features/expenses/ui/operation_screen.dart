@@ -49,12 +49,14 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
 
   bool get _editing => widget.operationId != null;
 
+  DateTime _now() => ref.read(clockProvider)();
+
   @override
   void initState() {
     super.initState();
     final currency = ref.read(activeProfileProvider)!.currency;
     _amount = AmountEntry.empty(currency);
-    _occurredAt = DateTime.now();
+    _occurredAt = _now();
     if (_editing) {
       _loading = true;
       _load(widget.operationId!);
@@ -178,7 +180,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
   }
 
   Future<void> _pickDate() async {
-    final now = DateTime.now();
+    final now = _now();
     final picked = await showDatePicker(
       context: context,
       initialDate: _occurredAt.isAfter(now) ? now : _occurredAt,
@@ -191,7 +193,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
   }
 
   void _setDay(DateTime day) {
-    final now = DateTime.now();
+    final now = _now();
     _update(() => _occurredAt = DateTime(day.year, day.month, day.day, now.hour, now.minute));
   }
 
@@ -280,7 +282,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
 
   List<Widget> _details(AppLocalizations l10n, List<Account> accounts, List<Category> categories) {
     final dateFormat = DateFormat.MMMEd('fr');
-    final now = DateTime.now();
+    final now = _now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final day = DateTime(_occurredAt.year, _occurredAt.month, _occurredAt.day);
