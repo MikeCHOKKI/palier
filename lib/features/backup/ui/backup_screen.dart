@@ -23,7 +23,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   final _exportConfirm = TextEditingController();
   final _importPassword = TextEditingController();
   PickedFile? _picked;
-  String? _importError;
+  BackupFailure? _importFailure;
   bool _exporting = false;
   bool _importing = false;
 
@@ -66,7 +66,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     if (file != null && mounted) {
       setState(() {
         _picked = file;
-        _importError = null;
+        _importFailure = null;
       });
     }
   }
@@ -78,7 +78,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final service = ref.read(backupServiceProvider);
     setState(() {
       _importing = true;
-      _importError = null;
+      _importFailure = null;
     });
     try {
       final preview = await service.open(picked.bytes, _importPassword.text);
@@ -93,18 +93,18 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       _toast(l10n.backupImported(preview.profile.name));
     } on BackupException catch (e) {
       if (mounted) {
-        setState(
-          () => _importError = switch (e.failure) {
-            BackupFailure.wrongPassword => l10n.backupWrongPassword,
-            BackupFailure.invalidFile => l10n.backupInvalidFile,
-            BackupFailure.newerVersion => l10n.backupNewerVersion,
-          },
-        );
+        setState(() => _importFailure = e.failure);
       }
     } finally {
       if (mounted) setState(() => _importing = false);
     }
   }
+
+  String? _fileProblem(AppLocalizations l10n) => switch (_importFailure) {
+    BackupFailure.invalidFile => l10n.backupInvalidFile,
+    BackupFailure.newerVersion => l10n.backupNewerVersion,
+    BackupFailure.wrongPassword || null => null,
+  };
 
   Future<bool> _confirmReplace(String name) async {
     final l10n = AppLocalizations.of(context);
@@ -208,15 +208,21 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                       ],
                     ),
                     const SizedBox(height: PalierSpace.sm),
+                    // Un mauvais mot de passe s'affiche sous son champ ; un
+                    // fichier illisible concerne le fichier, pas le champ.
                     LucidTextField.password(
                       controller: _importPassword,
                       label: l10n.backupImportPasswordLabel,
                       requireStrong: false,
+                      errorText: _importFailure == BackupFailure.wrongPassword ? l10n.backupWrongPassword : null,
+                      onChanged: (_) {
+                        if (_importFailure == BackupFailure.wrongPassword) setState(() => _importFailure = null);
+                      },
                       onSubmitted: (_) => _import(),
                     ),
-                    if (_importError != null) ...[
+                    if (_fileProblem(l10n) case final problem?) ...[
                       const SizedBox(height: PalierSpace.sm),
-                      Text(_importError!, style: text.bodyMedium?.copyWith(color: PalierColors.danger)),
+                      Text(problem, style: text.bodyMedium?.copyWith(color: PalierColors.danger)),
                     ],
                     const SizedBox(height: PalierSpace.lg - 4),
                     LucidButton(

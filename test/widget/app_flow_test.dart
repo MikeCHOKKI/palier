@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:palier/app/providers.dart';
 import 'package:palier/core/security/pin_hasher.dart';
+import 'package:palier/features/backup/data/backup_files.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 
 import '../helpers/pump_app.dart';
@@ -141,5 +142,35 @@ void main() {
     expect(find.text('Profil exporté.'), findsOneWidget);
     expect(app.files.saved.keys.single, endsWith('.palier'));
     expect(String.fromCharCodes(app.files.saved.values.single), isNot(contains('Ama')));
+  });
+
+  testWidgets('un mauvais mot de passe d’import s’affiche sous son champ et part quand on corrige', (tester) async {
+    final app = await TestApp.pump(tester, seed: (repo) => repo.create(const ProfileDraft(name: 'Ama')));
+    await tester.tap(find.text('Réglages'));
+    await app.settle(tester);
+    await tester.tap(find.text('Sauvegarde'));
+    await app.settle(tester);
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'lune-baobab-42');
+    await tester.enterText(fields.at(1), 'lune-baobab-42');
+    await tester.tap(find.text('Exporter'));
+    await app.settle(tester);
+    final saved = app.files.saved.entries.single;
+    app.files.toPick = PickedFile(name: saved.key, bytes: saved.value);
+
+    await tester.tap(find.text('Choisir un fichier'));
+    await app.settle(tester);
+    final importField = find.widgetWithText(TextFormField, 'Mot de passe du fichier');
+    await tester.enterText(importField, 'soleil-iroko-7');
+    await tester.tap(find.text('Importer'));
+    await app.settle(tester);
+
+    const wrong = 'Mot de passe incorrect, ou fichier abîmé.';
+    expect(find.descendant(of: importField, matching: find.text(wrong)), findsOneWidget);
+
+    await tester.enterText(importField, 'lune-baobab-4');
+    await tester.pump();
+    expect(find.text(wrong), findsNothing);
   });
 }
