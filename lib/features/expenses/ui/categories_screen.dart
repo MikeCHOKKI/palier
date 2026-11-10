@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 // Ses push/pop sur BuildContext masqueraient ceux de go_router.
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' hide LucidNavigationExtensions;
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_accent.dart';
@@ -122,7 +123,7 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
       }
       if (!mounted) return;
       context.pop();
-      messenger.showSnackBar(SnackBar(content: Text(l10n.categorySaved)));
+      PalierSnack.done(messenger, l10n.categorySaved);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -150,7 +151,7 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
     await ref.read(expensesRepositoryProvider).deleteCategory(category.id);
     if (!mounted) return;
     context.pop();
-    messenger.showSnackBar(SnackBar(content: Text(l10n.categoryDeleted)));
+    PalierSnack.deleted(messenger, l10n.categoryDeleted);
   }
 
   @override

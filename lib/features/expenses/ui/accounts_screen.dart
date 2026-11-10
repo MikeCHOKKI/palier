@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 // Ses push/pop sur BuildContext masqueraient ceux de go_router.
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' hide LucidNavigationExtensions;
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_theme.dart';
@@ -134,7 +135,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
       }
       if (!mounted) return;
       context.pop(id);
-      if (!widget.returnsSelection) messenger.showSnackBar(SnackBar(content: Text(l10n.accountSaved)));
+      if (!widget.returnsSelection) PalierSnack.done(messenger, l10n.accountSaved);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -163,9 +164,9 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
       await ref.read(expensesRepositoryProvider).deleteAccount(account.id);
       if (!mounted) return;
       context.pop();
-      messenger.showSnackBar(SnackBar(content: Text(l10n.accountDeleted)));
+      PalierSnack.deleted(messenger, l10n.accountDeleted);
     } on AccountInUseException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.accountInUse)));
+      PalierSnack.problem(messenger, l10n.accountInUse);
     }
   }
 

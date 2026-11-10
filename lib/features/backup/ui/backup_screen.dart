@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
@@ -35,9 +36,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     super.dispose();
   }
 
-  void _toast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
+  void _toast(String message) => PalierSnack.done(ScaffoldMessenger.of(context), message);
 
   Future<void> _export() async {
     if (!_exportForm.currentState!.validate()) return;
@@ -55,7 +54,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         _toast(l10n.backupExported);
       }
     } on Object {
-      if (mounted) _toast(l10n.errorGeneric);
+      if (mounted) PalierSnack.problem(ScaffoldMessenger.of(context), l10n.errorGeneric);
     } finally {
       if (mounted) setState(() => _exporting = false);
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidSnack;
 import 'package:palier/app/providers.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
@@ -103,7 +104,7 @@ void main() {
     expect(find.text('Transport'), findsOneWidget);
   });
 
-  testWidgets('le message « Annuler » part seul, ou d’une croix', (tester) async {
+  testWidgets('le message « Annuler » part seul, ou d’un glissement', (tester) async {
     final app = await _openExpenses(tester);
     final repo = app.container.read(expensesRepositoryProvider);
     Future<void> addAndDelete() async {
@@ -137,9 +138,9 @@ void main() {
     expect(find.text('Annuler'), findsNothing, reason: 'le message ne reste pas indéfiniment');
 
     await addAndDelete();
-    await tester.tap(find.byTooltip('Fermer'));
+    await tester.fling(find.byKey(LucidSnack.pillKey), const Offset(300, 0), 1000);
     await app.settle(tester);
-    expect(find.text('Annuler'), findsNothing, reason: 'la croix ferme le message');
+    expect(find.text('Annuler'), findsNothing, reason: 'un glissement de côté ferme le message');
   });
 
   testWidgets('l’aide du solde de départ se lit en entier sur un téléphone', (tester) async {

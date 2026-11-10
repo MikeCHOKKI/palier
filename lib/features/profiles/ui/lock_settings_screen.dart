@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_tokens.dart';
@@ -29,7 +30,7 @@ class LockSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     await ref.read(profilesRepositoryProvider).clearPin(ref.read(activeProfileProvider)!.id);
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.lockRemoved)));
+      PalierSnack.done(ScaffoldMessenger.of(context), l10n.lockRemoved);
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_accent.dart';
@@ -82,7 +83,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         case ProfileFormMode.edit:
           await repo.update(ref.read(activeProfileProvider)!.id, draft);
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.profileSaved)));
+            PalierSnack.done(ScaffoldMessenger.of(context), l10n.profileSaved);
             context.go(Routes.settings);
           }
       }

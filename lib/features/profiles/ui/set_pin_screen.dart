@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_tokens.dart';
@@ -41,7 +42,7 @@ class _SetPinScreenState extends ConsumerState<SetPinScreen> {
     final profile = ref.read(activeProfileProvider)!;
     await ref.read(profilesRepositoryProvider).setPin(profile.id, pin);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pinSaved)));
+    PalierSnack.done(ScaffoldMessenger.of(context), l10n.pinSaved);
     context.go(Routes.settingsLock);
   }
 

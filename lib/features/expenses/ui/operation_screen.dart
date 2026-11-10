@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_accent.dart';
@@ -145,11 +146,11 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
       }
       if (!mounted) return;
       context.pop();
-      messenger.showSnackBar(SnackBar(content: Text(l10n.operationSaved(_kind.name))));
+      PalierSnack.done(messenger, l10n.operationSaved(_kind.name));
     } on Object {
       if (!mounted) return;
       setState(() => _saving = false);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
+      PalierSnack.problem(messenger, l10n.errorGeneric);
     }
   }
 
@@ -162,15 +163,11 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     if (!mounted) return;
     context.pop();
     // Pas de boîte de confirmation : la suppression s'annule d'un geste.
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(l10n.operationDeleted),
-        action: SnackBarAction(label: l10n.operationUndo, onPressed: () => repo.restoreOperation(id)),
-        // Avec un bouton, Flutter garde le message à l'écran jusqu'à ce qu'on le
-        // touche ; six secondes suffisent pour se raviser.
-        persist: false,
-        duration: const Duration(seconds: 6),
-      ),
+    PalierSnack.deleted(
+      messenger,
+      l10n.operationDeleted,
+      undoLabel: l10n.operationUndo,
+      onUndo: () => repo.restoreOperation(id),
     );
   }
 
