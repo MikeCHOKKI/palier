@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 // Ses push/pop sur BuildContext masqueraient ceux de go_router.
-import 'package:lucid_core_flutter/lucid_core_flutter.dart' hide LucidBuildContextExtensions;
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' hide LucidNavigationExtensions;
 
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';

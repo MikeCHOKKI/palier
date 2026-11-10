@@ -849,10 +849,10 @@ packages:
     dependency: "direct main"
     description:
       name: lucid_core_flutter
-      sha256: "900838d70e65e560b8a686ab877193e328a0f96d5800d65f2410ceb3ba4a3ee5"
+      sha256: "861358a13d7e3a67ff1a1e85b9ab3994f974e6c09d180c4d006d35aa46669407"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.4.0"
   matcher:
     dependency: transitive
     description:
