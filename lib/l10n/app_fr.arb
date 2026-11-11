@@ -221,7 +221,7 @@
   "amountLabel": "Montant : {amount}",
   "@amountLabel": { "placeholders": { "amount": { "type": "String" } } },
 
-  "accountKind": "{kind, select, cash{Espèces} mobileMoney{Mobile Money} bank{Banque} savings{Épargne} other{Compte}}",
+  "accountKind": "{kind, select, cash{Espèces} mobileMoney{Mobile Money} bank{Banque} savings{Épargne} tontine{Tontine} other{Compte}}",
   "@accountKind": { "placeholders": { "kind": { "type": "String" } } },
   "accountsTitle": "Comptes",
   "accountsAdd": "Ajouter un compte",

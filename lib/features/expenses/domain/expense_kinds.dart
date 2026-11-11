@@ -4,7 +4,9 @@ library;
 
 /// Où se trouve l'argent. Un compte d'épargne est un compte comme les autres :
 /// on y verse par un virement « Entre comptes », et il peut viser un objectif.
-enum AccountKind { cash, mobileMoney, bank, savings }
+/// Un compte de tontine naît avec sa tontine (table `tontines`) : son solde est
+/// ce qu'on a cotisé, moins la main reçue.
+enum AccountKind { cash, mobileMoney, bank, savings, tontine }
 
 /// Une catégorie classe soit des dépenses, soit des revenus.
 enum CategoryKind { expense, income }

@@ -174,7 +174,33 @@ class RecurrenceSkips extends Table with SyncColumns {
   ];
 }
 
-@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips])
+/// Une tontine dont on suit sa propre part : ses cotisations et son tour.
+/// L'argent passe par son compte ([accountId]) grâce à deux récurrences de
+/// virement : la cotisation (de son compte vers la tontine, à chaque tour) et
+/// la main (de la tontine vers son compte, le jour de son rang). Ni l'une ni
+/// l'autre ne compte dans les dépenses ou les revenus du mois.
+@DataClassName('TontineRow')
+class Tontines extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get accountId => text().unique().references(Accounts, #id)();
+  @ReferenceName('contributionTontines')
+  TextColumn get contributionId => text().references(Recurrences, #id)();
+  @ReferenceName('handTontines')
+  TextColumn get handId => text().references(Recurrences, #id)();
+
+  /// Nombre de membres, soit aussi le nombre de tours.
+  // ignore: recursive_getters
+  IntColumn get members => integer().check(members.isBiggerOrEqualValue(2))();
+
+  /// Son tour de recevoir la main, de 1 à [members].
+  // ignore: recursive_getters
+  IntColumn get rank => integer().check(rank.isBiggerOrEqualValue(1))();
+
+  @override
+  List<String> get customConstraints => ['CHECK (rank <= members)'];
+}
+
+@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips, Tontines])
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
 
@@ -182,7 +208,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -205,6 +231,9 @@ class PalierDatabase extends _$PalierDatabase {
       },
       from4To5: (m, schema) async {
         await m.addColumn(schema.accounts, schema.accounts.goal);
+      },
+      from5To6: (m, schema) async {
+        await m.createTable(schema.tontines);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

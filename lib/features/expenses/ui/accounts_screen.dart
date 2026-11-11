@@ -222,22 +222,26 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       inputFormatters: [LengthLimitingTextInputFormatter(AccountDraft.maxNameLength)],
                       validator: (value) => (value?.trim() ?? '').isEmpty ? l10n.accountNameRequired : null,
                     ),
-                    FieldLabel(l10n.accountKindLabel),
-                    // Sur deux lignes plutôt qu'en rangée qui défile : les quatre
-                    // types restent visibles, « Épargne » compris.
-                    Wrap(
-                      spacing: PalierSpace.sm,
-                      runSpacing: PalierSpace.sm,
-                      children: [
-                        for (final kind in AccountKind.values)
-                          ChoicePill(
-                            label: l10n.accountKindName(kind),
-                            icon: accountIcon(kind),
-                            selected: _kind == kind,
-                            onTap: () => setState(() => _kind = kind),
-                          ),
-                      ],
-                    ),
+                    // Un compte de tontine naît avec sa tontine et garde son type.
+                    if (_kind != AccountKind.tontine) ...[
+                      FieldLabel(l10n.accountKindLabel),
+                      // Sur deux lignes plutôt qu'en rangée qui défile : les quatre
+                      // types restent visibles, « Épargne » compris.
+                      Wrap(
+                        spacing: PalierSpace.sm,
+                        runSpacing: PalierSpace.sm,
+                        children: [
+                          for (final kind in AccountKind.values)
+                            if (kind != AccountKind.tontine)
+                              ChoicePill(
+                                label: l10n.accountKindName(kind),
+                                icon: accountIcon(kind),
+                                selected: _kind == kind,
+                                onTap: () => setState(() => _kind = kind),
+                              ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: PalierSpace.lg),
                     LucidTextField(
                       controller: _opening,

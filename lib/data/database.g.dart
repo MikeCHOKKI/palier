@@ -4049,6 +4049,537 @@ class RecurrenceSkipsCompanion extends UpdateCompanion<RecurrenceSkipRow> {
   }
 }
 
+class $TontinesTable extends Tontines with TableInfo<$TontinesTable, TontineRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TontinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _accountIdMeta = const VerificationMeta('accountId');
+  @override
+  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+    'account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE REFERENCES accounts (id)'),
+  );
+  static const VerificationMeta _contributionIdMeta = const VerificationMeta('contributionId');
+  @override
+  late final GeneratedColumn<String> contributionId = GeneratedColumn<String>(
+    'contribution_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES recurrences (id)'),
+  );
+  static const VerificationMeta _handIdMeta = const VerificationMeta('handId');
+  @override
+  late final GeneratedColumn<String> handId = GeneratedColumn<String>(
+    'hand_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES recurrences (id)'),
+  );
+  static const VerificationMeta _membersMeta = const VerificationMeta('members');
+  @override
+  late final GeneratedColumn<int> members = GeneratedColumn<int>(
+    'members',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(members).isBiggerOrEqualValue(2),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rankMeta = const VerificationMeta('rank');
+  @override
+  late final GeneratedColumn<int> rank = GeneratedColumn<int>(
+    'rank',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(rank).isBiggerOrEqualValue(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    accountId,
+    contributionId,
+    handId,
+    members,
+    rank,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tontines';
+  @override
+  VerificationContext validateIntegrity(Insertable<TontineRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('account_id')) {
+      context.handle(_accountIdMeta, accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta));
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('contribution_id')) {
+      context.handle(
+        _contributionIdMeta,
+        contributionId.isAcceptableOrUnknown(data['contribution_id']!, _contributionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contributionIdMeta);
+    }
+    if (data.containsKey('hand_id')) {
+      context.handle(_handIdMeta, handId.isAcceptableOrUnknown(data['hand_id']!, _handIdMeta));
+    } else if (isInserting) {
+      context.missing(_handIdMeta);
+    }
+    if (data.containsKey('members')) {
+      context.handle(_membersMeta, members.isAcceptableOrUnknown(data['members']!, _membersMeta));
+    } else if (isInserting) {
+      context.missing(_membersMeta);
+    }
+    if (data.containsKey('rank')) {
+      context.handle(_rankMeta, rank.isAcceptableOrUnknown(data['rank']!, _rankMeta));
+    } else if (isInserting) {
+      context.missing(_rankMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TontineRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TontineRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      accountId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}account_id'])!,
+      contributionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contribution_id'],
+      )!,
+      handId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}hand_id'])!,
+      members: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}members'])!,
+      rank: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}rank'])!,
+    );
+  }
+
+  @override
+  $TontinesTable createAlias(String alias) {
+    return $TontinesTable(attachedDatabase, alias);
+  }
+}
+
+class TontineRow extends DataClass implements Insertable<TontineRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final String accountId;
+  final String contributionId;
+  final String handId;
+
+  /// Nombre de membres, soit aussi le nombre de tours.
+  final int members;
+
+  /// Son tour de recevoir la main, de 1 à [members].
+  final int rank;
+  const TontineRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.accountId,
+    required this.contributionId,
+    required this.handId,
+    required this.members,
+    required this.rank,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['account_id'] = Variable<String>(accountId);
+    map['contribution_id'] = Variable<String>(contributionId);
+    map['hand_id'] = Variable<String>(handId);
+    map['members'] = Variable<int>(members);
+    map['rank'] = Variable<int>(rank);
+    return map;
+  }
+
+  TontinesCompanion toCompanion(bool nullToAbsent) {
+    return TontinesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      accountId: Value(accountId),
+      contributionId: Value(contributionId),
+      handId: Value(handId),
+      members: Value(members),
+      rank: Value(rank),
+    );
+  }
+
+  factory TontineRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TontineRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      accountId: serializer.fromJson<String>(json['accountId']),
+      contributionId: serializer.fromJson<String>(json['contributionId']),
+      handId: serializer.fromJson<String>(json['handId']),
+      members: serializer.fromJson<int>(json['members']),
+      rank: serializer.fromJson<int>(json['rank']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'accountId': serializer.toJson<String>(accountId),
+      'contributionId': serializer.toJson<String>(contributionId),
+      'handId': serializer.toJson<String>(handId),
+      'members': serializer.toJson<int>(members),
+      'rank': serializer.toJson<int>(rank),
+    };
+  }
+
+  TontineRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    String? accountId,
+    String? contributionId,
+    String? handId,
+    int? members,
+    int? rank,
+  }) => TontineRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    accountId: accountId ?? this.accountId,
+    contributionId: contributionId ?? this.contributionId,
+    handId: handId ?? this.handId,
+    members: members ?? this.members,
+    rank: rank ?? this.rank,
+  );
+  TontineRow copyWithCompanion(TontinesCompanion data) {
+    return TontineRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      contributionId: data.contributionId.present ? data.contributionId.value : this.contributionId,
+      handId: data.handId.present ? data.handId.value : this.handId,
+      members: data.members.present ? data.members.value : this.members,
+      rank: data.rank.present ? data.rank.value : this.rank,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TontineRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('accountId: $accountId, ')
+          ..write('contributionId: $contributionId, ')
+          ..write('handId: $handId, ')
+          ..write('members: $members, ')
+          ..write('rank: $rank')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, createdAt, updatedAt, deletedAt, profileId, accountId, contributionId, handId, members, rank);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TontineRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.accountId == this.accountId &&
+          other.contributionId == this.contributionId &&
+          other.handId == this.handId &&
+          other.members == this.members &&
+          other.rank == this.rank);
+}
+
+class TontinesCompanion extends UpdateCompanion<TontineRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<String> accountId;
+  final Value<String> contributionId;
+  final Value<String> handId;
+  final Value<int> members;
+  final Value<int> rank;
+  final Value<int> rowid;
+  const TontinesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.contributionId = const Value.absent(),
+    this.handId = const Value.absent(),
+    this.members = const Value.absent(),
+    this.rank = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TontinesCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required String accountId,
+    required String contributionId,
+    required String handId,
+    required int members,
+    required int rank,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       accountId = Value(accountId),
+       contributionId = Value(contributionId),
+       handId = Value(handId),
+       members = Value(members),
+       rank = Value(rank);
+  static Insertable<TontineRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? accountId,
+    Expression<String>? contributionId,
+    Expression<String>? handId,
+    Expression<int>? members,
+    Expression<int>? rank,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (accountId != null) 'account_id': accountId,
+      if (contributionId != null) 'contribution_id': contributionId,
+      if (handId != null) 'hand_id': handId,
+      if (members != null) 'members': members,
+      if (rank != null) 'rank': rank,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TontinesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<String>? accountId,
+    Value<String>? contributionId,
+    Value<String>? handId,
+    Value<int>? members,
+    Value<int>? rank,
+    Value<int>? rowid,
+  }) {
+    return TontinesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      accountId: accountId ?? this.accountId,
+      contributionId: contributionId ?? this.contributionId,
+      handId: handId ?? this.handId,
+      members: members ?? this.members,
+      rank: rank ?? this.rank,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (accountId.present) {
+      map['account_id'] = Variable<String>(accountId.value);
+    }
+    if (contributionId.present) {
+      map['contribution_id'] = Variable<String>(contributionId.value);
+    }
+    if (handId.present) {
+      map['hand_id'] = Variable<String>(handId.value);
+    }
+    if (members.present) {
+      map['members'] = Variable<int>(members.value);
+    }
+    if (rank.present) {
+      map['rank'] = Variable<int>(rank.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TontinesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('accountId: $accountId, ')
+          ..write('contributionId: $contributionId, ')
+          ..write('handId: $handId, ')
+          ..write('members: $members, ')
+          ..write('rank: $rank, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$PalierDatabase extends GeneratedDatabase {
   _$PalierDatabase(QueryExecutor e) : super(e);
   $PalierDatabaseManager get managers => $PalierDatabaseManager(this);
@@ -4059,6 +4590,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
   late final $OperationsTable operations = $OperationsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $RecurrenceSkipsTable recurrenceSkips = $RecurrenceSkipsTable(this);
+  late final $TontinesTable tontines = $TontinesTable(this);
   late final Index operationsProfileDate = Index(
     'operations_profile_date',
     'CREATE INDEX operations_profile_date ON operations (profile_id, occurred_at)',
@@ -4074,6 +4606,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
     operations,
     budgets,
     recurrenceSkips,
+    tontines,
     operationsProfileDate,
   ];
   @override
@@ -4198,6 +4731,19 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_recurrenceSkipsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$TontinesTable, List<TontineRow>> _tontinesRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.tontines, aliasName: 'profiles__id__tontines__profile_id');
+
+  $$TontinesTableProcessedTableManager get tontinesRefs {
+    final manager = $$TontinesTableTableManager(
+      $_db,
+      $_db.tontines,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_tontinesRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
@@ -4356,6 +4902,24 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
           $$RecurrenceSkipsTableFilterComposer(
             $db: $db,
             $table: $db.recurrenceSkips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> tontinesRefs(Expression<bool> Function($$TontinesTableFilterComposer f) f) {
+    final $$TontinesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableFilterComposer(
+            $db: $db,
+            $table: $db.tontines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -4576,6 +5140,24 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     );
     return f(composer);
   }
+
+  Expression<T> tontinesRefs<T extends Object>(Expression<T> Function($$TontinesTableAnnotationComposer a) f) {
+    final $$TontinesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProfilesTableTableManager
@@ -4598,6 +5180,7 @@ class $$ProfilesTableTableManager
             bool operationsRefs,
             bool budgetsRefs,
             bool recurrenceSkipsRefs,
+            bool tontinesRefs,
           })
         > {
   $$ProfilesTableTableManager(_$PalierDatabase db, $ProfilesTable table)
@@ -4695,6 +5278,7 @@ class $$ProfilesTableTableManager
                 operationsRefs = false,
                 budgetsRefs = false,
                 recurrenceSkipsRefs = false,
+                tontinesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4705,6 +5289,7 @@ class $$ProfilesTableTableManager
                     if (operationsRefs) db.operations,
                     if (budgetsRefs) db.budgets,
                     if (recurrenceSkipsRefs) db.recurrenceSkips,
+                    if (tontinesRefs) db.tontines,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4773,6 +5358,15 @@ class $$ProfilesTableTableManager
                           referencedColumn: 'profile_id',
                           typedResults: items,
                         ),
+                      if (tontinesRefs)
+                        await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, TontineRow, $TontinesTable>(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._tontinesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).tontinesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4800,6 +5394,7 @@ typedef $$ProfilesTableProcessedTableManager =
         bool operationsRefs,
         bool budgetsRefs,
         bool recurrenceSkipsRefs,
+        bool tontinesRefs,
       })
     >;
 typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
@@ -4893,6 +5488,19 @@ final class $$AccountsTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.toAccountId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_incomingTransfersTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$TontinesTable, List<TontineRow>> _tontinesRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.tontines, aliasName: 'accounts__id__tontines__account_id');
+
+  $$TontinesTableProcessedTableManager get tontinesRefs {
+    final manager = $$TontinesTableTableManager(
+      $_db,
+      $_db.tontines,
+    ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_tontinesRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
@@ -5011,6 +5619,24 @@ class $$AccountsTableFilterComposer extends Composer<_$PalierDatabase, $Accounts
           $$OperationsTableFilterComposer(
             $db: $db,
             $table: $db.operations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> tontinesRefs(Expression<bool> Function($$TontinesTableFilterComposer f) f) {
+    final $$TontinesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableFilterComposer(
+            $db: $db,
+            $table: $db.tontines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -5194,6 +5820,24 @@ class $$AccountsTableAnnotationComposer extends Composer<_$PalierDatabase, $Acco
     );
     return f(composer);
   }
+
+  Expression<T> tontinesRefs<T extends Object>(Expression<T> Function($$TontinesTableAnnotationComposer a) f) {
+    final $$TontinesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$AccountsTableTableManager
@@ -5215,6 +5859,7 @@ class $$AccountsTableTableManager
             bool incomingRecurrences,
             bool outgoingOperations,
             bool incomingTransfers,
+            bool tontinesRefs,
           })
         > {
   $$AccountsTableTableManager(_$PalierDatabase db, $AccountsTable table)
@@ -5287,6 +5932,7 @@ class $$AccountsTableTableManager
                 incomingRecurrences = false,
                 outgoingOperations = false,
                 incomingTransfers = false,
+                tontinesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -5295,6 +5941,7 @@ class $$AccountsTableTableManager
                     if (incomingRecurrences) db.recurrences,
                     if (outgoingOperations) db.operations,
                     if (incomingTransfers) db.operations,
+                    if (tontinesRefs) db.tontines,
                   ],
                   addJoins:
                       <
@@ -5371,6 +6018,15 @@ class $$AccountsTableTableManager
                           referencedColumn: 'to_account_id',
                           typedResults: items,
                         ),
+                      if (tontinesRefs)
+                        await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, TontineRow, $TontinesTable>(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._tontinesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).tontinesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'account_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -5397,6 +6053,7 @@ typedef $$AccountsTableProcessedTableManager =
         bool incomingRecurrences,
         bool outgoingOperations,
         bool incomingTransfers,
+        bool tontinesRefs,
       })
     >;
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
@@ -6018,6 +6675,32 @@ final class $$RecurrencesTableReferences extends BaseReferences<_$PalierDatabase
     final cache = $_typedResult.readTableOrNull(_recurrenceSkipsRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
+
+  static MultiTypedResultKey<$TontinesTable, List<TontineRow>> _contributionTontinesTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.tontines, aliasName: 'recurrences__id__tontines__contribution_id');
+
+  $$TontinesTableProcessedTableManager get contributionTontines {
+    final manager = $$TontinesTableTableManager(
+      $_db,
+      $_db.tontines,
+    ).filter((f) => f.contributionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_contributionTontinesTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$TontinesTable, List<TontineRow>> _handTontinesTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.tontines, aliasName: 'recurrences__id__tontines__hand_id');
+
+  $$TontinesTableProcessedTableManager get handTontines {
+    final manager = $$TontinesTableTableManager(
+      $_db,
+      $_db.tontines,
+    ).filter((f) => f.handId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_handTontinesTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$RecurrencesTableFilterComposer extends Composer<_$PalierDatabase, $RecurrencesTable> {
@@ -6161,6 +6844,42 @@ class $$RecurrencesTableFilterComposer extends Composer<_$PalierDatabase, $Recur
           $$RecurrenceSkipsTableFilterComposer(
             $db: $db,
             $table: $db.recurrenceSkips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> contributionTontines(Expression<bool> Function($$TontinesTableFilterComposer f) f) {
+    final $$TontinesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.contributionId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableFilterComposer(
+            $db: $db,
+            $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> handTontines(Expression<bool> Function($$TontinesTableFilterComposer f) f) {
+    final $$TontinesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.handId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableFilterComposer(
+            $db: $db,
+            $table: $db.tontines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -6429,6 +7148,42 @@ class $$RecurrencesTableAnnotationComposer extends Composer<_$PalierDatabase, $R
     );
     return f(composer);
   }
+
+  Expression<T> contributionTontines<T extends Object>(Expression<T> Function($$TontinesTableAnnotationComposer a) f) {
+    final $$TontinesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.contributionId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> handTontines<T extends Object>(Expression<T> Function($$TontinesTableAnnotationComposer a) f) {
+    final $$TontinesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tontines,
+      getReferencedColumn: (t) => t.handId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TontinesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RecurrencesTableTableManager
@@ -6451,6 +7206,8 @@ class $$RecurrencesTableTableManager
             bool categoryId,
             bool operationsRefs,
             bool recurrenceSkipsRefs,
+            bool contributionTontines,
+            bool handTontines,
           })
         > {
   $$RecurrencesTableTableManager(_$PalierDatabase db, $RecurrencesTable table)
@@ -6551,12 +7308,16 @@ class $$RecurrencesTableTableManager
                 categoryId = false,
                 operationsRefs = false,
                 recurrenceSkipsRefs = false,
+                contributionTontines = false,
+                handTontines = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (operationsRefs) db.operations,
                     if (recurrenceSkipsRefs) db.recurrenceSkips,
+                    if (contributionTontines) db.tontines,
+                    if (handTontines) db.tontines,
                   ],
                   addJoins:
                       <
@@ -6640,6 +7401,35 @@ class $$RecurrencesTableTableManager
                           referencedColumn: 'recurrence_id',
                           typedResults: items,
                         ),
+                      if (contributionTontines)
+                        await $_getPrefetchedDataByColumns<
+                          RecurrenceRow,
+                          $RecurrencesTable,
+                          TontineRow,
+                          $TontinesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecurrencesTableReferences._contributionTontinesTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RecurrencesTableReferences(db, table, p0).contributionTontines,
+                          currentColumn: 'id',
+                          referencedColumn: 'contribution_id',
+                          typedResults: items,
+                        ),
+                      if (handTontines)
+                        await $_getPrefetchedDataByColumns<
+                          RecurrenceRow,
+                          $RecurrencesTable,
+                          TontineRow,
+                          $TontinesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecurrencesTableReferences._handTontinesTable(db),
+                          managerFromTypedResult: (p0) => $$RecurrencesTableReferences(db, table, p0).handTontines,
+                          currentColumn: 'id',
+                          referencedColumn: 'hand_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6667,6 +7457,8 @@ typedef $$RecurrencesTableProcessedTableManager =
         bool categoryId,
         bool operationsRefs,
         bool recurrenceSkipsRefs,
+        bool contributionTontines,
+        bool handTontines,
       })
     >;
 typedef $$OperationsTableCreateCompanionBuilder = OperationsCompanion Function({
@@ -8025,6 +8817,529 @@ typedef $$RecurrenceSkipsTableProcessedTableManager =
       RecurrenceSkipRow,
       PrefetchHooks Function({bool profileId, bool recurrenceId})
     >;
+typedef $$TontinesTableCreateCompanionBuilder = TontinesCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required String accountId,
+  required String contributionId,
+  required String handId,
+  required int members,
+  required int rank,
+  Value<int> rowid,
+});
+typedef $$TontinesTableUpdateCompanionBuilder = TontinesCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<String> accountId,
+  Value<String> contributionId,
+  Value<String> handId,
+  Value<int> members,
+  Value<int> rank,
+  Value<int> rowid,
+});
+
+final class $$TontinesTableReferences extends BaseReferences<_$PalierDatabase, $TontinesTable, TontineRow> {
+  $$TontinesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('tontines__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $AccountsTable _accountIdTable(_$PalierDatabase db) =>
+      db.accounts.createAlias('tontines__account_id__accounts__id');
+
+  $$AccountsTableProcessedTableManager get accountId {
+    final $_column = $_itemColumn<String>('account_id')!;
+
+    final manager = $$AccountsTableTableManager($_db, $_db.accounts).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_accountIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $RecurrencesTable _contributionIdTable(_$PalierDatabase db) =>
+      db.recurrences.createAlias('tontines__contribution_id__recurrences__id');
+
+  $$RecurrencesTableProcessedTableManager get contributionId {
+    final $_column = $_itemColumn<String>('contribution_id')!;
+
+    final manager = $$RecurrencesTableTableManager($_db, $_db.recurrences).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_contributionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $RecurrencesTable _handIdTable(_$PalierDatabase db) =>
+      db.recurrences.createAlias('tontines__hand_id__recurrences__id');
+
+  $$RecurrencesTableProcessedTableManager get handId {
+    final $_column = $_itemColumn<String>('hand_id')!;
+
+    final manager = $$RecurrencesTableTableManager($_db, $_db.recurrences).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_handIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TontinesTableFilterComposer extends Composer<_$PalierDatabase, $TontinesTable> {
+  $$TontinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get members =>
+      $composableBuilder(column: $table.members, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rank => $composableBuilder(column: $table.rank, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get accountId {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableFilterComposer get contributionId {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contributionId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableFilterComposer get handId {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.handId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TontinesTableOrderingComposer extends Composer<_$PalierDatabase, $TontinesTable> {
+  $$TontinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get members =>
+      $composableBuilder(column: $table.members, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rank =>
+      $composableBuilder(column: $table.rank, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get accountId {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableOrderingComposer get contributionId {
+    final $$RecurrencesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contributionId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableOrderingComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableOrderingComposer get handId {
+    final $$RecurrencesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.handId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableOrderingComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TontinesTableAnnotationComposer extends Composer<_$PalierDatabase, $TontinesTable> {
+  $$TontinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get members => $composableBuilder(column: $table.members, builder: (column) => column);
+
+  GeneratedColumn<int> get rank => $composableBuilder(column: $table.rank, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get accountId {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableAnnotationComposer get contributionId {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contributionId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableAnnotationComposer get handId {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.handId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TontinesTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $TontinesTable,
+          TontineRow,
+          $$TontinesTableFilterComposer,
+          $$TontinesTableOrderingComposer,
+          $$TontinesTableAnnotationComposer,
+          $$TontinesTableCreateCompanionBuilder,
+          $$TontinesTableUpdateCompanionBuilder,
+          (TontineRow, $$TontinesTableReferences),
+          TontineRow,
+          PrefetchHooks Function({bool profileId, bool accountId, bool contributionId, bool handId})
+        > {
+  $$TontinesTableTableManager(_$PalierDatabase db, $TontinesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$TontinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$TontinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$TontinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> accountId = const Value.absent(),
+                Value<String> contributionId = const Value.absent(),
+                Value<String> handId = const Value.absent(),
+                Value<int> members = const Value.absent(),
+                Value<int> rank = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TontinesCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                accountId: accountId,
+                contributionId: contributionId,
+                handId: handId,
+                members: members,
+                rank: rank,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required String accountId,
+                required String contributionId,
+                required String handId,
+                required int members,
+                required int rank,
+                Value<int> rowid = const Value.absent(),
+              }) => TontinesCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                accountId: accountId,
+                contributionId: contributionId,
+                handId: handId,
+                members: members,
+                rank: rank,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable<$TontinesTable, TontineRow>(table), $$TontinesTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({profileId = false, accountId = false, contributionId = false, handId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$TontinesTableReferences._profileIdTable(db),
+                        referencedColumn: $$TontinesTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+                    if (accountId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.accountId,
+                        referencedTable: $$TontinesTableReferences._accountIdTable(db),
+                        referencedColumn: $$TontinesTableReferences._accountIdTable(db).id,
+                      ) as T;
+                    }
+                    if (contributionId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.contributionId,
+                        referencedTable: $$TontinesTableReferences._contributionIdTable(db),
+                        referencedColumn: $$TontinesTableReferences._contributionIdTable(db).id,
+                      ) as T;
+                    }
+                    if (handId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.handId,
+                        referencedTable: $$TontinesTableReferences._handIdTable(db),
+                        referencedColumn: $$TontinesTableReferences._handIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TontinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $TontinesTable,
+      TontineRow,
+      $$TontinesTableFilterComposer,
+      $$TontinesTableOrderingComposer,
+      $$TontinesTableAnnotationComposer,
+      $$TontinesTableCreateCompanionBuilder,
+      $$TontinesTableUpdateCompanionBuilder,
+      (TontineRow, $$TontinesTableReferences),
+      TontineRow,
+      PrefetchHooks Function({bool profileId, bool accountId, bool contributionId, bool handId})
+    >;
 
 class $PalierDatabaseManager {
   final _$PalierDatabase _db;
@@ -8037,4 +9352,5 @@ class $PalierDatabaseManager {
   $$BudgetsTableTableManager get budgets => $$BudgetsTableTableManager(_db, _db.budgets);
   $$RecurrenceSkipsTableTableManager get recurrenceSkips =>
       $$RecurrenceSkipsTableTableManager(_db, _db.recurrenceSkips);
+  $$TontinesTableTableManager get tontines => $$TontinesTableTableManager(_db, _db.tontines);
 }

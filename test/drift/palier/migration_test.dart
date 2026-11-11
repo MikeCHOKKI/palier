@@ -9,6 +9,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -211,6 +212,70 @@ void main() {
     expect((await (db.select(db.accounts)..where((a) => a.id.equals('e'))).getSingle()).goal, 150000);
     // Un objectif nul ou négatif n'a pas de sens : la base le refuse.
     await expectLater(db.into(db.accounts).insert(savings('e0', 0)), throwsA(isA<SqliteException>()));
+  });
+
+  test('v5 → v6 garde les comptes, et une tontine garde un rang dans le tour', () async {
+    const at = '2026-11-11T09:00:00.000Z';
+    final schema = await verifier.schemaAt(5);
+    final oldDb = v5.DatabaseAtV5(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind, goal) '
+          "VALUES ('e', '$at', '$at', 'p', 'Tabaski', 'savings', 150000)",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind) '
+          "VALUES ('m', '$at', '$at', 'p', 'MoMo', 'mobileMoney')",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    expect((await (db.select(db.accounts)..where((a) => a.id.equals('e'))).getSingle()).goal, 150000);
+
+    final now = DateTime.utc(2026, 11, 11);
+    await db
+        .into(db.accounts)
+        .insert(
+          AccountsCompanion.insert(
+            id: 't',
+            createdAt: now,
+            updatedAt: now,
+            profileId: 'p',
+            name: 'Tontine du marché',
+            kind: AccountKind.tontine,
+          ),
+        );
+    RecurrencesCompanion recurrence(String id, String from, String to) => RecurrencesCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      kind: OperationKind.transfer,
+      amount: 5000,
+      accountId: from,
+      toAccountId: Value(to),
+      unit: RepeatUnit.week,
+      startsOn: '2026-11-13',
+      dueFrom: '2026-11-13',
+    );
+    await db.into(db.recurrences).insert(recurrence('c', 'm', 't'));
+    await db.into(db.recurrences).insert(recurrence('h', 't', 'm'));
+    TontinesCompanion tontine(String id, int rank) => TontinesCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      accountId: 't',
+      contributionId: 'c',
+      handId: 'h',
+      members: 10,
+      rank: rank,
+    );
+    // Un rang au-delà du nombre de membres n'existe pas.
+    await expectLater(db.into(db.tontines).insert(tontine('x', 11)), throwsA(isA<SqliteException>()));
+    await db.into(db.tontines).insert(tontine('ok', 3));
+    expect((await db.select(db.tontines).getSingle()).rank, 3);
   });
 
   test('les clés étrangères sont appliquées', () async {
