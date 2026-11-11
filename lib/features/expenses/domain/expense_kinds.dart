@@ -5,8 +5,13 @@ library;
 /// Où se trouve l'argent. Un compte d'épargne est un compte comme les autres :
 /// on y verse par un virement « Entre comptes », et il peut viser un objectif.
 /// Un compte de tontine naît avec sa tontine (table `tontines`) : son solde est
-/// ce qu'on a cotisé, moins la main reçue.
-enum AccountKind { cash, mobileMoney, bank, savings, tontine }
+/// ce qu'on a cotisé, moins la main reçue. Un compte de prêt naît avec son prêt
+/// (table `loans`) : son solde est ce qu'on nous doit (positif) ou ce qu'on doit
+/// (négatif).
+enum AccountKind { cash, mobileMoney, bank, savings, tontine, loan }
+
+/// Le sens d'un prêt : on a prêté (on nous doit) ou emprunté (on doit).
+enum LoanDirection { lent, borrowed }
 
 /// Une catégorie classe soit des dépenses, soit des revenus.
 enum CategoryKind { expense, income }

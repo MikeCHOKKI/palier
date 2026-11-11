@@ -10,6 +10,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
+import 'generated/schema_v6.dart' as v6;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -276,6 +277,52 @@ void main() {
     await expectLater(db.into(db.tontines).insert(tontine('x', 11)), throwsA(isA<SqliteException>()));
     await db.into(db.tontines).insert(tontine('ok', 3));
     expect((await db.select(db.tontines).getSingle()).rank, 3);
+  });
+
+  test('v6 → v7 garde les comptes, et un prêt a un montant positif', () async {
+    const at = '2026-11-11T09:00:00.000Z';
+    final schema = await verifier.schemaAt(6);
+    final oldDb = v6.DatabaseAtV6(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind) '
+          "VALUES ('m', '$at', '$at', 'p', 'MoMo', 'mobileMoney')",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    expect((await db.select(db.accounts).getSingle()).kind, AccountKind.mobileMoney);
+
+    final now = DateTime.utc(2026, 11, 11);
+    await db
+        .into(db.accounts)
+        .insert(
+          AccountsCompanion.insert(
+            id: 'l',
+            createdAt: now,
+            updatedAt: now,
+            profileId: 'p',
+            name: 'Koffi',
+            kind: AccountKind.loan,
+          ),
+        );
+    LoansCompanion loan(String id, int amount) => LoansCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      accountId: 'l',
+      direction: LoanDirection.lent,
+      amount: amount,
+      payAccountId: 'm',
+      startedOn: '2026-11-11',
+    );
+    await expectLater(db.into(db.loans).insert(loan('zero', 0)), throwsA(isA<SqliteException>()));
+    await db.into(db.loans).insert(loan('ok', 30000));
+    expect((await db.select(db.loans).getSingle()).direction, LoanDirection.lent);
   });
 
   test('les clés étrangères sont appliquées', () async {

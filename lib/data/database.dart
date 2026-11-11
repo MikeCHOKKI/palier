@@ -200,7 +200,31 @@ class Tontines extends Table with SyncColumns {
   List<String> get customConstraints => ['CHECK (rank <= members)'];
 }
 
-@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips, Tontines])
+/// Un prêt, dans un sens ou dans l'autre. L'argent passe par son compte
+/// ([accountId]) en virements : le prêt lui-même, puis les remboursements en
+/// sens inverse. Rien ne compte dans les dépenses, les revenus ni les budgets.
+@DataClassName('LoanRow')
+class Loans extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get accountId => text().unique().references(Accounts, #id)();
+  TextColumn get direction => textEnum<LoanDirection>()();
+
+  /// Le montant prêté ou emprunté, en unités mineures : la base de « remboursé ».
+  // ignore: recursive_getters
+  IntColumn get amount => integer().check(amount.isBiggerThanValue(0))();
+
+  /// Le compte d'où l'argent est parti (prêté) ou où il est arrivé (emprunté),
+  /// proposé pour les remboursements.
+  @ReferenceName('payingLoans')
+  TextColumn get payAccountId => text().references(Accounts, #id)();
+
+  /// Le jour du prêt (« 2026-11-05 »).
+  TextColumn get startedOn => text()();
+}
+
+@DriftDatabase(
+  tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips, Tontines, Loans],
+)
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
 
@@ -208,7 +232,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -234,6 +258,9 @@ class PalierDatabase extends _$PalierDatabase {
       },
       from5To6: (m, schema) async {
         await m.createTable(schema.tontines);
+      },
+      from6To7: (m, schema) async {
+        await m.createTable(schema.loans);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

@@ -228,8 +228,8 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       inputFormatters: [LengthLimitingTextInputFormatter(AccountDraft.maxNameLength)],
                       validator: (value) => (value?.trim() ?? '').isEmpty ? l10n.accountNameRequired : null,
                     ),
-                    // Un compte de tontine naît avec sa tontine et garde son type.
-                    if (_kind != AccountKind.tontine) ...[
+                    // Un compte de tontine ou de prêt naît avec eux et garde son type.
+                    if (_kind != AccountKind.tontine && _kind != AccountKind.loan) ...[
                       FieldLabel(l10n.accountKindLabel),
                       // Sur deux lignes plutôt qu'en rangée qui défile : les quatre
                       // types restent visibles, « Épargne » compris.
@@ -238,7 +238,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                         runSpacing: PalierSpace.sm,
                         children: [
                           for (final kind in AccountKind.values)
-                            if (kind != AccountKind.tontine)
+                            if (kind != AccountKind.tontine && kind != AccountKind.loan)
                               ChoicePill(
                                 label: l10n.accountKindName(kind),
                                 icon: accountIcon(kind),

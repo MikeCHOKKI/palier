@@ -332,10 +332,10 @@ class _TontineFormScreenState extends ConsumerState<TontineFormScreen> {
       existing = tontines.where((t) => t.id == widget.tontineId).firstOrNull;
       if (existing != null && currency != null) _fill(existing, currency);
     }
-    // On cotise depuis un vrai compte, pas depuis une autre tontine.
+    // On cotise depuis un vrai compte, pas depuis une tontine ni un prêt.
     final payable = [
       for (final a in accounts ?? const <Account>[])
-        if (a.kind != AccountKind.tontine) a,
+        if (a.kind != AccountKind.tontine && a.kind != AccountKind.loan) a,
     ];
     if (_accountId == null && payable.isNotEmpty) _accountId = payable.first.id;
     final loading = currency == null || accounts == null || (_editing && tontines == null);

@@ -4580,6 +4580,544 @@ class TontinesCompanion extends UpdateCompanion<TontineRow> {
   }
 }
 
+class $LoansTable extends Loans with TableInfo<$LoansTable, LoanRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LoansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _accountIdMeta = const VerificationMeta('accountId');
+  @override
+  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+    'account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE REFERENCES accounts (id)'),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<LoanDirection, String> direction = GeneratedColumn<String>(
+    'direction',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<LoanDirection>($LoansTable.$converterdirection);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+    'amount',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(amount).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payAccountIdMeta = const VerificationMeta('payAccountId');
+  @override
+  late final GeneratedColumn<String> payAccountId = GeneratedColumn<String>(
+    'pay_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES accounts (id)'),
+  );
+  static const VerificationMeta _startedOnMeta = const VerificationMeta('startedOn');
+  @override
+  late final GeneratedColumn<String> startedOn = GeneratedColumn<String>(
+    'started_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    accountId,
+    direction,
+    amount,
+    payAccountId,
+    startedOn,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'loans';
+  @override
+  VerificationContext validateIntegrity(Insertable<LoanRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('account_id')) {
+      context.handle(_accountIdMeta, accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta));
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta, amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('pay_account_id')) {
+      context.handle(_payAccountIdMeta, payAccountId.isAcceptableOrUnknown(data['pay_account_id']!, _payAccountIdMeta));
+    } else if (isInserting) {
+      context.missing(_payAccountIdMeta);
+    }
+    if (data.containsKey('started_on')) {
+      context.handle(_startedOnMeta, startedOn.isAcceptableOrUnknown(data['started_on']!, _startedOnMeta));
+    } else if (isInserting) {
+      context.missing(_startedOnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LoanRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LoanRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      accountId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}account_id'])!,
+      direction: $LoansTable.$converterdirection.fromSql(
+        attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}direction'])!,
+      ),
+      amount: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      payAccountId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}pay_account_id'])!,
+      startedOn: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}started_on'])!,
+    );
+  }
+
+  @override
+  $LoansTable createAlias(String alias) {
+    return $LoansTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<LoanDirection, String, String> $converterdirection = const EnumNameConverter<LoanDirection>(
+    LoanDirection.values,
+  );
+}
+
+class LoanRow extends DataClass implements Insertable<LoanRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final String accountId;
+  final LoanDirection direction;
+
+  /// Le montant prêté ou emprunté, en unités mineures : la base de « remboursé ».
+  final int amount;
+
+  /// Le compte d'où l'argent est parti (prêté) ou où il est arrivé (emprunté),
+  /// proposé pour les remboursements.
+  final String payAccountId;
+
+  /// Le jour du prêt (« 2026-11-05 »).
+  final String startedOn;
+  const LoanRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.accountId,
+    required this.direction,
+    required this.amount,
+    required this.payAccountId,
+    required this.startedOn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['account_id'] = Variable<String>(accountId);
+    {
+      map['direction'] = Variable<String>($LoansTable.$converterdirection.toSql(direction));
+    }
+    map['amount'] = Variable<int>(amount);
+    map['pay_account_id'] = Variable<String>(payAccountId);
+    map['started_on'] = Variable<String>(startedOn);
+    return map;
+  }
+
+  LoansCompanion toCompanion(bool nullToAbsent) {
+    return LoansCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      accountId: Value(accountId),
+      direction: Value(direction),
+      amount: Value(amount),
+      payAccountId: Value(payAccountId),
+      startedOn: Value(startedOn),
+    );
+  }
+
+  factory LoanRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LoanRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      accountId: serializer.fromJson<String>(json['accountId']),
+      direction: $LoansTable.$converterdirection.fromJson(serializer.fromJson<String>(json['direction'])),
+      amount: serializer.fromJson<int>(json['amount']),
+      payAccountId: serializer.fromJson<String>(json['payAccountId']),
+      startedOn: serializer.fromJson<String>(json['startedOn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'accountId': serializer.toJson<String>(accountId),
+      'direction': serializer.toJson<String>($LoansTable.$converterdirection.toJson(direction)),
+      'amount': serializer.toJson<int>(amount),
+      'payAccountId': serializer.toJson<String>(payAccountId),
+      'startedOn': serializer.toJson<String>(startedOn),
+    };
+  }
+
+  LoanRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    String? accountId,
+    LoanDirection? direction,
+    int? amount,
+    String? payAccountId,
+    String? startedOn,
+  }) => LoanRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    accountId: accountId ?? this.accountId,
+    direction: direction ?? this.direction,
+    amount: amount ?? this.amount,
+    payAccountId: payAccountId ?? this.payAccountId,
+    startedOn: startedOn ?? this.startedOn,
+  );
+  LoanRow copyWithCompanion(LoansCompanion data) {
+    return LoanRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      direction: data.direction.present ? data.direction.value : this.direction,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      payAccountId: data.payAccountId.present ? data.payAccountId.value : this.payAccountId,
+      startedOn: data.startedOn.present ? data.startedOn.value : this.startedOn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LoanRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('accountId: $accountId, ')
+          ..write('direction: $direction, ')
+          ..write('amount: $amount, ')
+          ..write('payAccountId: $payAccountId, ')
+          ..write('startedOn: $startedOn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    accountId,
+    direction,
+    amount,
+    payAccountId,
+    startedOn,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LoanRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.accountId == this.accountId &&
+          other.direction == this.direction &&
+          other.amount == this.amount &&
+          other.payAccountId == this.payAccountId &&
+          other.startedOn == this.startedOn);
+}
+
+class LoansCompanion extends UpdateCompanion<LoanRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<String> accountId;
+  final Value<LoanDirection> direction;
+  final Value<int> amount;
+  final Value<String> payAccountId;
+  final Value<String> startedOn;
+  final Value<int> rowid;
+  const LoansCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.direction = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.payAccountId = const Value.absent(),
+    this.startedOn = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LoansCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required String accountId,
+    required LoanDirection direction,
+    required int amount,
+    required String payAccountId,
+    required String startedOn,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       accountId = Value(accountId),
+       direction = Value(direction),
+       amount = Value(amount),
+       payAccountId = Value(payAccountId),
+       startedOn = Value(startedOn);
+  static Insertable<LoanRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? accountId,
+    Expression<String>? direction,
+    Expression<int>? amount,
+    Expression<String>? payAccountId,
+    Expression<String>? startedOn,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (accountId != null) 'account_id': accountId,
+      if (direction != null) 'direction': direction,
+      if (amount != null) 'amount': amount,
+      if (payAccountId != null) 'pay_account_id': payAccountId,
+      if (startedOn != null) 'started_on': startedOn,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LoansCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<String>? accountId,
+    Value<LoanDirection>? direction,
+    Value<int>? amount,
+    Value<String>? payAccountId,
+    Value<String>? startedOn,
+    Value<int>? rowid,
+  }) {
+    return LoansCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      accountId: accountId ?? this.accountId,
+      direction: direction ?? this.direction,
+      amount: amount ?? this.amount,
+      payAccountId: payAccountId ?? this.payAccountId,
+      startedOn: startedOn ?? this.startedOn,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (accountId.present) {
+      map['account_id'] = Variable<String>(accountId.value);
+    }
+    if (direction.present) {
+      map['direction'] = Variable<String>($LoansTable.$converterdirection.toSql(direction.value));
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (payAccountId.present) {
+      map['pay_account_id'] = Variable<String>(payAccountId.value);
+    }
+    if (startedOn.present) {
+      map['started_on'] = Variable<String>(startedOn.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LoansCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('accountId: $accountId, ')
+          ..write('direction: $direction, ')
+          ..write('amount: $amount, ')
+          ..write('payAccountId: $payAccountId, ')
+          ..write('startedOn: $startedOn, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$PalierDatabase extends GeneratedDatabase {
   _$PalierDatabase(QueryExecutor e) : super(e);
   $PalierDatabaseManager get managers => $PalierDatabaseManager(this);
@@ -4591,6 +5129,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $RecurrenceSkipsTable recurrenceSkips = $RecurrenceSkipsTable(this);
   late final $TontinesTable tontines = $TontinesTable(this);
+  late final $LoansTable loans = $LoansTable(this);
   late final Index operationsProfileDate = Index(
     'operations_profile_date',
     'CREATE INDEX operations_profile_date ON operations (profile_id, occurred_at)',
@@ -4607,6 +5146,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
     budgets,
     recurrenceSkips,
     tontines,
+    loans,
     operationsProfileDate,
   ];
   @override
@@ -4744,6 +5284,19 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_tontinesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$LoansTable, List<LoanRow>> _loansRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.loans, aliasName: 'profiles__id__loans__profile_id');
+
+  $$LoansTableProcessedTableManager get loansRefs {
+    final manager = $$LoansTableTableManager(
+      $_db,
+      $_db.loans,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_loansRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
@@ -4920,6 +5473,24 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
           $$TontinesTableFilterComposer(
             $db: $db,
             $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> loansRefs(Expression<bool> Function($$LoansTableFilterComposer f) f) {
+    final $$LoansTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableFilterComposer(
+            $db: $db,
+            $table: $db.loans,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -5158,6 +5729,24 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     );
     return f(composer);
   }
+
+  Expression<T> loansRefs<T extends Object>(Expression<T> Function($$LoansTableAnnotationComposer a) f) {
+    final $$LoansTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableAnnotationComposer(
+            $db: $db,
+            $table: $db.loans,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProfilesTableTableManager
@@ -5181,6 +5770,7 @@ class $$ProfilesTableTableManager
             bool budgetsRefs,
             bool recurrenceSkipsRefs,
             bool tontinesRefs,
+            bool loansRefs,
           })
         > {
   $$ProfilesTableTableManager(_$PalierDatabase db, $ProfilesTable table)
@@ -5279,6 +5869,7 @@ class $$ProfilesTableTableManager
                 budgetsRefs = false,
                 recurrenceSkipsRefs = false,
                 tontinesRefs = false,
+                loansRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -5290,6 +5881,7 @@ class $$ProfilesTableTableManager
                     if (budgetsRefs) db.budgets,
                     if (recurrenceSkipsRefs) db.recurrenceSkips,
                     if (tontinesRefs) db.tontines,
+                    if (loansRefs) db.loans,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -5367,6 +5959,15 @@ class $$ProfilesTableTableManager
                           referencedColumn: 'profile_id',
                           typedResults: items,
                         ),
+                      if (loansRefs)
+                        await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, LoanRow, $LoansTable>(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._loansRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).loansRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -5395,6 +5996,7 @@ typedef $$ProfilesTableProcessedTableManager =
         bool budgetsRefs,
         bool recurrenceSkipsRefs,
         bool tontinesRefs,
+        bool loansRefs,
       })
     >;
 typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
@@ -5501,6 +6103,32 @@ final class $$AccountsTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_tontinesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$LoansTable, List<LoanRow>> _loansRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.loans, aliasName: 'accounts__id__loans__account_id');
+
+  $$LoansTableProcessedTableManager get loansRefs {
+    final manager = $$LoansTableTableManager(
+      $_db,
+      $_db.loans,
+    ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_loansRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$LoansTable, List<LoanRow>> _payingLoansTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.loans, aliasName: 'accounts__id__loans__pay_account_id');
+
+  $$LoansTableProcessedTableManager get payingLoans {
+    final manager = $$LoansTableTableManager(
+      $_db,
+      $_db.loans,
+    ).filter((f) => f.payAccountId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_payingLoansTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
@@ -5637,6 +6265,42 @@ class $$AccountsTableFilterComposer extends Composer<_$PalierDatabase, $Accounts
           $$TontinesTableFilterComposer(
             $db: $db,
             $table: $db.tontines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> loansRefs(Expression<bool> Function($$LoansTableFilterComposer f) f) {
+    final $$LoansTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableFilterComposer(
+            $db: $db,
+            $table: $db.loans,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> payingLoans(Expression<bool> Function($$LoansTableFilterComposer f) f) {
+    final $$LoansTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.payAccountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableFilterComposer(
+            $db: $db,
+            $table: $db.loans,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -5838,6 +6502,42 @@ class $$AccountsTableAnnotationComposer extends Composer<_$PalierDatabase, $Acco
     );
     return f(composer);
   }
+
+  Expression<T> loansRefs<T extends Object>(Expression<T> Function($$LoansTableAnnotationComposer a) f) {
+    final $$LoansTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableAnnotationComposer(
+            $db: $db,
+            $table: $db.loans,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> payingLoans<T extends Object>(Expression<T> Function($$LoansTableAnnotationComposer a) f) {
+    final $$LoansTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.loans,
+      getReferencedColumn: (t) => t.payAccountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$LoansTableAnnotationComposer(
+            $db: $db,
+            $table: $db.loans,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$AccountsTableTableManager
@@ -5860,6 +6560,8 @@ class $$AccountsTableTableManager
             bool outgoingOperations,
             bool incomingTransfers,
             bool tontinesRefs,
+            bool loansRefs,
+            bool payingLoans,
           })
         > {
   $$AccountsTableTableManager(_$PalierDatabase db, $AccountsTable table)
@@ -5933,6 +6635,8 @@ class $$AccountsTableTableManager
                 outgoingOperations = false,
                 incomingTransfers = false,
                 tontinesRefs = false,
+                loansRefs = false,
+                payingLoans = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -5942,6 +6646,8 @@ class $$AccountsTableTableManager
                     if (outgoingOperations) db.operations,
                     if (incomingTransfers) db.operations,
                     if (tontinesRefs) db.tontines,
+                    if (loansRefs) db.loans,
+                    if (payingLoans) db.loans,
                   ],
                   addJoins:
                       <
@@ -6027,6 +6733,24 @@ class $$AccountsTableTableManager
                           referencedColumn: 'account_id',
                           typedResults: items,
                         ),
+                      if (loansRefs)
+                        await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, LoanRow, $LoansTable>(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._loansRefsTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).loansRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'account_id',
+                          typedResults: items,
+                        ),
+                      if (payingLoans)
+                        await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, LoanRow, $LoansTable>(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._payingLoansTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).payingLoans,
+                          currentColumn: 'id',
+                          referencedColumn: 'pay_account_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6054,6 +6778,8 @@ typedef $$AccountsTableProcessedTableManager =
         bool outgoingOperations,
         bool incomingTransfers,
         bool tontinesRefs,
+        bool loansRefs,
+        bool payingLoans,
       })
     >;
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
@@ -9340,6 +10066,464 @@ typedef $$TontinesTableProcessedTableManager =
       TontineRow,
       PrefetchHooks Function({bool profileId, bool accountId, bool contributionId, bool handId})
     >;
+typedef $$LoansTableCreateCompanionBuilder = LoansCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required String accountId,
+  required LoanDirection direction,
+  required int amount,
+  required String payAccountId,
+  required String startedOn,
+  Value<int> rowid,
+});
+typedef $$LoansTableUpdateCompanionBuilder = LoansCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<String> accountId,
+  Value<LoanDirection> direction,
+  Value<int> amount,
+  Value<String> payAccountId,
+  Value<String> startedOn,
+  Value<int> rowid,
+});
+
+final class $$LoansTableReferences extends BaseReferences<_$PalierDatabase, $LoansTable, LoanRow> {
+  $$LoansTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('loans__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $AccountsTable _accountIdTable(_$PalierDatabase db) =>
+      db.accounts.createAlias('loans__account_id__accounts__id');
+
+  $$AccountsTableProcessedTableManager get accountId {
+    final $_column = $_itemColumn<String>('account_id')!;
+
+    final manager = $$AccountsTableTableManager($_db, $_db.accounts).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_accountIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $AccountsTable _payAccountIdTable(_$PalierDatabase db) =>
+      db.accounts.createAlias('loans__pay_account_id__accounts__id');
+
+  $$AccountsTableProcessedTableManager get payAccountId {
+    final $_column = $_itemColumn<String>('pay_account_id')!;
+
+    final manager = $$AccountsTableTableManager($_db, $_db.accounts).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_payAccountIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$LoansTableFilterComposer extends Composer<_$PalierDatabase, $LoansTable> {
+  $$LoansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<LoanDirection, LoanDirection, String> get direction =>
+      $composableBuilder(column: $table.direction, builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get startedOn =>
+      $composableBuilder(column: $table.startedOn, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get accountId {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get payAccountId {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LoansTableOrderingComposer extends Composer<_$PalierDatabase, $LoansTable> {
+  $$LoansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get direction =>
+      $composableBuilder(column: $table.direction, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get startedOn =>
+      $composableBuilder(column: $table.startedOn, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get accountId {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get payAccountId {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LoansTableAnnotationComposer extends Composer<_$PalierDatabase, $LoansTable> {
+  $$LoansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<LoanDirection, String> get direction =>
+      $composableBuilder(column: $table.direction, builder: (column) => column);
+
+  GeneratedColumn<int> get amount => $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get startedOn => $composableBuilder(column: $table.startedOn, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get accountId {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get payAccountId {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LoansTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $LoansTable,
+          LoanRow,
+          $$LoansTableFilterComposer,
+          $$LoansTableOrderingComposer,
+          $$LoansTableAnnotationComposer,
+          $$LoansTableCreateCompanionBuilder,
+          $$LoansTableUpdateCompanionBuilder,
+          (LoanRow, $$LoansTableReferences),
+          LoanRow,
+          PrefetchHooks Function({bool profileId, bool accountId, bool payAccountId})
+        > {
+  $$LoansTableTableManager(_$PalierDatabase db, $LoansTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$LoansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$LoansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$LoansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> accountId = const Value.absent(),
+                Value<LoanDirection> direction = const Value.absent(),
+                Value<int> amount = const Value.absent(),
+                Value<String> payAccountId = const Value.absent(),
+                Value<String> startedOn = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LoansCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                accountId: accountId,
+                direction: direction,
+                amount: amount,
+                payAccountId: payAccountId,
+                startedOn: startedOn,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required String accountId,
+                required LoanDirection direction,
+                required int amount,
+                required String payAccountId,
+                required String startedOn,
+                Value<int> rowid = const Value.absent(),
+              }) => LoansCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                accountId: accountId,
+                direction: direction,
+                amount: amount,
+                payAccountId: payAccountId,
+                startedOn: startedOn,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable<$LoansTable, LoanRow>(table), $$LoansTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({profileId = false, accountId = false, payAccountId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$LoansTableReferences._profileIdTable(db),
+                        referencedColumn: $$LoansTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+                    if (accountId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.accountId,
+                        referencedTable: $$LoansTableReferences._accountIdTable(db),
+                        referencedColumn: $$LoansTableReferences._accountIdTable(db).id,
+                      ) as T;
+                    }
+                    if (payAccountId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.payAccountId,
+                        referencedTable: $$LoansTableReferences._payAccountIdTable(db),
+                        referencedColumn: $$LoansTableReferences._payAccountIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LoansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $LoansTable,
+      LoanRow,
+      $$LoansTableFilterComposer,
+      $$LoansTableOrderingComposer,
+      $$LoansTableAnnotationComposer,
+      $$LoansTableCreateCompanionBuilder,
+      $$LoansTableUpdateCompanionBuilder,
+      (LoanRow, $$LoansTableReferences),
+      LoanRow,
+      PrefetchHooks Function({bool profileId, bool accountId, bool payAccountId})
+    >;
 
 class $PalierDatabaseManager {
   final _$PalierDatabase _db;
@@ -9353,4 +10537,5 @@ class $PalierDatabaseManager {
   $$RecurrenceSkipsTableTableManager get recurrenceSkips =>
       $$RecurrenceSkipsTableTableManager(_db, _db.recurrenceSkips);
   $$TontinesTableTableManager get tontines => $$TontinesTableTableManager(_db, _db.tontines);
+  $$LoansTableTableManager get loans => $$LoansTableTableManager(_db, _db.loans);
 }
