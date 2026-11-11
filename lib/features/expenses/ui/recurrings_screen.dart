@@ -555,8 +555,7 @@ class _DuesBlockState extends ConsumerState<DuesBlock> {
                   ],
                 ),
               ),
-              for (final (i, due) in shown.indexed) ...[
-                if (i > 0) const Divider(height: 1, color: PalierColors.line),
+              for (final due in shown) ...[
                 _DueRow(
                   due: due,
                   today: today,
@@ -583,6 +582,8 @@ class _DuesBlockState extends ConsumerState<DuesBlock> {
   }
 }
 
+/// Une échéance sur une seule ligne : de quoi la reconnaître (nom, date,
+/// montant) et la traiter sans ouvrir d'écran.
 class _DueRow extends StatelessWidget {
   const _DueRow({
     required this.due,
@@ -607,72 +608,79 @@ class _DueRow extends StatelessWidget {
     final r = due.recurring;
     final title = r.title(l10n.expensesTransfer);
     final date = DateFormat.MMMd('fr').format(due.day);
+    final when = due.day == today ? l10n.expensesToday : date;
     final late = due.day.isBefore(today);
+    final small = text.bodySmall!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: PalierSpace.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      padding: const EdgeInsets.only(top: PalierSpace.xs),
+      child: Row(
         children: [
-          InkWell(
-            onTap: onOpen,
-            borderRadius: BorderRadius.circular(PalierRadius.sm),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: PalierSpace.xs),
-              child: Row(
-                children: [
-                  OperationBadge(kind: r.kind, icon: r.categoryIcon, size: 36),
-                  const SizedBox(width: PalierSpace.sm + 4),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: text.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 2),
-                        Text(
-                          due.day == today ? l10n.duesToday : l10n.duesOn(date),
-                          style: text.bodySmall?.copyWith(color: late ? PalierColors.warning : null),
-                        ),
-                      ],
+          Expanded(
+            child: InkWell(
+              onTap: onOpen,
+              borderRadius: BorderRadius.circular(PalierRadius.sm),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: PalierSpace.xs + 2),
+                child: Row(
+                  children: [
+                    OperationBadge(kind: r.kind, icon: r.categoryIcon, size: 32),
+                    const SizedBox(width: PalierSpace.sm + 4),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: text.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(when, style: small.copyWith(color: late ? PalierColors.warning : null)),
+                              Text(' · ', style: small),
+                              Flexible(
+                                child: LucidPrivateText(
+                                  signedMoney(r.kind, r.amount, currency),
+                                  mask: maskedMoney(currency),
+                                  style: small.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: _amountColor(r.kind),
+                                    fontFeatures: _figures,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: PalierSpace.sm),
-                  LucidPrivateText(
-                    signedMoney(r.kind, r.amount, currency),
-                    mask: maskedMoney(currency),
-                    style: manrope(
-                      size: 15,
-                      weight: FontWeight.w700,
-                      color: _amountColor(r.kind),
-                    ).copyWith(fontFeatures: _figures),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-          const SizedBox(height: PalierSpace.xs),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Semantics(
-                button: true,
-                label: l10n.dueSkipFor(title, date),
-                excludeSemantics: true,
-                // Neutre : l'accent du profil (ambre, corail…) se confondrait avec un retard.
-                child: TextButton(
-                  style: TextButton.styleFrom(foregroundColor: PalierColors.textMid),
-                  onPressed: onSkip,
-                  child: Text(l10n.dueSkip),
-                ),
+          Semantics(
+            button: true,
+            label: l10n.dueSkipFor(title, date),
+            excludeSemantics: true,
+            child: IconButton(
+              // Neutre : l'accent du profil (ambre, corail…) se confondrait avec un retard.
+              color: PalierColors.textMid,
+              tooltip: l10n.dueSkip,
+              icon: const Icon(Icons.skip_next_rounded),
+              onPressed: onSkip,
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: l10n.duePayFor(r.kind.name, title, date),
+            excludeSemantics: true,
+            child: FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(56, kPalierMinTarget),
+                padding: const EdgeInsets.symmetric(horizontal: PalierSpace.md),
               ),
-              const SizedBox(width: PalierSpace.sm),
-              Semantics(
-                button: true,
-                label: l10n.duePayFor(r.kind.name, title, date),
-                excludeSemantics: true,
-                child: FilledButton.tonal(onPressed: onPay, child: Text(l10n.duePay(r.kind.name))),
-              ),
-            ],
+              onPressed: onPay,
+              child: Text(l10n.duePay(r.kind.name)),
+            ),
           ),
         ],
       ),

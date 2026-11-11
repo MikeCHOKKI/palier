@@ -395,6 +395,9 @@ class ExpensesRepository {
     return all.where((r) => r.id == id).firstOrNull;
   }
 
+  /// Crée une récurrence. Ses échéances comptent à partir du jour de création :
+  /// une récurrence posée le 11 avec un début le 5 ne réclame pas l'échéance du
+  /// 5, sans doute déjà réglée, mais attend la suivante.
   Future<String> createRecurring(String profileId, RecurringDraft draft) async {
     _check(draft.asOperation);
     final now = _clock();
@@ -418,7 +421,7 @@ class ExpensesRepository {
             every: Value(rule.interval),
             startsOn: dayKey(rule.start),
             endsOn: Value(rule.until == null ? null : dayKey(rule.until!)),
-            dueFrom: dayKey(rule.start),
+            dueFrom: dayKey(_later(rule.start, localDay(now))),
           ),
         );
     return id;
@@ -554,7 +557,9 @@ class ExpensesRepository {
               start: parseDayKey(recurrence.startsOn),
               until: recurrence.endsOn == null ? null : parseDayKey(recurrence.endsOn!),
             ),
-            dueFrom: parseDayKey(recurrence.dueFrom),
+            // Même règle pour les lignes créées avant elle (le 11/11) : jamais
+            // d'échéance antérieure au jour de création.
+            dueFrom: _later(parseDayKey(recurrence.dueFrom), localDay(recurrence.createdAt)),
             settled: Set.unmodifiable(settled[recurrence.id] ?? const <DateTime>{}),
           );
         }(),
@@ -562,6 +567,8 @@ class ExpensesRepository {
   }
 
   // ------------------------------------------------------------------ outils
+
+  static DateTime _later(DateTime a, DateTime b) => a.isAfter(b) ? a : b;
 
   static void _check(OperationDraft draft) {
     final problem = draft.problem;

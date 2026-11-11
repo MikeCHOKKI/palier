@@ -39,7 +39,8 @@ Future<TestApp> _openExpenses(WidgetTester tester) async {
 /// Un transport à 2 000 chaque lundi depuis le 2 : les échéances du 2 et du 9 attendent.
 Future<void> _seedWeekly(WidgetTester tester, TestApp app) async {
   await tester.runAsync(() async {
-    final repo = ExpensesRepository(app.db);
+    // Créée le 1er : les échéances du 2 et du 9 lui reviennent.
+    final repo = ExpensesRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
     final profileId = (await app.profiles.watchAll().first).single.id;
     final account = (await repo.watchAccounts(profileId).first).first;
     final category = (await repo.watchCategories(profileId, kind: CategoryKind.expense).first).first;
@@ -92,14 +93,14 @@ void main() {
     await _seedWeekly(tester, app);
 
     expect(find.text('À valider'), findsOneWidget);
-    expect(find.text('Prévu le 2 nov.'), findsOneWidget);
-    expect(find.text('Prévu le 9 nov.'), findsOneWidget);
+    expect(find.text('2 nov.'), findsOneWidget);
+    expect(find.text('9 nov.'), findsOneWidget);
     expect(find.textContaining('Après les échéances du mois'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Payé : Zém, 2 nov.'));
     await app.settle(tester);
     expect(find.text('Échéance réglée.'), findsOneWidget);
-    expect(find.text('Prévu le 2 nov.'), findsNothing);
+    expect(find.text('2 nov.'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel('Passer : Zém, 9 nov.'));
     await app.settle(tester);
@@ -108,14 +109,14 @@ void main() {
 
     await tester.tap(find.text('Annuler'));
     await app.settle(tester);
-    expect(find.text('Prévu le 9 nov.'), findsOneWidget);
+    expect(find.text('9 nov.'), findsOneWidget);
   });
 
   testWidgets('toucher une échéance ouvre la saisie, montant modifiable', (tester) async {
     final app = await _openExpenses(tester);
     await _seedWeekly(tester, app);
 
-    await tester.tap(find.text('Prévu le 2 nov.'));
+    await tester.tap(find.text('2 nov.'));
     await app.settle(tester);
     expect(find.text('Régler l’échéance'), findsOneWidget);
     expect(find.text(AmountEntry.fromMinor(2000, _xof).display), findsOneWidget);
@@ -123,7 +124,7 @@ void main() {
     await _pad(tester, ['Effacer', '5']);
     await tester.tap(find.text('Enregistrer la dépense'));
     await app.settle(tester);
-    expect(find.text('Prévu le 2 nov.'), findsNothing);
-    expect(find.text('Prévu le 9 nov.'), findsOneWidget);
+    expect(find.text('2 nov.'), findsNothing);
+    expect(find.text('9 nov.'), findsOneWidget);
   });
 }

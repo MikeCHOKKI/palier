@@ -4,8 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidRecurrence, LucidRecurrenceUnit;
-import 'package:palier/app/providers.dart';
 import 'package:palier/app/theme/palier_accent.dart';
+import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
 import 'package:palier/features/expenses/domain/recurring.dart';
@@ -159,7 +159,8 @@ void main() {
 /// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un
 /// virement, trois plafonds, et ce qui revient (salaire, loyer, abonnement).
 Future<void> _kofiMonth(TestApp app) async {
-  final repo = app.container.read(expensesRepositoryProvider);
+  // Tout est créé le 1er du mois : la date réelle du jour ne change rien aux captures.
+  final repo = ExpensesRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
   final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
   await repo.ensureStarterKit(kofi);
   final cash = (await repo.watchAccounts(kofi).first).single;

@@ -173,9 +173,6 @@
   "operationRepeatHint": "Palier te la rappellera à chaque échéance.",
 
   "duesTitle": "À valider",
-  "duesOn": "Prévu le {date}",
-  "@duesOn": { "placeholders": { "date": { "type": "String" } } },
-  "duesToday": "Prévu aujourd’hui",
   "duePay": "{kind, select, expense{Payé} income{Reçu} transfer{Fait} other{Fait}}",
   "@duePay": { "placeholders": { "kind": { "type": "String" } } },
   "duePayFor": "{kind, select, expense{Payé} income{Reçu} transfer{Fait} other{Fait}} : {title}, {date}",
@@ -186,7 +183,7 @@
   "dueSettled": "Échéance réglée.",
   "dueSkipped": "Échéance passée.",
   "dueSettleTitle": "Régler l’échéance",
-  "duesMore": "Voir les {count} autres",
+  "duesMore": "{count, plural, =1{Voir l’autre} other{Voir les {count} autres}}",
   "@duesMore": { "placeholders": { "count": { "type": "int" } } },
   "duesFewer": "Voir moins",
 
