@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'expense_kinds.dart';
 import 'expenses.dart';
+import 'recurring.dart';
 
 /// Le plafond mensuel d'une catégorie de dépenses.
 @immutable
@@ -36,7 +37,8 @@ class Budget {
 ///
 /// La prévision suit le rythme depuis le 1er du mois (choix validé par Mike le
 /// 10/11) plutôt que la moyenne des mois passés : il n'y a encore qu'un mois de
-/// données. Les opérations récurrentes (étape 3) l'affineront.
+/// données. [BudgetMonth] en retire les opérations récurrentes, connues
+/// d'avance : un loyer payé le 1er ne se prolonge pas au rythme du mois.
 abstract final class Pace {
   /// Avant ce jour du mois, deux ou trois achats suffiraient à fausser la
   /// prévision : on n'en donne pas.
@@ -103,29 +105,43 @@ class UnbudgetedSpend {
 /// un dépassement qui n'en est pas un.
 @immutable
 class BudgetMonth {
+  ///
+  /// La prévision d'une catégorie prolonge seulement ses dépenses libres, puis
+  /// ajoute ses dépenses récurrentes : celles déjà réglées et celles encore
+  /// attendues dans le mois ([recurrings]).
   factory BudgetMonth({
     required DateTime month,
     required DateTime now,
     required List<Budget> budgets,
     required List<OperationEntry> entries,
+    List<Recurring> recurrings = const [],
   }) {
     final spentBy = <String?, int>{};
+    final fixedBy = <String?, int>{};
     final names = <String?, (String, String?)>{};
     for (final e in entries.where((e) => e.kind == OperationKind.expense)) {
       spentBy.update(e.categoryId, (sum) => sum + e.amount, ifAbsent: () => e.amount);
+      if (e.recurrenceId != null) fixedBy.update(e.categoryId, (sum) => sum + e.amount, ifAbsent: () => e.amount);
       names[e.categoryId] ??= (e.categoryName ?? '', e.categoryIcon);
     }
 
     final budgeted = {for (final b in budgets) b.categoryId};
+    var freeTotal = 0;
+    var knownTotal = 0;
     final lines = [
       for (final b in budgets)
         () {
           final spent = spentBy[b.categoryId] ?? 0;
+          final fixed = fixedBy[b.categoryId] ?? 0;
+          final known = fixed + pendingExpenseIn(recurrings, b.categoryId, month);
+          freeTotal += spent - fixed;
+          knownTotal += known;
+          final free = Pace.project(spent: spent - fixed, month: month, now: now);
           return BudgetLine(
             budget: b,
             spent: spent,
-            projected: Pace.project(spent: spent, month: month, now: now),
-            reachDay: Pace.reachDay(spent: spent, limit: b.amount, month: month, now: now),
+            projected: free == null ? null : free + known,
+            reachDay: Pace.reachDay(spent: spent - fixed, limit: b.amount - known, month: month, now: now),
           );
         }(),
     ]..sort((a, b) => b.ratio.compareTo(a.ratio));
@@ -136,12 +152,12 @@ class BudgetMonth {
           UnbudgetedSpend(categoryId: id, categoryName: names[id]!.$1, categoryIcon: names[id]!.$2, spent: spent),
     ]..sort((a, b) => b.spent.compareTo(a.spent));
 
-    final spent = lines.fold(0, (sum, l) => sum + l.spent);
+    final free = Pace.project(spent: freeTotal, month: month, now: now);
     return BudgetMonth._(
       month: month,
       lines: List.unmodifiable(lines),
       outside: List.unmodifiable(outside),
-      projected: Pace.project(spent: spent, month: month, now: now),
+      projected: free == null ? null : free + knownTotal,
     );
   }
 

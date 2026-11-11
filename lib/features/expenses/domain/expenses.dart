@@ -90,6 +90,8 @@ class OperationEntry {
     this.categoryName,
     this.categoryIcon,
     this.note,
+    this.recurrenceId,
+    this.dueOn,
   });
 
   final String id;
@@ -106,6 +108,10 @@ class OperationEntry {
   final String? categoryName;
   final String? categoryIcon;
   final String? note;
+
+  /// La récurrence dont l'opération règle une échéance, et cette échéance.
+  final String? recurrenceId;
+  final DateTime? dueOn;
 
   /// Effet sur l'argent du foyer : négatif pour une dépense, nul pour un
   /// virement (l'argent change seulement de compte).
