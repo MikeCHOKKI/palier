@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Rapports de Gradle (AGP 9) : sortie de compilation, jamais versionnée.
+/build/
