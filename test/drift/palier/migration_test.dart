@@ -121,6 +121,63 @@ void main() {
     await expectLater(db.into(db.budgets).insert(budget('b2')), throwsA(isA<SqliteException>()));
   });
 
+  test('v3 → v4 garde les opérations, qui peuvent ensuite régler une échéance', () async {
+    const at = '2026-11-10T09:00:00.000Z';
+    final schema = await verifier.schemaAt(3);
+    final oldDb = PalierDatabase(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind) '
+          "VALUES ('a', '$at', '$at', 'p', 'Espèces', 'cash')",
+      'INSERT INTO categories (id, created_at, updated_at, profile_id, name, kind, icon) '
+          "VALUES ('c', '$at', '$at', 'p', 'Loyer', 'expense', 'home')",
+      'INSERT INTO operations (id, created_at, updated_at, profile_id, kind, amount, account_id, category_id, occurred_at) '
+          "VALUES ('o', '$at', '$at', 'p', 'expense', 45000, 'a', 'c', '$at')",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    final kept = await db.select(db.operations).getSingle();
+    expect((kept.amount, kept.recurrenceId, kept.dueOn), (45000, null, null));
+
+    final now = DateTime.utc(2026, 11, 11);
+    await db
+        .into(db.recurrences)
+        .insert(
+          RecurrencesCompanion.insert(
+            id: 'r',
+            createdAt: now,
+            updatedAt: now,
+            profileId: 'p',
+            kind: OperationKind.expense,
+            amount: 45000,
+            accountId: 'a',
+            categoryId: const Value('c'),
+            unit: RepeatUnit.month,
+            startsOn: '2026-11-10',
+            dueFrom: '2026-11-10',
+          ),
+        );
+    await (db.update(db.operations)..where((o) => o.id.equals('o'))).write(
+      const OperationsCompanion(recurrenceId: Value('r'), dueOn: Value('2026-11-10')),
+    );
+    expect((await db.select(db.operations).getSingle()).recurrenceId, 'r');
+
+    RecurrenceSkipsCompanion skip(String id) => RecurrenceSkipsCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      recurrenceId: 'r',
+      dueOn: '2026-12-10',
+    );
+    await db.into(db.recurrenceSkips).insert(skip('s1'));
+    await expectLater(db.into(db.recurrenceSkips).insert(skip('s2')), throwsA(isA<SqliteException>()));
+  });
+
   test('les clés étrangères sont appliquées', () async {
     final db = PalierDatabase(DatabaseConnection(NativeDatabase.memory()));
     addTearDown(db.close);

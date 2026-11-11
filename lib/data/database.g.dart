@@ -1736,6 +1736,780 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
   }
 }
 
+class $RecurrencesTable extends Recurrences with TableInfo<$RecurrencesTable, RecurrenceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecurrencesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<OperationKind, String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<OperationKind>($RecurrencesTable.$converterkind);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+    'amount',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(amount).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _accountIdMeta = const VerificationMeta('accountId');
+  @override
+  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+    'account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES accounts (id)'),
+  );
+  static const VerificationMeta _toAccountIdMeta = const VerificationMeta('toAccountId');
+  @override
+  late final GeneratedColumn<String> toAccountId = GeneratedColumn<String>(
+    'to_account_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES accounts (id)'),
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta('categoryId');
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+    'category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES categories (id)'),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 120),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<RepeatUnit, String> unit = GeneratedColumn<String>(
+    'unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<RepeatUnit>($RecurrencesTable.$converterunit);
+  static const VerificationMeta _everyMeta = const VerificationMeta('every');
+  @override
+  late final GeneratedColumn<int> every = GeneratedColumn<int>(
+    'every',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(every).isBiggerOrEqualValue(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _startsOnMeta = const VerificationMeta('startsOn');
+  @override
+  late final GeneratedColumn<String> startsOn = GeneratedColumn<String>(
+    'starts_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endsOnMeta = const VerificationMeta('endsOn');
+  @override
+  late final GeneratedColumn<String> endsOn = GeneratedColumn<String>(
+    'ends_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueFromMeta = const VerificationMeta('dueFrom');
+  @override
+  late final GeneratedColumn<String> dueFrom = GeneratedColumn<String>(
+    'due_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    kind,
+    amount,
+    accountId,
+    toAccountId,
+    categoryId,
+    note,
+    unit,
+    every,
+    startsOn,
+    endsOn,
+    dueFrom,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recurrences';
+  @override
+  VerificationContext validateIntegrity(Insertable<RecurrenceRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta, amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('account_id')) {
+      context.handle(_accountIdMeta, accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta));
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('to_account_id')) {
+      context.handle(_toAccountIdMeta, toAccountId.isAcceptableOrUnknown(data['to_account_id']!, _toAccountIdMeta));
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(_categoryIdMeta, categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta));
+    }
+    if (data.containsKey('note')) {
+      context.handle(_noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+    }
+    if (data.containsKey('every')) {
+      context.handle(_everyMeta, every.isAcceptableOrUnknown(data['every']!, _everyMeta));
+    }
+    if (data.containsKey('starts_on')) {
+      context.handle(_startsOnMeta, startsOn.isAcceptableOrUnknown(data['starts_on']!, _startsOnMeta));
+    } else if (isInserting) {
+      context.missing(_startsOnMeta);
+    }
+    if (data.containsKey('ends_on')) {
+      context.handle(_endsOnMeta, endsOn.isAcceptableOrUnknown(data['ends_on']!, _endsOnMeta));
+    }
+    if (data.containsKey('due_from')) {
+      context.handle(_dueFromMeta, dueFrom.isAcceptableOrUnknown(data['due_from']!, _dueFromMeta));
+    } else if (isInserting) {
+      context.missing(_dueFromMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecurrenceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurrenceRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      kind: $RecurrencesTable.$converterkind.fromSql(
+        attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
+      ),
+      amount: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      accountId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}account_id'])!,
+      toAccountId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}to_account_id']),
+      categoryId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}category_id']),
+      note: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}note']),
+      unit: $RecurrencesTable.$converterunit.fromSql(
+        attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}unit'])!,
+      ),
+      every: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}every'])!,
+      startsOn: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}starts_on'])!,
+      endsOn: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}ends_on']),
+      dueFrom: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}due_from'])!,
+    );
+  }
+
+  @override
+  $RecurrencesTable createAlias(String alias) {
+    return $RecurrencesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<OperationKind, String, String> $converterkind = const EnumNameConverter<OperationKind>(
+    OperationKind.values,
+  );
+  static JsonTypeConverter2<RepeatUnit, String, String> $converterunit = const EnumNameConverter<RepeatUnit>(
+    RepeatUnit.values,
+  );
+}
+
+class RecurrenceRow extends DataClass implements Insertable<RecurrenceRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final OperationKind kind;
+  final int amount;
+  final String accountId;
+  final String? toAccountId;
+  final String? categoryId;
+  final String? note;
+  final RepeatUnit unit;
+
+  /// Toutes les combien d'unités : 1 chaque mois, 3 chaque trimestre.
+  final int every;
+  final String startsOn;
+  final String? endsOn;
+
+  /// Les échéances comptent à partir de ce jour : changer la règle ne fait pas
+  /// réapparaître celles d'avant.
+  final String dueFrom;
+  const RecurrenceRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.kind,
+    required this.amount,
+    required this.accountId,
+    this.toAccountId,
+    this.categoryId,
+    this.note,
+    required this.unit,
+    required this.every,
+    required this.startsOn,
+    this.endsOn,
+    required this.dueFrom,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    {
+      map['kind'] = Variable<String>($RecurrencesTable.$converterkind.toSql(kind));
+    }
+    map['amount'] = Variable<int>(amount);
+    map['account_id'] = Variable<String>(accountId);
+    if (!nullToAbsent || toAccountId != null) {
+      map['to_account_id'] = Variable<String>(toAccountId);
+    }
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    {
+      map['unit'] = Variable<String>($RecurrencesTable.$converterunit.toSql(unit));
+    }
+    map['every'] = Variable<int>(every);
+    map['starts_on'] = Variable<String>(startsOn);
+    if (!nullToAbsent || endsOn != null) {
+      map['ends_on'] = Variable<String>(endsOn);
+    }
+    map['due_from'] = Variable<String>(dueFrom);
+    return map;
+  }
+
+  RecurrencesCompanion toCompanion(bool nullToAbsent) {
+    return RecurrencesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      kind: Value(kind),
+      amount: Value(amount),
+      accountId: Value(accountId),
+      toAccountId: toAccountId == null && nullToAbsent ? const Value.absent() : Value(toAccountId),
+      categoryId: categoryId == null && nullToAbsent ? const Value.absent() : Value(categoryId),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      unit: Value(unit),
+      every: Value(every),
+      startsOn: Value(startsOn),
+      endsOn: endsOn == null && nullToAbsent ? const Value.absent() : Value(endsOn),
+      dueFrom: Value(dueFrom),
+    );
+  }
+
+  factory RecurrenceRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurrenceRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      kind: $RecurrencesTable.$converterkind.fromJson(serializer.fromJson<String>(json['kind'])),
+      amount: serializer.fromJson<int>(json['amount']),
+      accountId: serializer.fromJson<String>(json['accountId']),
+      toAccountId: serializer.fromJson<String?>(json['toAccountId']),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
+      note: serializer.fromJson<String?>(json['note']),
+      unit: $RecurrencesTable.$converterunit.fromJson(serializer.fromJson<String>(json['unit'])),
+      every: serializer.fromJson<int>(json['every']),
+      startsOn: serializer.fromJson<String>(json['startsOn']),
+      endsOn: serializer.fromJson<String?>(json['endsOn']),
+      dueFrom: serializer.fromJson<String>(json['dueFrom']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'kind': serializer.toJson<String>($RecurrencesTable.$converterkind.toJson(kind)),
+      'amount': serializer.toJson<int>(amount),
+      'accountId': serializer.toJson<String>(accountId),
+      'toAccountId': serializer.toJson<String?>(toAccountId),
+      'categoryId': serializer.toJson<String?>(categoryId),
+      'note': serializer.toJson<String?>(note),
+      'unit': serializer.toJson<String>($RecurrencesTable.$converterunit.toJson(unit)),
+      'every': serializer.toJson<int>(every),
+      'startsOn': serializer.toJson<String>(startsOn),
+      'endsOn': serializer.toJson<String?>(endsOn),
+      'dueFrom': serializer.toJson<String>(dueFrom),
+    };
+  }
+
+  RecurrenceRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    OperationKind? kind,
+    int? amount,
+    String? accountId,
+    Value<String?> toAccountId = const Value.absent(),
+    Value<String?> categoryId = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    RepeatUnit? unit,
+    int? every,
+    String? startsOn,
+    Value<String?> endsOn = const Value.absent(),
+    String? dueFrom,
+  }) => RecurrenceRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    kind: kind ?? this.kind,
+    amount: amount ?? this.amount,
+    accountId: accountId ?? this.accountId,
+    toAccountId: toAccountId.present ? toAccountId.value : this.toAccountId,
+    categoryId: categoryId.present ? categoryId.value : this.categoryId,
+    note: note.present ? note.value : this.note,
+    unit: unit ?? this.unit,
+    every: every ?? this.every,
+    startsOn: startsOn ?? this.startsOn,
+    endsOn: endsOn.present ? endsOn.value : this.endsOn,
+    dueFrom: dueFrom ?? this.dueFrom,
+  );
+  RecurrenceRow copyWithCompanion(RecurrencesCompanion data) {
+    return RecurrenceRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      toAccountId: data.toAccountId.present ? data.toAccountId.value : this.toAccountId,
+      categoryId: data.categoryId.present ? data.categoryId.value : this.categoryId,
+      note: data.note.present ? data.note.value : this.note,
+      unit: data.unit.present ? data.unit.value : this.unit,
+      every: data.every.present ? data.every.value : this.every,
+      startsOn: data.startsOn.present ? data.startsOn.value : this.startsOn,
+      endsOn: data.endsOn.present ? data.endsOn.value : this.endsOn,
+      dueFrom: data.dueFrom.present ? data.dueFrom.value : this.dueFrom,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurrenceRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('kind: $kind, ')
+          ..write('amount: $amount, ')
+          ..write('accountId: $accountId, ')
+          ..write('toAccountId: $toAccountId, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('note: $note, ')
+          ..write('unit: $unit, ')
+          ..write('every: $every, ')
+          ..write('startsOn: $startsOn, ')
+          ..write('endsOn: $endsOn, ')
+          ..write('dueFrom: $dueFrom')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    kind,
+    amount,
+    accountId,
+    toAccountId,
+    categoryId,
+    note,
+    unit,
+    every,
+    startsOn,
+    endsOn,
+    dueFrom,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurrenceRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.kind == this.kind &&
+          other.amount == this.amount &&
+          other.accountId == this.accountId &&
+          other.toAccountId == this.toAccountId &&
+          other.categoryId == this.categoryId &&
+          other.note == this.note &&
+          other.unit == this.unit &&
+          other.every == this.every &&
+          other.startsOn == this.startsOn &&
+          other.endsOn == this.endsOn &&
+          other.dueFrom == this.dueFrom);
+}
+
+class RecurrencesCompanion extends UpdateCompanion<RecurrenceRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<OperationKind> kind;
+  final Value<int> amount;
+  final Value<String> accountId;
+  final Value<String?> toAccountId;
+  final Value<String?> categoryId;
+  final Value<String?> note;
+  final Value<RepeatUnit> unit;
+  final Value<int> every;
+  final Value<String> startsOn;
+  final Value<String?> endsOn;
+  final Value<String> dueFrom;
+  final Value<int> rowid;
+  const RecurrencesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.toAccountId = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.note = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.every = const Value.absent(),
+    this.startsOn = const Value.absent(),
+    this.endsOn = const Value.absent(),
+    this.dueFrom = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecurrencesCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required OperationKind kind,
+    required int amount,
+    required String accountId,
+    this.toAccountId = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.note = const Value.absent(),
+    required RepeatUnit unit,
+    this.every = const Value.absent(),
+    required String startsOn,
+    this.endsOn = const Value.absent(),
+    required String dueFrom,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       kind = Value(kind),
+       amount = Value(amount),
+       accountId = Value(accountId),
+       unit = Value(unit),
+       startsOn = Value(startsOn),
+       dueFrom = Value(dueFrom);
+  static Insertable<RecurrenceRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? kind,
+    Expression<int>? amount,
+    Expression<String>? accountId,
+    Expression<String>? toAccountId,
+    Expression<String>? categoryId,
+    Expression<String>? note,
+    Expression<String>? unit,
+    Expression<int>? every,
+    Expression<String>? startsOn,
+    Expression<String>? endsOn,
+    Expression<String>? dueFrom,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (kind != null) 'kind': kind,
+      if (amount != null) 'amount': amount,
+      if (accountId != null) 'account_id': accountId,
+      if (toAccountId != null) 'to_account_id': toAccountId,
+      if (categoryId != null) 'category_id': categoryId,
+      if (note != null) 'note': note,
+      if (unit != null) 'unit': unit,
+      if (every != null) 'every': every,
+      if (startsOn != null) 'starts_on': startsOn,
+      if (endsOn != null) 'ends_on': endsOn,
+      if (dueFrom != null) 'due_from': dueFrom,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecurrencesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<OperationKind>? kind,
+    Value<int>? amount,
+    Value<String>? accountId,
+    Value<String?>? toAccountId,
+    Value<String?>? categoryId,
+    Value<String?>? note,
+    Value<RepeatUnit>? unit,
+    Value<int>? every,
+    Value<String>? startsOn,
+    Value<String?>? endsOn,
+    Value<String>? dueFrom,
+    Value<int>? rowid,
+  }) {
+    return RecurrencesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      kind: kind ?? this.kind,
+      amount: amount ?? this.amount,
+      accountId: accountId ?? this.accountId,
+      toAccountId: toAccountId ?? this.toAccountId,
+      categoryId: categoryId ?? this.categoryId,
+      note: note ?? this.note,
+      unit: unit ?? this.unit,
+      every: every ?? this.every,
+      startsOn: startsOn ?? this.startsOn,
+      endsOn: endsOn ?? this.endsOn,
+      dueFrom: dueFrom ?? this.dueFrom,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>($RecurrencesTable.$converterkind.toSql(kind.value));
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (accountId.present) {
+      map['account_id'] = Variable<String>(accountId.value);
+    }
+    if (toAccountId.present) {
+      map['to_account_id'] = Variable<String>(toAccountId.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (unit.present) {
+      map['unit'] = Variable<String>($RecurrencesTable.$converterunit.toSql(unit.value));
+    }
+    if (every.present) {
+      map['every'] = Variable<int>(every.value);
+    }
+    if (startsOn.present) {
+      map['starts_on'] = Variable<String>(startsOn.value);
+    }
+    if (endsOn.present) {
+      map['ends_on'] = Variable<String>(endsOn.value);
+    }
+    if (dueFrom.present) {
+      map['due_from'] = Variable<String>(dueFrom.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurrencesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('kind: $kind, ')
+          ..write('amount: $amount, ')
+          ..write('accountId: $accountId, ')
+          ..write('toAccountId: $toAccountId, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('note: $note, ')
+          ..write('unit: $unit, ')
+          ..write('every: $every, ')
+          ..write('startsOn: $startsOn, ')
+          ..write('endsOn: $endsOn, ')
+          ..write('dueFrom: $dueFrom, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $OperationsTable extends Operations with TableInfo<$OperationsTable, OperationRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1854,6 +2628,25 @@ class $OperationsTable extends Operations with TableInfo<$OperationsTable, Opera
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _recurrenceIdMeta = const VerificationMeta('recurrenceId');
+  @override
+  late final GeneratedColumn<String> recurrenceId = GeneratedColumn<String>(
+    'recurrence_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES recurrences (id)'),
+  );
+  static const VerificationMeta _dueOnMeta = const VerificationMeta('dueOn');
+  @override
+  late final GeneratedColumn<String> dueOn = GeneratedColumn<String>(
+    'due_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1868,6 +2661,8 @@ class $OperationsTable extends Operations with TableInfo<$OperationsTable, Opera
     categoryId,
     note,
     occurredAt,
+    recurrenceId,
+    dueOn,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1925,6 +2720,12 @@ class $OperationsTable extends Operations with TableInfo<$OperationsTable, Opera
     } else if (isInserting) {
       context.missing(_occurredAtMeta);
     }
+    if (data.containsKey('recurrence_id')) {
+      context.handle(_recurrenceIdMeta, recurrenceId.isAcceptableOrUnknown(data['recurrence_id']!, _recurrenceIdMeta));
+    }
+    if (data.containsKey('due_on')) {
+      context.handle(_dueOnMeta, dueOn.isAcceptableOrUnknown(data['due_on']!, _dueOnMeta));
+    }
     return context;
   }
 
@@ -1948,6 +2749,8 @@ class $OperationsTable extends Operations with TableInfo<$OperationsTable, Opera
       categoryId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}category_id']),
       note: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}note']),
       occurredAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}occurred_at'])!,
+      recurrenceId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}recurrence_id']),
+      dueOn: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}due_on']),
     );
   }
 
@@ -1985,6 +2788,13 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
 
   /// Moment de l'opération (UTC), que l'on peut dater d'un autre jour que la saisie.
   final DateTime occurredAt;
+
+  /// La récurrence dont l'opération règle une échéance ; `null` sinon.
+  final String? recurrenceId;
+
+  /// L'échéance réglée, en jour du calendrier (« 2026-11-05 ») : l'opération peut
+  /// être datée d'un autre jour que son échéance.
+  final String? dueOn;
   const OperationRow({
     required this.id,
     required this.createdAt,
@@ -1998,6 +2808,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
     this.categoryId,
     this.note,
     required this.occurredAt,
+    this.recurrenceId,
+    this.dueOn,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2024,6 +2836,12 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
       map['note'] = Variable<String>(note);
     }
     map['occurred_at'] = Variable<DateTime>(occurredAt);
+    if (!nullToAbsent || recurrenceId != null) {
+      map['recurrence_id'] = Variable<String>(recurrenceId);
+    }
+    if (!nullToAbsent || dueOn != null) {
+      map['due_on'] = Variable<String>(dueOn);
+    }
     return map;
   }
 
@@ -2041,6 +2859,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
       categoryId: categoryId == null && nullToAbsent ? const Value.absent() : Value(categoryId),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       occurredAt: Value(occurredAt),
+      recurrenceId: recurrenceId == null && nullToAbsent ? const Value.absent() : Value(recurrenceId),
+      dueOn: dueOn == null && nullToAbsent ? const Value.absent() : Value(dueOn),
     );
   }
 
@@ -2059,6 +2879,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
       categoryId: serializer.fromJson<String?>(json['categoryId']),
       note: serializer.fromJson<String?>(json['note']),
       occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      recurrenceId: serializer.fromJson<String?>(json['recurrenceId']),
+      dueOn: serializer.fromJson<String?>(json['dueOn']),
     );
   }
   @override
@@ -2077,6 +2899,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
       'categoryId': serializer.toJson<String?>(categoryId),
       'note': serializer.toJson<String?>(note),
       'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'recurrenceId': serializer.toJson<String?>(recurrenceId),
+      'dueOn': serializer.toJson<String?>(dueOn),
     };
   }
 
@@ -2093,6 +2917,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
     Value<String?> categoryId = const Value.absent(),
     Value<String?> note = const Value.absent(),
     DateTime? occurredAt,
+    Value<String?> recurrenceId = const Value.absent(),
+    Value<String?> dueOn = const Value.absent(),
   }) => OperationRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -2106,6 +2932,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
     categoryId: categoryId.present ? categoryId.value : this.categoryId,
     note: note.present ? note.value : this.note,
     occurredAt: occurredAt ?? this.occurredAt,
+    recurrenceId: recurrenceId.present ? recurrenceId.value : this.recurrenceId,
+    dueOn: dueOn.present ? dueOn.value : this.dueOn,
   );
   OperationRow copyWithCompanion(OperationsCompanion data) {
     return OperationRow(
@@ -2121,6 +2949,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
       categoryId: data.categoryId.present ? data.categoryId.value : this.categoryId,
       note: data.note.present ? data.note.value : this.note,
       occurredAt: data.occurredAt.present ? data.occurredAt.value : this.occurredAt,
+      recurrenceId: data.recurrenceId.present ? data.recurrenceId.value : this.recurrenceId,
+      dueOn: data.dueOn.present ? data.dueOn.value : this.dueOn,
     );
   }
 
@@ -2138,7 +2968,9 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
           ..write('toAccountId: $toAccountId, ')
           ..write('categoryId: $categoryId, ')
           ..write('note: $note, ')
-          ..write('occurredAt: $occurredAt')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('recurrenceId: $recurrenceId, ')
+          ..write('dueOn: $dueOn')
           ..write(')'))
         .toString();
   }
@@ -2157,6 +2989,8 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
     categoryId,
     note,
     occurredAt,
+    recurrenceId,
+    dueOn,
   );
   @override
   bool operator ==(Object other) =>
@@ -2173,7 +3007,9 @@ class OperationRow extends DataClass implements Insertable<OperationRow> {
           other.toAccountId == this.toAccountId &&
           other.categoryId == this.categoryId &&
           other.note == this.note &&
-          other.occurredAt == this.occurredAt);
+          other.occurredAt == this.occurredAt &&
+          other.recurrenceId == this.recurrenceId &&
+          other.dueOn == this.dueOn);
 }
 
 class OperationsCompanion extends UpdateCompanion<OperationRow> {
@@ -2189,6 +3025,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
   final Value<String?> categoryId;
   final Value<String?> note;
   final Value<DateTime> occurredAt;
+  final Value<String?> recurrenceId;
+  final Value<String?> dueOn;
   final Value<int> rowid;
   const OperationsCompanion({
     this.id = const Value.absent(),
@@ -2203,6 +3041,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
     this.categoryId = const Value.absent(),
     this.note = const Value.absent(),
     this.occurredAt = const Value.absent(),
+    this.recurrenceId = const Value.absent(),
+    this.dueOn = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   OperationsCompanion.insert({
@@ -2218,6 +3058,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
     this.categoryId = const Value.absent(),
     this.note = const Value.absent(),
     required DateTime occurredAt,
+    this.recurrenceId = const Value.absent(),
+    this.dueOn = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -2240,6 +3082,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
     Expression<String>? categoryId,
     Expression<String>? note,
     Expression<DateTime>? occurredAt,
+    Expression<String>? recurrenceId,
+    Expression<String>? dueOn,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2255,6 +3099,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
       if (categoryId != null) 'category_id': categoryId,
       if (note != null) 'note': note,
       if (occurredAt != null) 'occurred_at': occurredAt,
+      if (recurrenceId != null) 'recurrence_id': recurrenceId,
+      if (dueOn != null) 'due_on': dueOn,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2272,6 +3118,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
     Value<String?>? categoryId,
     Value<String?>? note,
     Value<DateTime>? occurredAt,
+    Value<String?>? recurrenceId,
+    Value<String?>? dueOn,
     Value<int>? rowid,
   }) {
     return OperationsCompanion(
@@ -2287,6 +3135,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
       categoryId: categoryId ?? this.categoryId,
       note: note ?? this.note,
       occurredAt: occurredAt ?? this.occurredAt,
+      recurrenceId: recurrenceId ?? this.recurrenceId,
+      dueOn: dueOn ?? this.dueOn,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2330,6 +3180,12 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
     if (occurredAt.present) {
       map['occurred_at'] = Variable<DateTime>(occurredAt.value);
     }
+    if (recurrenceId.present) {
+      map['recurrence_id'] = Variable<String>(recurrenceId.value);
+    }
+    if (dueOn.present) {
+      map['due_on'] = Variable<String>(dueOn.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2351,6 +3207,8 @@ class OperationsCompanion extends UpdateCompanion<OperationRow> {
           ..write('categoryId: $categoryId, ')
           ..write('note: $note, ')
           ..write('occurredAt: $occurredAt, ')
+          ..write('recurrenceId: $recurrenceId, ')
+          ..write('dueOn: $dueOn, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2753,14 +3611,411 @@ class BudgetsCompanion extends UpdateCompanion<BudgetRow> {
   }
 }
 
+class $RecurrenceSkipsTable extends RecurrenceSkips with TableInfo<$RecurrenceSkipsTable, RecurrenceSkipRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecurrenceSkipsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _recurrenceIdMeta = const VerificationMeta('recurrenceId');
+  @override
+  late final GeneratedColumn<String> recurrenceId = GeneratedColumn<String>(
+    'recurrence_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES recurrences (id)'),
+  );
+  static const VerificationMeta _dueOnMeta = const VerificationMeta('dueOn');
+  @override
+  late final GeneratedColumn<String> dueOn = GeneratedColumn<String>(
+    'due_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, createdAt, updatedAt, deletedAt, profileId, recurrenceId, dueOn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recurrence_skips';
+  @override
+  VerificationContext validateIntegrity(Insertable<RecurrenceSkipRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('recurrence_id')) {
+      context.handle(_recurrenceIdMeta, recurrenceId.isAcceptableOrUnknown(data['recurrence_id']!, _recurrenceIdMeta));
+    } else if (isInserting) {
+      context.missing(_recurrenceIdMeta);
+    }
+    if (data.containsKey('due_on')) {
+      context.handle(_dueOnMeta, dueOn.isAcceptableOrUnknown(data['due_on']!, _dueOnMeta));
+    } else if (isInserting) {
+      context.missing(_dueOnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {recurrenceId, dueOn},
+  ];
+  @override
+  RecurrenceSkipRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurrenceSkipRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      recurrenceId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}recurrence_id'])!,
+      dueOn: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}due_on'])!,
+    );
+  }
+
+  @override
+  $RecurrenceSkipsTable createAlias(String alias) {
+    return $RecurrenceSkipsTable(attachedDatabase, alias);
+  }
+}
+
+class RecurrenceSkipRow extends DataClass implements Insertable<RecurrenceSkipRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final String recurrenceId;
+  final String dueOn;
+  const RecurrenceSkipRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.recurrenceId,
+    required this.dueOn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['recurrence_id'] = Variable<String>(recurrenceId);
+    map['due_on'] = Variable<String>(dueOn);
+    return map;
+  }
+
+  RecurrenceSkipsCompanion toCompanion(bool nullToAbsent) {
+    return RecurrenceSkipsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      recurrenceId: Value(recurrenceId),
+      dueOn: Value(dueOn),
+    );
+  }
+
+  factory RecurrenceSkipRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurrenceSkipRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      recurrenceId: serializer.fromJson<String>(json['recurrenceId']),
+      dueOn: serializer.fromJson<String>(json['dueOn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'recurrenceId': serializer.toJson<String>(recurrenceId),
+      'dueOn': serializer.toJson<String>(dueOn),
+    };
+  }
+
+  RecurrenceSkipRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    String? recurrenceId,
+    String? dueOn,
+  }) => RecurrenceSkipRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    recurrenceId: recurrenceId ?? this.recurrenceId,
+    dueOn: dueOn ?? this.dueOn,
+  );
+  RecurrenceSkipRow copyWithCompanion(RecurrenceSkipsCompanion data) {
+    return RecurrenceSkipRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      recurrenceId: data.recurrenceId.present ? data.recurrenceId.value : this.recurrenceId,
+      dueOn: data.dueOn.present ? data.dueOn.value : this.dueOn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurrenceSkipRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('recurrenceId: $recurrenceId, ')
+          ..write('dueOn: $dueOn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, createdAt, updatedAt, deletedAt, profileId, recurrenceId, dueOn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurrenceSkipRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.recurrenceId == this.recurrenceId &&
+          other.dueOn == this.dueOn);
+}
+
+class RecurrenceSkipsCompanion extends UpdateCompanion<RecurrenceSkipRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<String> recurrenceId;
+  final Value<String> dueOn;
+  final Value<int> rowid;
+  const RecurrenceSkipsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.recurrenceId = const Value.absent(),
+    this.dueOn = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecurrenceSkipsCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required String recurrenceId,
+    required String dueOn,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       recurrenceId = Value(recurrenceId),
+       dueOn = Value(dueOn);
+  static Insertable<RecurrenceSkipRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? recurrenceId,
+    Expression<String>? dueOn,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (recurrenceId != null) 'recurrence_id': recurrenceId,
+      if (dueOn != null) 'due_on': dueOn,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecurrenceSkipsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<String>? recurrenceId,
+    Value<String>? dueOn,
+    Value<int>? rowid,
+  }) {
+    return RecurrenceSkipsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      recurrenceId: recurrenceId ?? this.recurrenceId,
+      dueOn: dueOn ?? this.dueOn,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (recurrenceId.present) {
+      map['recurrence_id'] = Variable<String>(recurrenceId.value);
+    }
+    if (dueOn.present) {
+      map['due_on'] = Variable<String>(dueOn.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurrenceSkipsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('recurrenceId: $recurrenceId, ')
+          ..write('dueOn: $dueOn, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$PalierDatabase extends GeneratedDatabase {
   _$PalierDatabase(QueryExecutor e) : super(e);
   $PalierDatabaseManager get managers => $PalierDatabaseManager(this);
   late final $ProfilesTable profiles = $ProfilesTable(this);
   late final $AccountsTable accounts = $AccountsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
+  late final $RecurrencesTable recurrences = $RecurrencesTable(this);
   late final $OperationsTable operations = $OperationsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
+  late final $RecurrenceSkipsTable recurrenceSkips = $RecurrenceSkipsTable(this);
   late final Index operationsProfileDate = Index(
     'operations_profile_date',
     'CREATE INDEX operations_profile_date ON operations (profile_id, occurred_at)',
@@ -2772,8 +4027,10 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
     profiles,
     accounts,
     categories,
+    recurrences,
     operations,
     budgets,
+    recurrenceSkips,
     operationsProfileDate,
   ];
   @override
@@ -2848,6 +4105,19 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
+  static MultiTypedResultKey<$RecurrencesTable, List<RecurrenceRow>> _recurrencesRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.recurrences, aliasName: 'profiles__id__recurrences__profile_id');
+
+  $$RecurrencesTableProcessedTableManager get recurrencesRefs {
+    final manager = $$RecurrencesTableTableManager(
+      $_db,
+      $_db.recurrences,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_recurrencesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
   static MultiTypedResultKey<$OperationsTable, List<OperationRow>> _operationsRefsTable(_$PalierDatabase db) =>
       MultiTypedResultKey.fromTable(db.operations, aliasName: 'profiles__id__operations__profile_id');
 
@@ -2871,6 +4141,20 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_budgetsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$RecurrenceSkipsTable, List<RecurrenceSkipRow>> _recurrenceSkipsRefsTable(
+    _$PalierDatabase db,
+  ) => MultiTypedResultKey.fromTable(db.recurrenceSkips, aliasName: 'profiles__id__recurrence_skips__profile_id');
+
+  $$RecurrenceSkipsTableProcessedTableManager get recurrenceSkipsRefs {
+    final manager = $$RecurrenceSkipsTableTableManager(
+      $_db,
+      $_db.recurrenceSkips,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_recurrenceSkipsRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
@@ -2965,6 +4249,24 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
     return f(composer);
   }
 
+  Expression<bool> recurrencesRefs(Expression<bool> Function($$RecurrencesTableFilterComposer f) f) {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> operationsRefs(Expression<bool> Function($$OperationsTableFilterComposer f) f) {
     final $$OperationsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -2993,6 +4295,24 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
           $$BudgetsTableFilterComposer(
             $db: $db,
             $table: $db.budgets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> recurrenceSkipsRefs(Expression<bool> Function($$RecurrenceSkipsTableFilterComposer f) f) {
+    final $$RecurrenceSkipsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrenceSkips,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrenceSkipsTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrenceSkips,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -3140,6 +4460,24 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     return f(composer);
   }
 
+  Expression<T> recurrencesRefs<T extends Object>(Expression<T> Function($$RecurrencesTableAnnotationComposer a) f) {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> operationsRefs<T extends Object>(Expression<T> Function($$OperationsTableAnnotationComposer a) f) {
     final $$OperationsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -3175,6 +4513,26 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     );
     return f(composer);
   }
+
+  Expression<T> recurrenceSkipsRefs<T extends Object>(
+    Expression<T> Function($$RecurrenceSkipsTableAnnotationComposer a) f,
+  ) {
+    final $$RecurrenceSkipsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrenceSkips,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrenceSkipsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrenceSkips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ProfilesTableTableManager
@@ -3190,7 +4548,14 @@ class $$ProfilesTableTableManager
           $$ProfilesTableUpdateCompanionBuilder,
           (ProfileRow, $$ProfilesTableReferences),
           ProfileRow,
-          PrefetchHooks Function({bool accountsRefs, bool categoriesRefs, bool operationsRefs, bool budgetsRefs})
+          PrefetchHooks Function({
+            bool accountsRefs,
+            bool categoriesRefs,
+            bool recurrencesRefs,
+            bool operationsRefs,
+            bool budgetsRefs,
+            bool recurrenceSkipsRefs,
+          })
         > {
   $$ProfilesTableTableManager(_$PalierDatabase db, $ProfilesTable table)
     : super(
@@ -3280,14 +4645,23 @@ class $$ProfilesTableTableManager
               .map((e) => (e.readTable<$ProfilesTable, ProfileRow>(table), $$ProfilesTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback:
-              ({accountsRefs = false, categoriesRefs = false, operationsRefs = false, budgetsRefs = false}) {
+              ({
+                accountsRefs = false,
+                categoriesRefs = false,
+                recurrencesRefs = false,
+                operationsRefs = false,
+                budgetsRefs = false,
+                recurrenceSkipsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (accountsRefs) db.accounts,
                     if (categoriesRefs) db.categories,
+                    if (recurrencesRefs) db.recurrences,
                     if (operationsRefs) db.operations,
                     if (budgetsRefs) db.budgets,
+                    if (recurrenceSkipsRefs) db.recurrenceSkips,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3310,6 +4684,20 @@ class $$ProfilesTableTableManager
                           referencedColumn: 'profile_id',
                           typedResults: items,
                         ),
+                      if (recurrencesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          ProfileRow,
+                          $ProfilesTable,
+                          RecurrenceRow,
+                          $RecurrencesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._recurrencesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).recurrencesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
                       if (operationsRefs)
                         await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, OperationRow, $OperationsTable>(
                           currentTable: table,
@@ -3324,6 +4712,20 @@ class $$ProfilesTableTableManager
                           currentTable: table,
                           referencedTable: $$ProfilesTableReferences._budgetsRefsTable(db),
                           managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).budgetsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
+                      if (recurrenceSkipsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          ProfileRow,
+                          $ProfilesTable,
+                          RecurrenceSkipRow,
+                          $RecurrenceSkipsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._recurrenceSkipsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).recurrenceSkipsRefs,
                           currentColumn: 'id',
                           referencedColumn: 'profile_id',
                           typedResults: items,
@@ -3348,7 +4750,14 @@ typedef $$ProfilesTableProcessedTableManager =
       $$ProfilesTableUpdateCompanionBuilder,
       (ProfileRow, $$ProfilesTableReferences),
       ProfileRow,
-      PrefetchHooks Function({bool accountsRefs, bool categoriesRefs, bool operationsRefs, bool budgetsRefs})
+      PrefetchHooks Function({
+        bool accountsRefs,
+        bool categoriesRefs,
+        bool recurrencesRefs,
+        bool operationsRefs,
+        bool budgetsRefs,
+        bool recurrenceSkipsRefs,
+      })
     >;
 typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
   required String id,
@@ -3388,6 +4797,32 @@ final class $$AccountsTableReferences extends BaseReferences<_$PalierDatabase, $
     final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$RecurrencesTable, List<RecurrenceRow>> _outgoingRecurrencesTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.recurrences, aliasName: 'accounts__id__recurrences__account_id');
+
+  $$RecurrencesTableProcessedTableManager get outgoingRecurrences {
+    final manager = $$RecurrencesTableTableManager(
+      $_db,
+      $_db.recurrences,
+    ).filter((f) => f.accountId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_outgoingRecurrencesTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$RecurrencesTable, List<RecurrenceRow>> _incomingRecurrencesTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.recurrences, aliasName: 'accounts__id__recurrences__to_account_id');
+
+  $$RecurrencesTableProcessedTableManager get incomingRecurrences {
+    final manager = $$RecurrencesTableTableManager(
+      $_db,
+      $_db.recurrences,
+    ).filter((f) => f.toAccountId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_incomingRecurrencesTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
   static MultiTypedResultKey<$OperationsTable, List<OperationRow>> _outgoingOperationsTable(_$PalierDatabase db) =>
@@ -3463,6 +4898,42 @@ class $$AccountsTableFilterComposer extends Composer<_$PalierDatabase, $Accounts
           ),
     );
     return composer;
+  }
+
+  Expression<bool> outgoingRecurrences(Expression<bool> Function($$RecurrencesTableFilterComposer f) f) {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> incomingRecurrences(Expression<bool> Function($$RecurrencesTableFilterComposer f) f) {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.toAccountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 
   Expression<bool> outgoingOperations(Expression<bool> Function($$OperationsTableFilterComposer f) f) {
@@ -3596,6 +5067,46 @@ class $$AccountsTableAnnotationComposer extends Composer<_$PalierDatabase, $Acco
     return composer;
   }
 
+  Expression<T> outgoingRecurrences<T extends Object>(
+    Expression<T> Function($$RecurrencesTableAnnotationComposer a) f,
+  ) {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.accountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> incomingRecurrences<T extends Object>(
+    Expression<T> Function($$RecurrencesTableAnnotationComposer a) f,
+  ) {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.toAccountId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> outgoingOperations<T extends Object>(Expression<T> Function($$OperationsTableAnnotationComposer a) f) {
     final $$OperationsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -3646,7 +5157,13 @@ class $$AccountsTableTableManager
           $$AccountsTableUpdateCompanionBuilder,
           (AccountRow, $$AccountsTableReferences),
           AccountRow,
-          PrefetchHooks Function({bool profileId, bool outgoingOperations, bool incomingTransfers})
+          PrefetchHooks Function({
+            bool profileId,
+            bool outgoingRecurrences,
+            bool incomingRecurrences,
+            bool outgoingOperations,
+            bool incomingTransfers,
+          })
         > {
   $$AccountsTableTableManager(_$PalierDatabase db, $AccountsTable table)
     : super(
@@ -3707,61 +5224,101 @@ class $$AccountsTableTableManager
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable<$AccountsTable, AccountRow>(table), $$AccountsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({profileId = false, outgoingOperations = false, incomingTransfers = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (outgoingOperations) db.operations, if (incomingTransfers) db.operations],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.profileId,
-                        referencedTable: $$AccountsTableReferences._profileIdTable(db),
-                        referencedColumn: $$AccountsTableReferences._profileIdTable(db).id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({
+                profileId = false,
+                outgoingRecurrences = false,
+                incomingRecurrences = false,
+                outgoingOperations = false,
+                incomingTransfers = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (outgoingRecurrences) db.recurrences,
+                    if (incomingRecurrences) db.recurrences,
+                    if (outgoingOperations) db.operations,
+                    if (incomingTransfers) db.operations,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.profileId,
+                            referencedTable: $$AccountsTableReferences._profileIdTable(db),
+                            referencedColumn: $$AccountsTableReferences._profileIdTable(db).id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (outgoingRecurrences)
+                        await $_getPrefetchedDataByColumns<
+                          AccountRow,
+                          $AccountsTable,
+                          RecurrenceRow,
+                          $RecurrencesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._outgoingRecurrencesTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).outgoingRecurrences,
+                          currentColumn: 'id',
+                          referencedColumn: 'account_id',
+                          typedResults: items,
+                        ),
+                      if (incomingRecurrences)
+                        await $_getPrefetchedDataByColumns<
+                          AccountRow,
+                          $AccountsTable,
+                          RecurrenceRow,
+                          $RecurrencesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._incomingRecurrencesTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).incomingRecurrences,
+                          currentColumn: 'id',
+                          referencedColumn: 'to_account_id',
+                          typedResults: items,
+                        ),
+                      if (outgoingOperations)
+                        await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, OperationRow, $OperationsTable>(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._outgoingOperationsTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).outgoingOperations,
+                          currentColumn: 'id',
+                          referencedColumn: 'account_id',
+                          typedResults: items,
+                        ),
+                      if (incomingTransfers)
+                        await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, OperationRow, $OperationsTable>(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences._incomingTransfersTable(db),
+                          managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).incomingTransfers,
+                          currentColumn: 'id',
+                          referencedColumn: 'to_account_id',
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (outgoingOperations)
-                    await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, OperationRow, $OperationsTable>(
-                      currentTable: table,
-                      referencedTable: $$AccountsTableReferences._outgoingOperationsTable(db),
-                      managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).outgoingOperations,
-                      currentColumn: 'id',
-                      referencedColumn: 'account_id',
-                      typedResults: items,
-                    ),
-                  if (incomingTransfers)
-                    await $_getPrefetchedDataByColumns<AccountRow, $AccountsTable, OperationRow, $OperationsTable>(
-                      currentTable: table,
-                      referencedTable: $$AccountsTableReferences._incomingTransfersTable(db),
-                      managerFromTypedResult: (p0) => $$AccountsTableReferences(db, table, p0).incomingTransfers,
-                      currentColumn: 'id',
-                      referencedColumn: 'to_account_id',
-                      typedResults: items,
-                    ),
-                ];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -3778,7 +5335,13 @@ typedef $$AccountsTableProcessedTableManager =
       $$AccountsTableUpdateCompanionBuilder,
       (AccountRow, $$AccountsTableReferences),
       AccountRow,
-      PrefetchHooks Function({bool profileId, bool outgoingOperations, bool incomingTransfers})
+      PrefetchHooks Function({
+        bool profileId,
+        bool outgoingRecurrences,
+        bool incomingRecurrences,
+        bool outgoingOperations,
+        bool incomingTransfers,
+      })
     >;
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
   required String id,
@@ -3818,6 +5381,19 @@ final class $$CategoriesTableReferences extends BaseReferences<_$PalierDatabase,
     final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$RecurrencesTable, List<RecurrenceRow>> _recurrencesRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.recurrences, aliasName: 'categories__id__recurrences__category_id');
+
+  $$RecurrencesTableProcessedTableManager get recurrencesRefs {
+    final manager = $$RecurrencesTableTableManager(
+      $_db,
+      $_db.recurrences,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_recurrencesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
   static MultiTypedResultKey<$OperationsTable, List<OperationRow>> _operationsRefsTable(_$PalierDatabase db) =>
@@ -3892,6 +5468,24 @@ class $$CategoriesTableFilterComposer extends Composer<_$PalierDatabase, $Catego
           ),
     );
     return composer;
+  }
+
+  Expression<bool> recurrencesRefs(Expression<bool> Function($$RecurrencesTableFilterComposer f) f) {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.categoryId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 
   Expression<bool> operationsRefs(Expression<bool> Function($$OperationsTableFilterComposer f) f) {
@@ -4024,6 +5618,24 @@ class $$CategoriesTableAnnotationComposer extends Composer<_$PalierDatabase, $Ca
     return composer;
   }
 
+  Expression<T> recurrencesRefs<T extends Object>(Expression<T> Function($$RecurrencesTableAnnotationComposer a) f) {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.categoryId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> operationsRefs<T extends Object>(Expression<T> Function($$OperationsTableAnnotationComposer a) f) {
     final $$OperationsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -4074,7 +5686,7 @@ class $$CategoriesTableTableManager
           $$CategoriesTableUpdateCompanionBuilder,
           (CategoryRow, $$CategoriesTableReferences),
           CategoryRow,
-          PrefetchHooks Function({bool profileId, bool operationsRefs, bool budgetsRefs})
+          PrefetchHooks Function({bool profileId, bool recurrencesRefs, bool operationsRefs, bool budgetsRefs})
         > {
   $$CategoriesTableTableManager(_$PalierDatabase db, $CategoriesTable table)
     : super(
@@ -4137,61 +5749,85 @@ class $$CategoriesTableTableManager
                 (e) => (e.readTable<$CategoriesTable, CategoryRow>(table), $$CategoriesTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({profileId = false, operationsRefs = false, budgetsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (operationsRefs) db.operations, if (budgetsRefs) db.budgets],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.profileId,
-                        referencedTable: $$CategoriesTableReferences._profileIdTable(db),
-                        referencedColumn: $$CategoriesTableReferences._profileIdTable(db).id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({profileId = false, recurrencesRefs = false, operationsRefs = false, budgetsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (recurrencesRefs) db.recurrences,
+                    if (operationsRefs) db.operations,
+                    if (budgetsRefs) db.budgets,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.profileId,
+                            referencedTable: $$CategoriesTableReferences._profileIdTable(db),
+                            referencedColumn: $$CategoriesTableReferences._profileIdTable(db).id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (recurrencesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          CategoryRow,
+                          $CategoriesTable,
+                          RecurrenceRow,
+                          $RecurrencesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences._recurrencesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CategoriesTableReferences(db, table, p0).recurrencesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'category_id',
+                          typedResults: items,
+                        ),
+                      if (operationsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          CategoryRow,
+                          $CategoriesTable,
+                          OperationRow,
+                          $OperationsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences._operationsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CategoriesTableReferences(db, table, p0).operationsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'category_id',
+                          typedResults: items,
+                        ),
+                      if (budgetsRefs)
+                        await $_getPrefetchedDataByColumns<CategoryRow, $CategoriesTable, BudgetRow, $BudgetsTable>(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences._budgetsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CategoriesTableReferences(db, table, p0).budgetsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'category_id',
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (operationsRefs)
-                    await $_getPrefetchedDataByColumns<CategoryRow, $CategoriesTable, OperationRow, $OperationsTable>(
-                      currentTable: table,
-                      referencedTable: $$CategoriesTableReferences._operationsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$CategoriesTableReferences(db, table, p0).operationsRefs,
-                      currentColumn: 'id',
-                      referencedColumn: 'category_id',
-                      typedResults: items,
-                    ),
-                  if (budgetsRefs)
-                    await $_getPrefetchedDataByColumns<CategoryRow, $CategoriesTable, BudgetRow, $BudgetsTable>(
-                      currentTable: table,
-                      referencedTable: $$CategoriesTableReferences._budgetsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$CategoriesTableReferences(db, table, p0).budgetsRefs,
-                      currentColumn: 'id',
-                      referencedColumn: 'category_id',
-                      typedResults: items,
-                    ),
-                ];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -4208,9 +5844,9 @@ typedef $$CategoriesTableProcessedTableManager =
       $$CategoriesTableUpdateCompanionBuilder,
       (CategoryRow, $$CategoriesTableReferences),
       CategoryRow,
-      PrefetchHooks Function({bool profileId, bool operationsRefs, bool budgetsRefs})
+      PrefetchHooks Function({bool profileId, bool recurrencesRefs, bool operationsRefs, bool budgetsRefs})
     >;
-typedef $$OperationsTableCreateCompanionBuilder = OperationsCompanion Function({
+typedef $$RecurrencesTableCreateCompanionBuilder = RecurrencesCompanion Function({
   required String id,
   required DateTime createdAt,
   required DateTime updatedAt,
@@ -4222,10 +5858,14 @@ typedef $$OperationsTableCreateCompanionBuilder = OperationsCompanion Function({
   Value<String?> toAccountId,
   Value<String?> categoryId,
   Value<String?> note,
-  required DateTime occurredAt,
+  required RepeatUnit unit,
+  Value<int> every,
+  required String startsOn,
+  Value<String?> endsOn,
+  required String dueFrom,
   Value<int> rowid,
 });
-typedef $$OperationsTableUpdateCompanionBuilder = OperationsCompanion Function({
+typedef $$RecurrencesTableUpdateCompanionBuilder = RecurrencesCompanion Function({
   Value<String> id,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -4237,15 +5877,19 @@ typedef $$OperationsTableUpdateCompanionBuilder = OperationsCompanion Function({
   Value<String?> toAccountId,
   Value<String?> categoryId,
   Value<String?> note,
-  Value<DateTime> occurredAt,
+  Value<RepeatUnit> unit,
+  Value<int> every,
+  Value<String> startsOn,
+  Value<String?> endsOn,
+  Value<String> dueFrom,
   Value<int> rowid,
 });
 
-final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase, $OperationsTable, OperationRow> {
-  $$OperationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $$RecurrencesTableReferences extends BaseReferences<_$PalierDatabase, $RecurrencesTable, RecurrenceRow> {
+  $$RecurrencesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
-      db.profiles.createAlias('operations__profile_id__profiles__id');
+      db.profiles.createAlias('recurrences__profile_id__profiles__id');
 
   $$ProfilesTableProcessedTableManager get profileId {
     final $_column = $_itemColumn<String>('profile_id')!;
@@ -4257,7 +5901,7 @@ final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase,
   }
 
   static $AccountsTable _accountIdTable(_$PalierDatabase db) =>
-      db.accounts.createAlias('operations__account_id__accounts__id');
+      db.accounts.createAlias('recurrences__account_id__accounts__id');
 
   $$AccountsTableProcessedTableManager get accountId {
     final $_column = $_itemColumn<String>('account_id')!;
@@ -4269,7 +5913,7 @@ final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase,
   }
 
   static $AccountsTable _toAccountIdTable(_$PalierDatabase db) =>
-      db.accounts.createAlias('operations__to_account_id__accounts__id');
+      db.accounts.createAlias('recurrences__to_account_id__accounts__id');
 
   $$AccountsTableProcessedTableManager? get toAccountId {
     final $_column = $_itemColumn<String>('to_account_id');
@@ -4281,7 +5925,7 @@ final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase,
   }
 
   static $CategoriesTable _categoryIdTable(_$PalierDatabase db) =>
-      db.categories.createAlias('operations__category_id__categories__id');
+      db.categories.createAlias('recurrences__category_id__categories__id');
 
   $$CategoriesTableProcessedTableManager? get categoryId {
     final $_column = $_itemColumn<String>('category_id');
@@ -4291,10 +5935,37 @@ final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase,
     if (item == null) return manager;
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
+
+  static MultiTypedResultKey<$OperationsTable, List<OperationRow>> _operationsRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.operations, aliasName: 'recurrences__id__operations__recurrence_id');
+
+  $$OperationsTableProcessedTableManager get operationsRefs {
+    final manager = $$OperationsTableTableManager(
+      $_db,
+      $_db.operations,
+    ).filter((f) => f.recurrenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_operationsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$RecurrenceSkipsTable, List<RecurrenceSkipRow>> _recurrenceSkipsRefsTable(
+    _$PalierDatabase db,
+  ) => MultiTypedResultKey.fromTable(db.recurrenceSkips, aliasName: 'recurrences__id__recurrence_skips__recurrence_id');
+
+  $$RecurrenceSkipsTableProcessedTableManager get recurrenceSkipsRefs {
+    final manager = $$RecurrenceSkipsTableTableManager(
+      $_db,
+      $_db.recurrenceSkips,
+    ).filter((f) => f.recurrenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_recurrenceSkipsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
-class $$OperationsTableFilterComposer extends Composer<_$PalierDatabase, $OperationsTable> {
-  $$OperationsTableFilterComposer({
+class $$RecurrencesTableFilterComposer extends Composer<_$PalierDatabase, $RecurrencesTable> {
+  $$RecurrencesTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4320,8 +5991,19 @@ class $$OperationsTableFilterComposer extends Composer<_$PalierDatabase, $Operat
 
   ColumnFilters<String> get note => $composableBuilder(column: $table.note, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get occurredAt =>
-      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnFilters(column));
+  ColumnWithTypeConverterFilters<RepeatUnit, RepeatUnit, String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<int> get every => $composableBuilder(column: $table.every, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get startsOn =>
+      $composableBuilder(column: $table.startsOn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get endsOn =>
+      $composableBuilder(column: $table.endsOn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dueFrom =>
+      $composableBuilder(column: $table.dueFrom, builder: (column) => ColumnFilters(column));
 
   $$ProfilesTableFilterComposer get profileId {
     final $$ProfilesTableFilterComposer composer = $composerBuilder(
@@ -4394,10 +6076,46 @@ class $$OperationsTableFilterComposer extends Composer<_$PalierDatabase, $Operat
     );
     return composer;
   }
+
+  Expression<bool> operationsRefs(Expression<bool> Function($$OperationsTableFilterComposer f) f) {
+    final $$OperationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.operations,
+      getReferencedColumn: (t) => t.recurrenceId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$OperationsTableFilterComposer(
+            $db: $db,
+            $table: $db.operations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> recurrenceSkipsRefs(Expression<bool> Function($$RecurrenceSkipsTableFilterComposer f) f) {
+    final $$RecurrenceSkipsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrenceSkips,
+      getReferencedColumn: (t) => t.recurrenceId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrenceSkipsTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrenceSkips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
-class $$OperationsTableOrderingComposer extends Composer<_$PalierDatabase, $OperationsTable> {
-  $$OperationsTableOrderingComposer({
+class $$RecurrencesTableOrderingComposer extends Composer<_$PalierDatabase, $RecurrencesTable> {
+  $$RecurrencesTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4424,8 +6142,20 @@ class $$OperationsTableOrderingComposer extends Composer<_$PalierDatabase, $Oper
   ColumnOrderings<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get occurredAt =>
-      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get every =>
+      $composableBuilder(column: $table.every, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get startsOn =>
+      $composableBuilder(column: $table.startsOn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get endsOn =>
+      $composableBuilder(column: $table.endsOn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dueFrom =>
+      $composableBuilder(column: $table.dueFrom, builder: (column) => ColumnOrderings(column));
 
   $$ProfilesTableOrderingComposer get profileId {
     final $$ProfilesTableOrderingComposer composer = $composerBuilder(
@@ -4500,8 +6230,8 @@ class $$OperationsTableOrderingComposer extends Composer<_$PalierDatabase, $Oper
   }
 }
 
-class $$OperationsTableAnnotationComposer extends Composer<_$PalierDatabase, $OperationsTable> {
-  $$OperationsTableAnnotationComposer({
+class $$RecurrencesTableAnnotationComposer extends Composer<_$PalierDatabase, $RecurrencesTable> {
+  $$RecurrencesTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4523,8 +6253,16 @@ class $$OperationsTableAnnotationComposer extends Composer<_$PalierDatabase, $Op
 
   GeneratedColumn<String> get note => $composableBuilder(column: $table.note, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get occurredAt =>
-      $composableBuilder(column: $table.occurredAt, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<RepeatUnit, String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<int> get every => $composableBuilder(column: $table.every, builder: (column) => column);
+
+  GeneratedColumn<String> get startsOn => $composableBuilder(column: $table.startsOn, builder: (column) => column);
+
+  GeneratedColumn<String> get endsOn => $composableBuilder(column: $table.endsOn, builder: (column) => column);
+
+  GeneratedColumn<String> get dueFrom => $composableBuilder(column: $table.dueFrom, builder: (column) => column);
 
   $$ProfilesTableAnnotationComposer get profileId {
     final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
@@ -4597,6 +6335,749 @@ class $$OperationsTableAnnotationComposer extends Composer<_$PalierDatabase, $Op
     );
     return composer;
   }
+
+  Expression<T> operationsRefs<T extends Object>(Expression<T> Function($$OperationsTableAnnotationComposer a) f) {
+    final $$OperationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.operations,
+      getReferencedColumn: (t) => t.recurrenceId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$OperationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.operations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> recurrenceSkipsRefs<T extends Object>(
+    Expression<T> Function($$RecurrenceSkipsTableAnnotationComposer a) f,
+  ) {
+    final $$RecurrenceSkipsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurrenceSkips,
+      getReferencedColumn: (t) => t.recurrenceId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrenceSkipsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrenceSkips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RecurrencesTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $RecurrencesTable,
+          RecurrenceRow,
+          $$RecurrencesTableFilterComposer,
+          $$RecurrencesTableOrderingComposer,
+          $$RecurrencesTableAnnotationComposer,
+          $$RecurrencesTableCreateCompanionBuilder,
+          $$RecurrencesTableUpdateCompanionBuilder,
+          (RecurrenceRow, $$RecurrencesTableReferences),
+          RecurrenceRow,
+          PrefetchHooks Function({
+            bool profileId,
+            bool accountId,
+            bool toAccountId,
+            bool categoryId,
+            bool operationsRefs,
+            bool recurrenceSkipsRefs,
+          })
+        > {
+  $$RecurrencesTableTableManager(_$PalierDatabase db, $RecurrencesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$RecurrencesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$RecurrencesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$RecurrencesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<OperationKind> kind = const Value.absent(),
+                Value<int> amount = const Value.absent(),
+                Value<String> accountId = const Value.absent(),
+                Value<String?> toAccountId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<RepeatUnit> unit = const Value.absent(),
+                Value<int> every = const Value.absent(),
+                Value<String> startsOn = const Value.absent(),
+                Value<String?> endsOn = const Value.absent(),
+                Value<String> dueFrom = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecurrencesCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                kind: kind,
+                amount: amount,
+                accountId: accountId,
+                toAccountId: toAccountId,
+                categoryId: categoryId,
+                note: note,
+                unit: unit,
+                every: every,
+                startsOn: startsOn,
+                endsOn: endsOn,
+                dueFrom: dueFrom,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required OperationKind kind,
+                required int amount,
+                required String accountId,
+                Value<String?> toAccountId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required RepeatUnit unit,
+                Value<int> every = const Value.absent(),
+                required String startsOn,
+                Value<String?> endsOn = const Value.absent(),
+                required String dueFrom,
+                Value<int> rowid = const Value.absent(),
+              }) => RecurrencesCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                kind: kind,
+                amount: amount,
+                accountId: accountId,
+                toAccountId: toAccountId,
+                categoryId: categoryId,
+                note: note,
+                unit: unit,
+                every: every,
+                startsOn: startsOn,
+                endsOn: endsOn,
+                dueFrom: dueFrom,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable<$RecurrencesTable, RecurrenceRow>(table), $$RecurrencesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                profileId = false,
+                accountId = false,
+                toAccountId = false,
+                categoryId = false,
+                operationsRefs = false,
+                recurrenceSkipsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (operationsRefs) db.operations,
+                    if (recurrenceSkipsRefs) db.recurrenceSkips,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.profileId,
+                            referencedTable: $$RecurrencesTableReferences._profileIdTable(db),
+                            referencedColumn: $$RecurrencesTableReferences._profileIdTable(db).id,
+                          ) as T;
+                        }
+                        if (accountId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.accountId,
+                            referencedTable: $$RecurrencesTableReferences._accountIdTable(db),
+                            referencedColumn: $$RecurrencesTableReferences._accountIdTable(db).id,
+                          ) as T;
+                        }
+                        if (toAccountId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.toAccountId,
+                            referencedTable: $$RecurrencesTableReferences._toAccountIdTable(db),
+                            referencedColumn: $$RecurrencesTableReferences._toAccountIdTable(db).id,
+                          ) as T;
+                        }
+                        if (categoryId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.categoryId,
+                            referencedTable: $$RecurrencesTableReferences._categoryIdTable(db),
+                            referencedColumn: $$RecurrencesTableReferences._categoryIdTable(db).id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (operationsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          RecurrenceRow,
+                          $RecurrencesTable,
+                          OperationRow,
+                          $OperationsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecurrencesTableReferences._operationsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$RecurrencesTableReferences(db, table, p0).operationsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'recurrence_id',
+                          typedResults: items,
+                        ),
+                      if (recurrenceSkipsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          RecurrenceRow,
+                          $RecurrencesTable,
+                          RecurrenceSkipRow,
+                          $RecurrenceSkipsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecurrencesTableReferences._recurrenceSkipsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RecurrencesTableReferences(db, table, p0).recurrenceSkipsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'recurrence_id',
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RecurrencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $RecurrencesTable,
+      RecurrenceRow,
+      $$RecurrencesTableFilterComposer,
+      $$RecurrencesTableOrderingComposer,
+      $$RecurrencesTableAnnotationComposer,
+      $$RecurrencesTableCreateCompanionBuilder,
+      $$RecurrencesTableUpdateCompanionBuilder,
+      (RecurrenceRow, $$RecurrencesTableReferences),
+      RecurrenceRow,
+      PrefetchHooks Function({
+        bool profileId,
+        bool accountId,
+        bool toAccountId,
+        bool categoryId,
+        bool operationsRefs,
+        bool recurrenceSkipsRefs,
+      })
+    >;
+typedef $$OperationsTableCreateCompanionBuilder = OperationsCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required OperationKind kind,
+  required int amount,
+  required String accountId,
+  Value<String?> toAccountId,
+  Value<String?> categoryId,
+  Value<String?> note,
+  required DateTime occurredAt,
+  Value<String?> recurrenceId,
+  Value<String?> dueOn,
+  Value<int> rowid,
+});
+typedef $$OperationsTableUpdateCompanionBuilder = OperationsCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<OperationKind> kind,
+  Value<int> amount,
+  Value<String> accountId,
+  Value<String?> toAccountId,
+  Value<String?> categoryId,
+  Value<String?> note,
+  Value<DateTime> occurredAt,
+  Value<String?> recurrenceId,
+  Value<String?> dueOn,
+  Value<int> rowid,
+});
+
+final class $$OperationsTableReferences extends BaseReferences<_$PalierDatabase, $OperationsTable, OperationRow> {
+  $$OperationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('operations__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $AccountsTable _accountIdTable(_$PalierDatabase db) =>
+      db.accounts.createAlias('operations__account_id__accounts__id');
+
+  $$AccountsTableProcessedTableManager get accountId {
+    final $_column = $_itemColumn<String>('account_id')!;
+
+    final manager = $$AccountsTableTableManager($_db, $_db.accounts).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_accountIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $AccountsTable _toAccountIdTable(_$PalierDatabase db) =>
+      db.accounts.createAlias('operations__to_account_id__accounts__id');
+
+  $$AccountsTableProcessedTableManager? get toAccountId {
+    final $_column = $_itemColumn<String>('to_account_id');
+    if ($_column == null) return null;
+    final manager = $$AccountsTableTableManager($_db, $_db.accounts).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_toAccountIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $CategoriesTable _categoryIdTable(_$PalierDatabase db) =>
+      db.categories.createAlias('operations__category_id__categories__id');
+
+  $$CategoriesTableProcessedTableManager? get categoryId {
+    final $_column = $_itemColumn<String>('category_id');
+    if ($_column == null) return null;
+    final manager = $$CategoriesTableTableManager($_db, $_db.categories).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $RecurrencesTable _recurrenceIdTable(_$PalierDatabase db) =>
+      db.recurrences.createAlias('operations__recurrence_id__recurrences__id');
+
+  $$RecurrencesTableProcessedTableManager? get recurrenceId {
+    final $_column = $_itemColumn<String>('recurrence_id');
+    if ($_column == null) return null;
+    final manager = $$RecurrencesTableTableManager($_db, $_db.recurrences).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_recurrenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$OperationsTableFilterComposer extends Composer<_$PalierDatabase, $OperationsTable> {
+  $$OperationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<OperationKind, OperationKind, String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get note => $composableBuilder(column: $table.note, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dueOn =>
+      $composableBuilder(column: $table.dueOn, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get accountId {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get toAccountId {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.toAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableFilterComposer get recurrenceId {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$OperationsTableOrderingComposer extends Composer<_$PalierDatabase, $OperationsTable> {
+  $$OperationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dueOn =>
+      $composableBuilder(column: $table.dueOn, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get accountId {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get toAccountId {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.toAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableOrderingComposer get recurrenceId {
+    final $$RecurrencesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableOrderingComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$OperationsTableAnnotationComposer extends Composer<_$PalierDatabase, $OperationsTable> {
+  $$OperationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<OperationKind, String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get amount => $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get note => $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => column);
+
+  GeneratedColumn<String> get dueOn => $composableBuilder(column: $table.dueOn, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get accountId {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.accountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get toAccountId {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.toAccountId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoriesTableAnnotationComposer get categoryId {
+    final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableAnnotationComposer get recurrenceId {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$OperationsTableTableManager
@@ -4612,7 +7093,7 @@ class $$OperationsTableTableManager
           $$OperationsTableUpdateCompanionBuilder,
           (OperationRow, $$OperationsTableReferences),
           OperationRow,
-          PrefetchHooks Function({bool profileId, bool accountId, bool toAccountId, bool categoryId})
+          PrefetchHooks Function({bool profileId, bool accountId, bool toAccountId, bool categoryId, bool recurrenceId})
         > {
   $$OperationsTableTableManager(_$PalierDatabase db, $OperationsTable table)
     : super(
@@ -4636,6 +7117,8 @@ class $$OperationsTableTableManager
                 Value<String?> categoryId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
+                Value<String?> recurrenceId = const Value.absent(),
+                Value<String?> dueOn = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => OperationsCompanion(
                 id: id,
@@ -4650,6 +7133,8 @@ class $$OperationsTableTableManager
                 categoryId: categoryId,
                 note: note,
                 occurredAt: occurredAt,
+                recurrenceId: recurrenceId,
+                dueOn: dueOn,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4666,6 +7151,8 @@ class $$OperationsTableTableManager
                 Value<String?> categoryId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 required DateTime occurredAt,
+                Value<String?> recurrenceId = const Value.absent(),
+                Value<String?> dueOn = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => OperationsCompanion.insert(
                 id: id,
@@ -4680,6 +7167,8 @@ class $$OperationsTableTableManager
                 categoryId: categoryId,
                 note: note,
                 occurredAt: occurredAt,
+                recurrenceId: recurrenceId,
+                dueOn: dueOn,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4687,66 +7176,75 @@ class $$OperationsTableTableManager
                 (e) => (e.readTable<$OperationsTable, OperationRow>(table), $$OperationsTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({profileId = false, accountId = false, toAccountId = false, categoryId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.profileId,
-                        referencedTable: $$OperationsTableReferences._profileIdTable(db),
-                        referencedColumn: $$OperationsTableReferences._profileIdTable(db).id,
-                      ) as T;
-                    }
-                    if (accountId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.accountId,
-                        referencedTable: $$OperationsTableReferences._accountIdTable(db),
-                        referencedColumn: $$OperationsTableReferences._accountIdTable(db).id,
-                      ) as T;
-                    }
-                    if (toAccountId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.toAccountId,
-                        referencedTable: $$OperationsTableReferences._toAccountIdTable(db),
-                        referencedColumn: $$OperationsTableReferences._toAccountIdTable(db).id,
-                      ) as T;
-                    }
-                    if (categoryId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.categoryId,
-                        referencedTable: $$OperationsTableReferences._categoryIdTable(db),
-                        referencedColumn: $$OperationsTableReferences._categoryIdTable(db).id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({profileId = false, accountId = false, toAccountId = false, categoryId = false, recurrenceId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.profileId,
+                            referencedTable: $$OperationsTableReferences._profileIdTable(db),
+                            referencedColumn: $$OperationsTableReferences._profileIdTable(db).id,
+                          ) as T;
+                        }
+                        if (accountId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.accountId,
+                            referencedTable: $$OperationsTableReferences._accountIdTable(db),
+                            referencedColumn: $$OperationsTableReferences._accountIdTable(db).id,
+                          ) as T;
+                        }
+                        if (toAccountId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.toAccountId,
+                            referencedTable: $$OperationsTableReferences._toAccountIdTable(db),
+                            referencedColumn: $$OperationsTableReferences._toAccountIdTable(db).id,
+                          ) as T;
+                        }
+                        if (categoryId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.categoryId,
+                            referencedTable: $$OperationsTableReferences._categoryIdTable(db),
+                            referencedColumn: $$OperationsTableReferences._categoryIdTable(db).id,
+                          ) as T;
+                        }
+                        if (recurrenceId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.recurrenceId,
+                            referencedTable: $$OperationsTableReferences._recurrenceIdTable(db),
+                            referencedColumn: $$OperationsTableReferences._recurrenceIdTable(db).id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -4763,7 +7261,7 @@ typedef $$OperationsTableProcessedTableManager =
       $$OperationsTableUpdateCompanionBuilder,
       (OperationRow, $$OperationsTableReferences),
       OperationRow,
-      PrefetchHooks Function({bool profileId, bool accountId, bool toAccountId, bool categoryId})
+      PrefetchHooks Function({bool profileId, bool accountId, bool toAccountId, bool categoryId, bool recurrenceId})
     >;
 typedef $$BudgetsTableCreateCompanionBuilder = BudgetsCompanion Function({
   required String id,
@@ -5115,6 +7613,362 @@ typedef $$BudgetsTableProcessedTableManager =
       BudgetRow,
       PrefetchHooks Function({bool profileId, bool categoryId})
     >;
+typedef $$RecurrenceSkipsTableCreateCompanionBuilder = RecurrenceSkipsCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required String recurrenceId,
+  required String dueOn,
+  Value<int> rowid,
+});
+typedef $$RecurrenceSkipsTableUpdateCompanionBuilder = RecurrenceSkipsCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<String> recurrenceId,
+  Value<String> dueOn,
+  Value<int> rowid,
+});
+
+final class $$RecurrenceSkipsTableReferences
+    extends BaseReferences<_$PalierDatabase, $RecurrenceSkipsTable, RecurrenceSkipRow> {
+  $$RecurrenceSkipsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('recurrence_skips__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $RecurrencesTable _recurrenceIdTable(_$PalierDatabase db) =>
+      db.recurrences.createAlias('recurrence_skips__recurrence_id__recurrences__id');
+
+  $$RecurrencesTableProcessedTableManager get recurrenceId {
+    final $_column = $_itemColumn<String>('recurrence_id')!;
+
+    final manager = $$RecurrencesTableTableManager($_db, $_db.recurrences).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_recurrenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$RecurrenceSkipsTableFilterComposer extends Composer<_$PalierDatabase, $RecurrenceSkipsTable> {
+  $$RecurrenceSkipsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dueOn =>
+      $composableBuilder(column: $table.dueOn, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableFilterComposer get recurrenceId {
+    final $$RecurrencesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurrenceSkipsTableOrderingComposer extends Composer<_$PalierDatabase, $RecurrenceSkipsTable> {
+  $$RecurrenceSkipsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dueOn =>
+      $composableBuilder(column: $table.dueOn, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableOrderingComposer get recurrenceId {
+    final $$RecurrencesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableOrderingComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurrenceSkipsTableAnnotationComposer extends Composer<_$PalierDatabase, $RecurrenceSkipsTable> {
+  $$RecurrenceSkipsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get dueOn => $composableBuilder(column: $table.dueOn, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RecurrencesTableAnnotationComposer get recurrenceId {
+    final $$RecurrencesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recurrenceId,
+      referencedTable: $db.recurrences,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$RecurrencesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recurrences,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurrenceSkipsTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $RecurrenceSkipsTable,
+          RecurrenceSkipRow,
+          $$RecurrenceSkipsTableFilterComposer,
+          $$RecurrenceSkipsTableOrderingComposer,
+          $$RecurrenceSkipsTableAnnotationComposer,
+          $$RecurrenceSkipsTableCreateCompanionBuilder,
+          $$RecurrenceSkipsTableUpdateCompanionBuilder,
+          (RecurrenceSkipRow, $$RecurrenceSkipsTableReferences),
+          RecurrenceSkipRow,
+          PrefetchHooks Function({bool profileId, bool recurrenceId})
+        > {
+  $$RecurrenceSkipsTableTableManager(_$PalierDatabase db, $RecurrenceSkipsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$RecurrenceSkipsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$RecurrenceSkipsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$RecurrenceSkipsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> recurrenceId = const Value.absent(),
+                Value<String> dueOn = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecurrenceSkipsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                recurrenceId: recurrenceId,
+                dueOn: dueOn,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required String recurrenceId,
+                required String dueOn,
+                Value<int> rowid = const Value.absent(),
+              }) => RecurrenceSkipsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                recurrenceId: recurrenceId,
+                dueOn: dueOn,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecurrenceSkipsTable, RecurrenceSkipRow>(table),
+                  $$RecurrenceSkipsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({profileId = false, recurrenceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$RecurrenceSkipsTableReferences._profileIdTable(db),
+                        referencedColumn: $$RecurrenceSkipsTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+                    if (recurrenceId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.recurrenceId,
+                        referencedTable: $$RecurrenceSkipsTableReferences._recurrenceIdTable(db),
+                        referencedColumn: $$RecurrenceSkipsTableReferences._recurrenceIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RecurrenceSkipsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $RecurrenceSkipsTable,
+      RecurrenceSkipRow,
+      $$RecurrenceSkipsTableFilterComposer,
+      $$RecurrenceSkipsTableOrderingComposer,
+      $$RecurrenceSkipsTableAnnotationComposer,
+      $$RecurrenceSkipsTableCreateCompanionBuilder,
+      $$RecurrenceSkipsTableUpdateCompanionBuilder,
+      (RecurrenceSkipRow, $$RecurrenceSkipsTableReferences),
+      RecurrenceSkipRow,
+      PrefetchHooks Function({bool profileId, bool recurrenceId})
+    >;
 
 class $PalierDatabaseManager {
   final _$PalierDatabase _db;
@@ -5122,6 +7976,9 @@ class $PalierDatabaseManager {
   $$ProfilesTableTableManager get profiles => $$ProfilesTableTableManager(_db, _db.profiles);
   $$AccountsTableTableManager get accounts => $$AccountsTableTableManager(_db, _db.accounts);
   $$CategoriesTableTableManager get categories => $$CategoriesTableTableManager(_db, _db.categories);
+  $$RecurrencesTableTableManager get recurrences => $$RecurrencesTableTableManager(_db, _db.recurrences);
   $$OperationsTableTableManager get operations => $$OperationsTableTableManager(_db, _db.operations);
   $$BudgetsTableTableManager get budgets => $$BudgetsTableTableManager(_db, _db.budgets);
+  $$RecurrenceSkipsTableTableManager get recurrenceSkips =>
+      $$RecurrenceSkipsTableTableManager(_db, _db.recurrenceSkips);
 }

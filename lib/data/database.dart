@@ -99,6 +99,13 @@ class Operations extends Table with SyncColumns {
 
   /// Moment de l'opération (UTC), que l'on peut dater d'un autre jour que la saisie.
   DateTimeColumn get occurredAt => dateTime()();
+
+  /// La récurrence dont l'opération règle une échéance ; `null` sinon.
+  TextColumn get recurrenceId => text().nullable().references(Recurrences, #id)();
+
+  /// L'échéance réglée, en jour du calendrier (« 2026-11-05 ») : l'opération peut
+  /// être datée d'un autre jour que son échéance.
+  TextColumn get dueOn => text().nullable()();
 }
 
 /// Le plafond mensuel d'une catégorie de dépenses. Il vaut pour tous les mois
@@ -116,7 +123,53 @@ class Budgets extends Table with SyncColumns {
   IntColumn get amount => integer().check(amount.isBiggerThanValue(0))();
 }
 
-@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets])
+/// Une opération qui revient (loyer, abonnement, salaire…). Chaque échéance
+/// attend qu'on la règle (une opération liée) ou qu'on la passe ([RecurrenceSkips]) :
+/// rien ne s'enregistre tout seul.
+///
+/// Les jours (début, fin, échéances) sont des textes « 2026-11-05 » : un jour du
+/// calendrier n'a pas d'heure, et un instant UTC le décalerait d'un fuseau à l'autre.
+@DataClassName('RecurrenceRow')
+class Recurrences extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get kind => textEnum<OperationKind>()();
+  // ignore: recursive_getters
+  IntColumn get amount => integer().check(amount.isBiggerThanValue(0))();
+  @ReferenceName('outgoingRecurrences')
+  TextColumn get accountId => text().references(Accounts, #id)();
+  @ReferenceName('incomingRecurrences')
+  TextColumn get toAccountId => text().nullable().references(Accounts, #id)();
+  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get note => text().withLength(max: 120).nullable()();
+
+  TextColumn get unit => textEnum<RepeatUnit>()();
+
+  /// Toutes les combien d'unités : 1 chaque mois, 3 chaque trimestre.
+  // ignore: recursive_getters
+  IntColumn get every => integer().withDefault(const Constant(1)).check(every.isBiggerOrEqualValue(1))();
+  TextColumn get startsOn => text()();
+  TextColumn get endsOn => text().nullable()();
+
+  /// Les échéances comptent à partir de ce jour : changer la règle ne fait pas
+  /// réapparaître celles d'avant.
+  TextColumn get dueFrom => text()();
+}
+
+/// Une échéance passée sans opération (« Passer »).
+@DataClassName('RecurrenceSkipRow')
+class RecurrenceSkips extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get recurrenceId => text().references(Recurrences, #id)();
+  TextColumn get dueOn => text()();
+
+  /// Une ligne par échéance, même annulée : c'est elle qu'on réactive.
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {recurrenceId, dueOn},
+  ];
+}
+
+@DriftDatabase(tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips])
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
 
@@ -124,7 +177,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -138,6 +191,12 @@ class PalierDatabase extends _$PalierDatabase {
       },
       from2To3: (m, schema) async {
         await m.createTable(schema.budgets);
+      },
+      from3To4: (m, schema) async {
+        await m.createTable(schema.recurrences);
+        await m.createTable(schema.recurrenceSkips);
+        await m.addColumn(schema.operations, schema.operations.recurrenceId);
+        await m.addColumn(schema.operations, schema.operations.dueOn);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

@@ -22,3 +22,9 @@ enum OperationKind {
     OperationKind.transfer => null,
   };
 }
+
+/// L'unité d'une opération récurrente, telle qu'enregistrée en base. Une copie
+/// de `LucidRecurrenceUnit` (lucid_core) : les outils de migration de drift ne
+/// lisent pas un type venu d'un autre paquet, et le nom en base ne doit pas
+/// dépendre d'un renommage dans le paquet.
+enum RepeatUnit { week, month, year }
