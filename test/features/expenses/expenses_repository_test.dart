@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidRecurrence, LucidRecurrenceUnit;
 import 'package:palier/data/database.dart';
 import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
+import 'package:palier/features/expenses/domain/recurring.dart';
 import 'package:palier/features/expenses/domain/starter_kit.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
@@ -270,6 +272,109 @@ void main() {
 
       expect(await repo.spentIn(ama, food.id, from: from, to: to), 12000);
       expect(await repo.spentIn(ama, 'aucune', from: from, to: to), 0);
+    });
+  });
+
+  group('récurrences', () {
+    late String cash;
+    late String rent;
+
+    setUp(() async {
+      await repo.ensureStarterKit(ama);
+      cash = (await repo.watchAccounts(ama).first).single.id;
+      rent = (await repo.watchCategories(ama).first).first.id;
+    });
+
+    final monthly = LucidRecurrence(unit: LucidRecurrenceUnit.month, start: DateTime(2026, 1, 1));
+
+    test('« Répéter » crée la récurrence, et l’opération règle sa première échéance', () async {
+      await repo.addOperation(ama, spend(45000, cash, rent, at: DateTime(2026, 10, 5, 9)), repeat: monthly);
+
+      final recurring = (await repo.watchRecurrings(ama).first).single;
+      expect(recurring.rule.start, DateTime(2026, 10, 5));
+      expect(recurring.amount, 45000);
+      expect(recurring.settled, {DateTime(2026, 10, 5)});
+      // Le 9 novembre : l'échéance du 5 attend.
+      expect(duesUntil([recurring], now).map((d) => d.day), [DateTime(2026, 11, 5)]);
+
+      final (from, to) = MonthView.bounds(DateTime(2026, 10));
+      final first = (await repo.watchOperations(ama, from: from, to: to).first).single;
+      expect((first.recurrenceId, first.dueOn), (recurring.id, DateTime(2026, 10, 5)));
+    });
+
+    test('régler une échéance la retire ; supprimer l’opération la fait revenir', () async {
+      await repo.addOperation(ama, spend(45000, cash, rent, at: DateTime(2026, 10, 5, 9)), repeat: monthly);
+      var recurring = (await repo.watchRecurrings(ama).first).single;
+      final due = duesUntil([recurring], now).single;
+
+      final paid = await repo.addOperation(ama, recurring.draftFor(due.day), due: due);
+      recurring = (await repo.watchRecurrings(ama).first).single;
+      expect(duesUntil([recurring], now), isEmpty);
+
+      await repo.deleteOperation(paid);
+      recurring = (await repo.watchRecurrings(ama).first).single;
+      expect(duesUntil([recurring], now), [due]);
+    });
+
+    test('passer une échéance, puis l’annuler, puis la repasser', () async {
+      await repo.addOperation(ama, spend(45000, cash, rent, at: DateTime(2026, 10, 5, 9)), repeat: monthly);
+      Future<List<Due>> dues() async => duesUntil(await repo.watchRecurrings(ama).first, now);
+      final due = (await dues()).single;
+
+      await repo.skipDue(ama, due);
+      expect(await dues(), isEmpty);
+      await repo.unskipDue(due);
+      expect(await dues(), [due]);
+      await repo.skipDue(ama, due);
+      expect(await dues(), isEmpty);
+    });
+
+    test('changer la règle fait compter les échéances à partir d’aujourd’hui', () async {
+      final id = await repo.createRecurring(
+        ama,
+        RecurringDraft(
+          kind: OperationKind.expense,
+          amount: 3000,
+          accountId: cash,
+          categoryId: rent,
+          rule: LucidRecurrence(unit: LucidRecurrenceUnit.week, start: DateTime(2026, 11, 2)),
+        ),
+      );
+      final before = (await repo.watchRecurrings(ama).first).single;
+      expect(duesUntil([before], now).map((d) => d.day), [DateTime(2026, 11, 2), DateTime(2026, 11, 9)]);
+
+      // Le montant seul ne touche pas aux échéances.
+      await repo.updateRecurring(id, RecurringDraft.fromOperation(before.draftFor(DateTime(2026, 11, 2)), before.rule));
+      expect((await repo.watchRecurrings(ama).first).single.dueFrom, DateTime(2026, 11, 2));
+
+      final daily = before.toDraft();
+      await repo.updateRecurring(
+        id,
+        RecurringDraft(
+          kind: daily.kind,
+          amount: daily.amount,
+          accountId: daily.accountId,
+          categoryId: daily.categoryId,
+          rule: daily.rule.copyWith(start: DateTime(2026, 11, 3)),
+        ),
+      );
+      final after = (await repo.watchRecurrings(ama).first).single;
+      expect(after.dueFrom, DateTime(2026, 11, 9));
+      expect(duesUntil([after], now), isEmpty, reason: 'le mardi 10 n’est pas encore arrivé');
+    });
+
+    test('supprimer une récurrence s’annule, et un compte qui en porte une reste', () async {
+      final id = await repo.createRecurring(
+        ama,
+        RecurringDraft(kind: OperationKind.expense, amount: 3000, accountId: cash, categoryId: rent, rule: monthly),
+      );
+      await expectLater(repo.deleteAccount(cash), throwsA(isA<AccountInUseException>()));
+
+      await repo.deleteRecurring(id);
+      expect(await repo.watchRecurrings(ama).first, isEmpty);
+      expect(await repo.findRecurring(id), isNull);
+      await repo.restoreRecurring(id);
+      expect((await repo.findRecurring(id))?.amount, 3000);
     });
   });
 }

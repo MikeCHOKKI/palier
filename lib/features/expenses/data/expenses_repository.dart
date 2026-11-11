@@ -1,10 +1,12 @@
 import 'package:drift/drift.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidRecurrence;
 import 'package:uuid/uuid.dart';
 
 import '../../../data/database.dart';
 import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
+import '../domain/recurring.dart';
 import '../domain/starter_kit.dart';
 
 /// Un compte encore utilisé par des opérations ne se supprime pas : ses
@@ -13,7 +15,7 @@ class AccountInUseException implements Exception {
   const AccountInUseException();
 }
 
-/// Comptes, catégories, opérations et plafonds d'un profil.
+/// Comptes, catégories, opérations, plafonds et récurrences d'un profil.
 class ExpensesRepository {
   ExpensesRepository(this._db, {DateTime Function()? clock, Uuid? uuid})
     : _clock = clock ?? (() => DateTime.now().toUtc()),
@@ -120,7 +122,7 @@ class ExpensesRepository {
     );
   }
 
-  /// Supprime un compte sans opération ; lève [AccountInUseException] sinon.
+  /// Supprime un compte sans opération ni récurrence ; lève [AccountInUseException] sinon.
   Future<void> deleteAccount(String id) {
     return _db.transaction(() async {
       final used =
@@ -129,6 +131,12 @@ class ExpensesRepository {
                 ..limit(1))
               .getSingleOrNull();
       if (used != null) throw const AccountInUseException();
+      final repeating =
+          await (_db.select(_db.recurrences)
+                ..where((r) => (r.accountId.equals(id) | r.toAccountId.equals(id)) & r.deletedAt.isNull())
+                ..limit(1))
+              .getSingleOrNull();
+      if (repeating != null) throw const AccountInUseException();
       final now = _clock();
       await (_db.update(
         _db.accounts,
@@ -213,28 +221,42 @@ class ExpensesRepository {
     return row != null;
   }
 
-  Future<String> addOperation(String profileId, OperationDraft draft) async {
+  /// Enregistre une opération. Avec [repeat], elle devient la première échéance
+  /// d'une nouvelle récurrence ; avec [due], elle règle cette échéance.
+  Future<String> addOperation(String profileId, OperationDraft draft, {LucidRecurrence? repeat, Due? due}) {
     _check(draft);
-    final now = _clock();
-    final id = _uuid.v4();
-    await _db
-        .into(_db.operations)
-        .insert(
-          OperationsCompanion.insert(
-            id: id,
-            createdAt: now,
-            updatedAt: now,
-            profileId: profileId,
-            kind: draft.kind,
-            amount: draft.amount,
-            accountId: draft.accountId!,
-            toAccountId: Value(draft.kind == OperationKind.transfer ? draft.toAccountId : null),
-            categoryId: Value(draft.kind == OperationKind.transfer ? null : draft.categoryId),
-            note: Value(draft.cleanNote),
-            occurredAt: draft.occurredAt.toUtc(),
-          ),
-        );
-    return id;
+    assert(repeat == null || due == null, 'une opération règle une échéance ou en crée une, pas les deux');
+    return _db.transaction(() async {
+      final now = _clock();
+      final id = _uuid.v4();
+      String? recurrenceId = due?.recurring.id;
+      DateTime? dueOn = due?.day;
+      if (repeat != null) {
+        final recurring = RecurringDraft.fromOperation(draft, repeat);
+        recurrenceId = await createRecurring(profileId, recurring);
+        dueOn = recurring.rule.start;
+      }
+      await _db
+          .into(_db.operations)
+          .insert(
+            OperationsCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              kind: draft.kind,
+              amount: draft.amount,
+              accountId: draft.accountId!,
+              toAccountId: Value(draft.kind == OperationKind.transfer ? draft.toAccountId : null),
+              categoryId: Value(draft.kind == OperationKind.transfer ? null : draft.categoryId),
+              note: Value(draft.cleanNote),
+              occurredAt: draft.occurredAt.toUtc(),
+              recurrenceId: Value(recurrenceId),
+              dueOn: Value(dueOn == null ? null : dayKey(dueOn)),
+            ),
+          );
+      return id;
+    });
   }
 
   Future<void> updateOperation(String id, OperationDraft draft) {
@@ -345,6 +367,200 @@ class ExpensesRepository {
     return row.read(total) ?? 0;
   }
 
+  // ------------------------------------------------------------ récurrences
+
+  /// Les récurrences du profil, avec leurs échéances déjà réglées ou passées.
+  /// Relues à chaque changement d'opération : régler ou supprimer une
+  /// opération fait disparaître ou revenir son échéance.
+  Stream<List<Recurring>> watchRecurrings(String profileId) async* {
+    yield await _recurrings(profileId);
+    final tables = <ResultSetImplementation<dynamic, dynamic>>[
+      _db.recurrences,
+      _db.recurrenceSkips,
+      _db.operations,
+      _db.accounts,
+      _db.categories,
+    ];
+    await for (final _ in _db.tableUpdates(TableUpdateQuery.onAllTables(tables))) {
+      yield await _recurrings(profileId);
+    }
+  }
+
+  Future<Recurring?> findRecurring(String id) async {
+    final row = await (_db.select(
+      _db.recurrences,
+    )..where((r) => r.id.equals(id) & r.deletedAt.isNull())).getSingleOrNull();
+    if (row == null) return null;
+    final all = await _recurrings(row.profileId);
+    return all.where((r) => r.id == id).firstOrNull;
+  }
+
+  Future<String> createRecurring(String profileId, RecurringDraft draft) async {
+    _check(draft.asOperation);
+    final now = _clock();
+    final id = _uuid.v4();
+    final rule = draft.rule;
+    await _db
+        .into(_db.recurrences)
+        .insert(
+          RecurrencesCompanion.insert(
+            id: id,
+            createdAt: now,
+            updatedAt: now,
+            profileId: profileId,
+            kind: draft.kind,
+            amount: draft.amount,
+            accountId: draft.accountId!,
+            toAccountId: Value(draft.kind == OperationKind.transfer ? draft.toAccountId : null),
+            categoryId: Value(draft.kind == OperationKind.transfer ? null : draft.categoryId),
+            note: Value(draft.cleanNote),
+            unit: rule.unit.repeat,
+            every: Value(rule.interval),
+            startsOn: dayKey(rule.start),
+            endsOn: Value(rule.until == null ? null : dayKey(rule.until!)),
+            dueFrom: dayKey(rule.start),
+          ),
+        );
+    return id;
+  }
+
+  /// Change une récurrence. Si sa règle change (unité, fréquence, début), les
+  /// échéances ne comptent plus qu'à partir d'aujourd'hui : celles de l'ancienne
+  /// règle ne réapparaissent pas sous de nouvelles dates.
+  Future<void> updateRecurring(String id, RecurringDraft draft) {
+    _check(draft.asOperation);
+    return _db.transaction(() async {
+      final row = await (_db.select(_db.recurrences)..where((r) => r.id.equals(id))).getSingle();
+      final rule = draft.rule;
+      final ruleChanged =
+          row.unit != rule.unit.repeat || row.every != rule.interval || row.startsOn != dayKey(rule.start);
+      await (_db.update(_db.recurrences)..where((r) => r.id.equals(id))).write(
+        RecurrencesCompanion(
+          kind: Value(draft.kind),
+          amount: Value(draft.amount),
+          accountId: Value(draft.accountId!),
+          toAccountId: Value(draft.kind == OperationKind.transfer ? draft.toAccountId : null),
+          categoryId: Value(draft.kind == OperationKind.transfer ? null : draft.categoryId),
+          note: Value(draft.cleanNote),
+          unit: Value(rule.unit.repeat),
+          every: Value(rule.interval),
+          startsOn: Value(dayKey(rule.start)),
+          endsOn: Value(rule.until == null ? null : dayKey(rule.until!)),
+          dueFrom: ruleChanged ? Value(dayKey(localDay(_clock()))) : const Value.absent(),
+          updatedAt: Value(_clock()),
+        ),
+      );
+    });
+  }
+
+  /// Suppression douce : les opérations déjà réglées restent.
+  Future<void> deleteRecurring(String id) {
+    final now = _clock();
+    return (_db.update(
+      _db.recurrences,
+    )..where((r) => r.id.equals(id))).write(RecurrencesCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+  }
+
+  Future<void> restoreRecurring(String id) {
+    return (_db.update(_db.recurrences)..where((r) => r.id.equals(id))).write(
+      RecurrencesCompanion(deletedAt: const Value(null), updatedAt: Value(_clock())),
+    );
+  }
+
+  /// Passe une échéance sans rien enregistrer. Une échéance n'a qu'une ligne :
+  /// passée, rétablie puis repassée, c'est la même.
+  Future<void> skipDue(String profileId, Due due) {
+    final now = _clock();
+    return _db
+        .into(_db.recurrenceSkips)
+        .insert(
+          RecurrenceSkipsCompanion.insert(
+            id: _uuid.v4(),
+            createdAt: now,
+            updatedAt: now,
+            profileId: profileId,
+            recurrenceId: due.recurring.id,
+            dueOn: dayKey(due.day),
+          ),
+          onConflict: DoUpdate(
+            (_) => RecurrenceSkipsCompanion(deletedAt: const Value(null), updatedAt: Value(now)),
+            target: [_db.recurrenceSkips.recurrenceId, _db.recurrenceSkips.dueOn],
+          ),
+        );
+  }
+
+  /// Annule [skipDue] (bouton « Annuler »).
+  Future<void> unskipDue(Due due) {
+    final now = _clock();
+    return (_db.update(_db.recurrenceSkips)
+          ..where((s) => s.recurrenceId.equals(due.recurring.id) & s.dueOn.equals(dayKey(due.day))))
+        .write(RecurrenceSkipsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+  }
+
+  Future<List<Recurring>> _recurrings(String profileId) async {
+    final r = _db.recurrences;
+    final from = _debitedAccount;
+    final to = _creditedAccount;
+    final category = _db.categories;
+    final rows =
+        await (_db.select(r).join([
+                innerJoin(from, from.id.equalsExp(r.accountId)),
+                leftOuterJoin(to, to.id.equalsExp(r.toAccountId)),
+                leftOuterJoin(category, category.id.equalsExp(r.categoryId)),
+              ])
+              ..where(r.profileId.equals(profileId) & r.deletedAt.isNull())
+              ..orderBy([OrderingTerm.asc(r.createdAt)]))
+            .get();
+
+    final settled = <String, Set<DateTime>>{};
+    final o = _db.operations;
+    final paid =
+        await (_db.selectOnly(o)
+              ..addColumns([o.recurrenceId, o.dueOn])
+              ..where(
+                o.profileId.equals(profileId) & o.deletedAt.isNull() & o.recurrenceId.isNotNull() & o.dueOn.isNotNull(),
+              ))
+            .get();
+    for (final row in paid) {
+      settled.putIfAbsent(row.read(o.recurrenceId)!, () => {}).add(parseDayKey(row.read(o.dueOn)!));
+    }
+    final skipped = await (_db.select(
+      _db.recurrenceSkips,
+    )..where((s) => s.profileId.equals(profileId) & s.deletedAt.isNull())).get();
+    for (final skip in skipped) {
+      settled.putIfAbsent(skip.recurrenceId, () => {}).add(parseDayKey(skip.dueOn));
+    }
+
+    return [
+      for (final row in rows)
+        () {
+          final recurrence = row.readTable(r);
+          final cat = row.readTableOrNull(category);
+          return Recurring(
+            id: recurrence.id,
+            kind: recurrence.kind,
+            amount: recurrence.amount,
+            accountId: recurrence.accountId,
+            accountName: row.readTable(from).name,
+            toAccountId: recurrence.toAccountId,
+            toAccountName: row.readTableOrNull(to)?.name,
+            categoryId: recurrence.categoryId,
+            categoryName: cat?.name,
+            categoryIcon: cat?.icon,
+            note: recurrence.note,
+            rule: LucidRecurrence(
+              unit: recurrence.unit.lucid,
+              interval: recurrence.every,
+              start: parseDayKey(recurrence.startsOn),
+              until: recurrence.endsOn == null ? null : parseDayKey(recurrence.endsOn!),
+            ),
+            dueFrom: parseDayKey(recurrence.dueFrom),
+            settled: Set.unmodifiable(settled[recurrence.id] ?? const <DateTime>{}),
+          );
+        }(),
+    ];
+  }
+
   // ------------------------------------------------------------------ outils
 
   static void _check(OperationDraft draft) {
@@ -386,6 +602,8 @@ class ExpensesRepository {
       categoryName: category?.name,
       categoryIcon: category?.icon,
       note: operation.note,
+      recurrenceId: operation.recurrenceId,
+      dueOn: operation.dueOn == null ? null : parseDayKey(operation.dueOn!),
     );
   }
 

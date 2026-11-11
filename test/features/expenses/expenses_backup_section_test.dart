@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidRecurrence, LucidRecurrenceUnit;
 import 'package:palier/app/providers.dart';
 import 'package:palier/data/database.dart';
 import 'package:palier/features/backup/data/backup_service.dart';
@@ -6,6 +7,7 @@ import 'package:palier/features/backup/domain/backup_codec.dart';
 import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
+import 'package:palier/features/expenses/domain/recurring.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 
@@ -85,5 +87,40 @@ void main() {
     expect((await expenses.watchAccounts(ama.id).first).map((a) => a.name), ['Espèces']);
     expect(await expenses.watchCategories(ama.id).first, hasLength(15));
     expect(await expenses.watchBudgets(ama.id).first, isEmpty);
+  });
+
+  test('les récurrences et leurs échéances passées suivent le profil', () async {
+    final phone = openTestDatabase();
+    addTearDown(phone.close);
+    final now = DateTime.utc(2026, 11, 11, 9);
+    final expenses = ExpensesRepository(phone, clock: () => now);
+    final ama = await ProfilesRepository(phone).create(const ProfileDraft(name: 'Ama'));
+    await expenses.ensureStarterKit(ama.id);
+    final cash = (await expenses.watchAccounts(ama.id).first).single;
+    final rent = (await expenses.watchCategories(ama.id).first).first;
+    await expenses.addOperation(
+      ama.id,
+      OperationDraft(
+        kind: OperationKind.expense,
+        amount: 45000,
+        accountId: cash.id,
+        categoryId: rent.id,
+        occurredAt: DateTime.utc(2026, 9, 5, 10),
+      ),
+      repeat: LucidRecurrence(unit: LucidRecurrenceUnit.month, start: DateTime(2026, 9, 5)),
+    );
+    final recurring = (await expenses.watchRecurrings(ama.id).first).single;
+    await expenses.skipDue(ama.id, Due(recurring: recurring, day: DateTime(2026, 10, 5)));
+
+    final file = await serviceFor(phone).exportProfile(ama.id, password);
+    // L'import remplace : une récurrence posée après l'export disparaît.
+    await expenses.createRecurring(ama.id, recurring.toDraft());
+    final service = serviceFor(phone);
+    await service.import(await service.open(file, password));
+
+    final restored = (await ExpensesRepository(phone, clock: () => now).watchRecurrings(ama.id).first).single;
+    expect(restored.id, recurring.id);
+    expect(restored.settled, {DateTime(2026, 9, 5), DateTime(2026, 10, 5)});
+    expect(duesUntil([restored], now).map((d) => d.day), [DateTime(2026, 11, 5)]);
   });
 }

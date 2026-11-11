@@ -2,8 +2,9 @@ import '../../../data/database.dart';
 import '../../../data/utc_serializer.dart';
 import '../../backup/data/backup_service.dart';
 
-/// Comptes, catégories, opérations et plafonds d'un profil dans son export
-/// chiffré. Un fichier d'avant les plafonds s'importe tel quel, sans plafond.
+/// Comptes, catégories, opérations, plafonds et récurrences d'un profil dans son
+/// export chiffré. Un fichier plus ancien s'importe tel quel, sans ce qu'il ne
+/// connaissait pas encore.
 ///
 /// Chaque ligne porte sa table (`_table`) ; les lignes supprimées partent aussi,
 /// pour qu'une future synchronisation sache ce qui a disparu.
@@ -24,10 +25,14 @@ class ExpensesBackupSection implements BackupSection {
     final categories = await (_db.select(_db.categories)..where((c) => c.profileId.equals(profileId))).get();
     final operations = await (_db.select(_db.operations)..where((o) => o.profileId.equals(profileId))).get();
     final budgets = await (_db.select(_db.budgets)..where((b) => b.profileId.equals(profileId))).get();
+    final recurrences = await (_db.select(_db.recurrences)..where((r) => r.profileId.equals(profileId))).get();
+    final skips = await (_db.select(_db.recurrenceSkips)..where((s) => s.profileId.equals(profileId))).get();
     return [
       for (final row in accounts) {_tableKey: 'accounts', ...row.toJson()},
       for (final row in categories) {_tableKey: 'categories', ...row.toJson()},
+      for (final row in recurrences) {_tableKey: 'recurrences', ...row.toJson()},
       for (final row in operations) {_tableKey: 'operations', ...row.toJson()},
+      for (final row in skips) {_tableKey: 'recurrenceSkips', ...row.toJson()},
       for (final row in budgets) {_tableKey: 'budgets', ...row.toJson()},
     ];
   }
@@ -40,9 +45,12 @@ class ExpensesBackupSection implements BackupSection {
         if (row[_tableKey] == table) {...row}..remove(_tableKey),
     ];
 
-    // Opérations et plafonds d'abord : ils pointent vers les comptes et les catégories.
+    // Ce qui pointe vers d'autres lignes part d'abord : échéances passées,
+    // opérations, récurrences et plafonds, puis comptes et catégories.
+    await (_db.delete(_db.recurrenceSkips)..where((s) => s.profileId.equals(profileId))).go();
     await (_db.delete(_db.budgets)..where((b) => b.profileId.equals(profileId))).go();
     await (_db.delete(_db.operations)..where((o) => o.profileId.equals(profileId))).go();
+    await (_db.delete(_db.recurrences)..where((r) => r.profileId.equals(profileId))).go();
     await (_db.delete(_db.accounts)..where((a) => a.profileId.equals(profileId))).go();
     await (_db.delete(_db.categories)..where((c) => c.profileId.equals(profileId))).go();
 
@@ -55,6 +63,10 @@ class ExpensesBackupSection implements BackupSection {
       final row = CategoryRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.categories).insert(row.toCompanion(false));
     }
+    for (final json in of('recurrences')) {
+      final row = RecurrenceRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.recurrences).insert(row.toCompanion(false));
+    }
     for (final json in of('operations')) {
       final row = OperationRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.operations).insert(row.toCompanion(false));
@@ -62,6 +74,10 @@ class ExpensesBackupSection implements BackupSection {
     for (final json in of('budgets')) {
       final row = BudgetRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.budgets).insert(row.toCompanion(false));
+    }
+    for (final json in of('recurrenceSkips')) {
+      final row = RecurrenceSkipRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.recurrenceSkips).insert(row.toCompanion(false));
     }
   }
 }
