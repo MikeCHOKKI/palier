@@ -6,8 +6,6 @@ import 'package:intl/intl.dart';
 import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
-import '../../../app/theme/palier_accent.dart';
-import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/budgets.dart';
@@ -19,6 +17,7 @@ import 'amount_pad.dart';
 import 'expense_visuals.dart';
 import 'expense_widgets.dart';
 import 'expenses_providers.dart';
+import 'operation_fields.dart';
 
 /// Noter une opération en trois gestes (montant, catégorie, compte), ou la modifier.
 ///
@@ -327,40 +326,19 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     final day = DateTime(_occurredAt.year, _occurredAt.month, _occurredAt.day);
     final otherDay = day != today && day != yesterday;
 
-    Widget accountPills(String? selected, ValueChanged<String> onSelect) => PillRow(
-      children: [
-        for (final account in accounts)
-          ChoicePill(
-            label: account.name,
-            icon: accountIcon(account.kind),
-            selected: account.id == selected,
-            onTap: () => onSelect(account.id),
-          ),
-      ],
-    );
-
     return [
-      if (_kind == OperationKind.transfer) ...[
-        if (accounts.length < 2)
-          _TransferNeedsTwoAccounts(onAdd: _addTargetAccount)
-        else ...[
-          FieldLabel(l10n.operationFromLabel),
-          accountPills(_accountId, (id) => _update(() => _accountId = id)),
-          FieldLabel(l10n.operationToLabel),
-          accountPills(_toAccountId, (id) => _update(() => _toAccountId = id)),
-        ],
-      ] else ...[
-        FieldLabel(l10n.operationCategoryLabel),
-        _CategoryStrip(
-          categories: categories,
-          selectedId: _categoryId,
-          onSelect: (id) => _update(() => _categoryId = id),
-          onManage: () => context.push(Routes.expensesCategories),
-          manageLabel: l10n.expensesManageCategories,
-        ),
-        FieldLabel(l10n.operationAccountLabel),
-        accountPills(_accountId, (id) => _update(() => _accountId = id)),
-      ],
+      OperationFields(
+        kind: _kind,
+        accounts: accounts,
+        categories: categories,
+        accountId: _accountId,
+        toAccountId: _toAccountId,
+        categoryId: _categoryId,
+        onAccount: (id) => _update(() => _accountId = id),
+        onToAccount: (id) => _update(() => _toAccountId = id),
+        onCategory: (id) => _update(() => _categoryId = id),
+        onAddTargetAccount: _addTargetAccount,
+      ),
       FieldLabel(l10n.operationDateLabel),
       PillRow(
         children: [
@@ -386,133 +364,5 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
         ),
       ),
     ];
-  }
-}
-
-/// Les catégories en une bande qui défile : une pastille ronde et son nom.
-class _CategoryStrip extends StatelessWidget {
-  const _CategoryStrip({
-    required this.categories,
-    required this.selectedId,
-    required this.onSelect,
-    required this.onManage,
-    required this.manageLabel,
-  });
-
-  final List<Category> categories;
-  final String? selectedId;
-  final ValueChanged<String> onSelect;
-  final VoidCallback onManage;
-  final String manageLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 92,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        children: [
-          for (final category in categories)
-            _CategoryChoice(
-              label: category.name,
-              icon: categoryIcon(category.icon),
-              selected: category.id == selectedId,
-              onTap: () => onSelect(category.id),
-            ),
-          _CategoryChoice(label: manageLabel, icon: Icons.tune_rounded, selected: false, quiet: true, onTap: onManage),
-        ],
-      ),
-    );
-  }
-}
-
-class _CategoryChoice extends StatelessWidget {
-  const _CategoryChoice({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-    this.quiet = false,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-  final bool quiet;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
-    return Semantics(
-      selected: selected,
-      button: true,
-      label: label,
-      excludeSemantics: true,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(PalierRadius.sm),
-        child: SizedBox(
-          width: 76,
-          child: Column(
-            children: [
-              const SizedBox(height: PalierSpace.xs),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                curve: Curves.easeOutCubic,
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selected ? accent : (quiet ? Colors.transparent : PalierColors.surface),
-                  border: Border.all(color: selected ? accent : PalierColors.line),
-                ),
-                child: Icon(icon, size: 22, color: selected ? PalierAccent.onAccent : PalierColors.textMid),
-              ),
-              const SizedBox(height: PalierSpace.xs + 2),
-              Text(
-                label,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: manrope(
-                  size: 12,
-                  height: 1.2,
-                  weight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected ? PalierColors.textHigh : PalierColors.textMid,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TransferNeedsTwoAccounts extends StatelessWidget {
-  const _TransferNeedsTwoAccounts({required this.onAdd});
-
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: PalierSpace.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.operationTransferNeedsTwo, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: PalierSpace.sm),
-          OutlinedButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(Icons.add_rounded),
-            label: Text(l10n.operationAddAccount),
-          ),
-        ],
-      ),
-    );
   }
 }
