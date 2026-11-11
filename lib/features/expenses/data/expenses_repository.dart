@@ -8,6 +8,7 @@ import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import '../domain/recurring.dart';
 import '../domain/starter_kit.dart';
+import '../domain/tontines.dart';
 
 /// Un compte encore utilisé par des opérations ne se supprime pas : ses
 /// opérations perdraient leur sens et les soldes deviendraient faux.
@@ -501,6 +502,163 @@ class ExpensesRepository {
     return (_db.update(_db.recurrenceSkips)
           ..where((s) => s.recurrenceId.equals(due.recurring.id) & s.dueOn.equals(dayKey(due.day))))
         .write(RecurrenceSkipsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+  }
+
+  // --------------------------------------------------------------- tontines
+
+  /// Les tontines du profil, avec le solde de leur compte.
+  Stream<List<Tontine>> watchTontines(String profileId) async* {
+    yield await _tontines(profileId);
+    final tables = <ResultSetImplementation<dynamic, dynamic>>[
+      _db.tontines,
+      _db.accounts,
+      _db.operations,
+      _db.recurrences,
+    ];
+    await for (final _ in _db.tableUpdates(TableUpdateQuery.onAllTables(tables))) {
+      yield await _tontines(profileId);
+    }
+  }
+
+  /// Crée une tontine : son compte, sa cotisation et sa main. Une tontine déjà
+  /// commencée reçoit en solde de départ les tours d'avant aujourd'hui, que les
+  /// récurrences ne réclameront pas. [notes] nomment les deux échéances dans
+  /// « À valider » et dans la liste du mois.
+  Future<String> createTontine(String profileId, TontineDraft draft, {required TontineNotes notes}) {
+    _checkTontine(draft);
+    return _db.transaction(() async {
+      final now = _clock();
+      final terms = draft.terms;
+      final account = await createAccount(
+        profileId,
+        AccountDraft(name: draft.name, kind: AccountKind.tontine, openingBalance: terms.openingBalance(localDay(now))),
+      );
+      final contributionId = await createRecurring(profileId, _contributionOf(draft, account.id, notes));
+      final handId = await createRecurring(profileId, _handOf(draft, account.id, notes));
+      final id = _uuid.v4();
+      await _db
+          .into(_db.tontines)
+          .insert(
+            TontinesCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              accountId: account.id,
+              contributionId: contributionId,
+              handId: handId,
+              members: terms.members,
+              rank: terms.rank,
+            ),
+          );
+      return id;
+    });
+  }
+
+  /// Change une tontine. Le solde de départ de son compte ne bouge pas : il dit
+  /// ce qui s'est passé avant qu'on la suive. Si le calendrier change, ses
+  /// échéances repartent d'aujourd'hui (voir [updateRecurring]).
+  Future<void> updateTontine(String id, TontineDraft draft, {required TontineNotes notes}) {
+    _checkTontine(draft);
+    return _db.transaction(() async {
+      final row = await (_db.select(_db.tontines)..where((t) => t.id.equals(id))).getSingle();
+      await (_db.update(_db.accounts)..where((a) => a.id.equals(row.accountId))).write(
+        AccountsCompanion(name: Value(draft.name.trim()), updatedAt: Value(_clock())),
+      );
+      await updateRecurring(row.contributionId, _contributionOf(draft, row.accountId, notes));
+      await updateRecurring(row.handId, _handOf(draft, row.accountId, notes));
+      await (_db.update(_db.tontines)..where((t) => t.id.equals(id))).write(
+        TontinesCompanion(
+          members: Value(draft.terms.members),
+          rank: Value(draft.terms.rank),
+          updatedAt: Value(_clock()),
+        ),
+      );
+    });
+  }
+
+  /// Arrête une tontine : plus aucune échéance. Son compte reste s'il a des
+  /// opérations (son histoire et son solde comptent) ; sinon il part avec elle.
+  Future<void> deleteTontine(String id) {
+    return _db.transaction(() async {
+      final row = await (_db.select(_db.tontines)..where((t) => t.id.equals(id))).getSingle();
+      final now = _clock();
+      await (_db.update(
+        _db.tontines,
+      )..where((t) => t.id.equals(id))).write(TontinesCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      await deleteRecurring(row.contributionId);
+      await deleteRecurring(row.handId);
+      try {
+        await deleteAccount(row.accountId);
+      } on AccountInUseException {
+        // Le compte garde ses opérations.
+      }
+    });
+  }
+
+  RecurringDraft _contributionOf(TontineDraft draft, String tontineAccountId, TontineNotes notes) => RecurringDraft(
+    kind: OperationKind.transfer,
+    amount: draft.terms.contribution,
+    accountId: draft.accountId,
+    toAccountId: tontineAccountId,
+    note: notes.contribution(draft.name.trim()),
+    rule: draft.terms.contributionRule,
+  );
+
+  RecurringDraft _handOf(TontineDraft draft, String tontineAccountId, TontineNotes notes) => RecurringDraft(
+    kind: OperationKind.transfer,
+    amount: draft.terms.pot,
+    accountId: tontineAccountId,
+    toAccountId: draft.accountId,
+    note: notes.hand(draft.name.trim()),
+    rule: draft.terms.handRule,
+  );
+
+  Future<List<Tontine>> _tontines(String profileId) async {
+    final rows =
+        await (_db.select(_db.tontines)
+              ..where((t) => t.profileId.equals(profileId) & t.deletedAt.isNull())
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+            .get();
+    if (rows.isEmpty) return const [];
+    final balances = {for (final a in await watchAccounts(profileId).first) a.id: a.balance};
+    // Tous les comptes, supprimés compris : un nom reste lisible.
+    final names = {
+      for (final a in await (_db.select(_db.accounts)..where((a) => a.profileId.equals(profileId))).get()) a.id: a.name,
+    };
+    final contributions = {
+      for (final r in await (_db.select(
+        _db.recurrences,
+      )..where((r) => r.id.isIn(rows.map((t) => t.contributionId)))).get())
+        r.id: r,
+    };
+    return [
+      for (final row in rows)
+        if (contributions[row.contributionId] case final contribution?)
+          Tontine(
+            id: row.id,
+            name: names[row.accountId] ?? '',
+            accountId: row.accountId,
+            balance: balances[row.accountId] ?? 0,
+            terms: TontineTerms(
+              contribution: contribution.amount,
+              members: row.members,
+              rank: row.rank,
+              unit: contribution.unit.lucid,
+              interval: contribution.every,
+              firstRound: parseDayKey(contribution.startsOn),
+            ),
+            payAccountId: contribution.accountId,
+            payAccountName: names[contribution.accountId] ?? '',
+            contributionId: row.contributionId,
+            handId: row.handId,
+          ),
+    ];
+  }
+
+  static void _checkTontine(TontineDraft draft) {
+    final problem = draft.problem;
+    if (problem != null) throw ArgumentError.value(problem, 'draft', 'Tontine incomplète');
   }
 
   Future<List<Recurring>> _recurrings(String profileId) async {

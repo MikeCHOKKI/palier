@@ -116,6 +116,11 @@ class TontineDraft {
   }
 }
 
+/// Les notes des deux échéances d'une tontine, à partir de son nom : elles la
+/// nomment dans « À valider » et dans la liste du mois. Fournies par l'écran,
+/// qui connaît la langue.
+typedef TontineNotes = ({String Function(String name) contribution, String Function(String name) hand});
+
 /// Une tontine telle que les écrans l'affichent.
 @immutable
 class Tontine {

@@ -8,6 +8,7 @@ import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
 import 'package:palier/features/expenses/domain/recurring.dart';
+import 'package:palier/features/expenses/domain/tontines.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 
@@ -126,5 +127,40 @@ void main() {
     expect(restored.id, recurring.id);
     expect(restored.settled, {DateTime(2026, 9, 5), DateTime(2026, 10, 5)});
     expect(duesUntil([restored], now).map((d) => d.day), [DateTime(2026, 11, 5)]);
+  });
+
+  test('une tontine suit le profil, avec son compte et ses deux échéances', () async {
+    final phone = openTestDatabase();
+    addTearDown(phone.close);
+    final expenses = ExpensesRepository(phone, clock: () => DateTime.utc(2026, 11, 14, 9));
+    final ama = await ProfilesRepository(phone).create(const ProfileDraft(name: 'Ama'));
+    final momo = await expenses.createAccount(ama.id, const AccountDraft(name: 'MoMo', kind: AccountKind.mobileMoney));
+    await expenses.createTontine(
+      ama.id,
+      TontineDraft(
+        name: 'Marché',
+        accountId: momo.id,
+        terms: TontineTerms(
+          contribution: 5000,
+          members: 10,
+          rank: 3,
+          unit: LucidRecurrenceUnit.week,
+          firstRound: DateTime(2026, 11, 6),
+        ),
+      ),
+      notes: (contribution: (name) => 'Cotisation $name', hand: (name) => 'Main $name'),
+    );
+
+    final file = await serviceFor(phone).exportProfile(ama.id, password);
+    final newPhone = openTestDatabase();
+    addTearDown(newPhone.close);
+    final service = serviceFor(newPhone);
+    await service.import(await service.open(file, password));
+    // Un second import remplace sans doubler, tontines comprises.
+    await service.import(await service.open(file, password));
+
+    final restored = ExpensesRepository(newPhone);
+    expect(await restored.watchTontines(ama.id).first, await expenses.watchTontines(ama.id).first);
+    expect((await restored.watchRecurrings(ama.id).first).length, 2);
   });
 }

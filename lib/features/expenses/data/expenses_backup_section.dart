@@ -2,7 +2,7 @@ import '../../../data/database.dart';
 import '../../../data/utc_serializer.dart';
 import '../../backup/data/backup_service.dart';
 
-/// Comptes, catégories, opérations, plafonds et récurrences d'un profil dans son
+/// Comptes, catégories, opérations, plafonds, récurrences et tontines d'un profil dans son
 /// export chiffré. Un fichier plus ancien s'importe tel quel, sans ce qu'il ne
 /// connaissait pas encore.
 ///
@@ -27,6 +27,7 @@ class ExpensesBackupSection implements BackupSection {
     final budgets = await (_db.select(_db.budgets)..where((b) => b.profileId.equals(profileId))).get();
     final recurrences = await (_db.select(_db.recurrences)..where((r) => r.profileId.equals(profileId))).get();
     final skips = await (_db.select(_db.recurrenceSkips)..where((s) => s.profileId.equals(profileId))).get();
+    final tontines = await (_db.select(_db.tontines)..where((t) => t.profileId.equals(profileId))).get();
     return [
       for (final row in accounts) {_tableKey: 'accounts', ...row.toJson()},
       for (final row in categories) {_tableKey: 'categories', ...row.toJson()},
@@ -34,6 +35,7 @@ class ExpensesBackupSection implements BackupSection {
       for (final row in operations) {_tableKey: 'operations', ...row.toJson()},
       for (final row in skips) {_tableKey: 'recurrenceSkips', ...row.toJson()},
       for (final row in budgets) {_tableKey: 'budgets', ...row.toJson()},
+      for (final row in tontines) {_tableKey: 'tontines', ...row.toJson()},
     ];
   }
 
@@ -45,8 +47,9 @@ class ExpensesBackupSection implements BackupSection {
         if (row[_tableKey] == table) {...row}..remove(_tableKey),
     ];
 
-    // Ce qui pointe vers d'autres lignes part d'abord : échéances passées,
-    // opérations, récurrences et plafonds, puis comptes et catégories.
+    // Ce qui pointe vers d'autres lignes part d'abord : tontines, échéances
+    // passées, opérations, récurrences et plafonds, puis comptes et catégories.
+    await (_db.delete(_db.tontines)..where((t) => t.profileId.equals(profileId))).go();
     await (_db.delete(_db.recurrenceSkips)..where((s) => s.profileId.equals(profileId))).go();
     await (_db.delete(_db.budgets)..where((b) => b.profileId.equals(profileId))).go();
     await (_db.delete(_db.operations)..where((o) => o.profileId.equals(profileId))).go();
@@ -78,6 +81,10 @@ class ExpensesBackupSection implements BackupSection {
     for (final json in of('recurrenceSkips')) {
       final row = RecurrenceSkipRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.recurrenceSkips).insert(row.toCompanion(false));
+    }
+    for (final json in of('tontines')) {
+      final row = TontineRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.tontines).insert(row.toCompanion(false));
     }
   }
 }
