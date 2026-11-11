@@ -51,7 +51,7 @@ class AccountsScreen extends ConsumerWidget {
                   title: Text(account.name),
                   subtitle: Text(l10n.accountKindName(account.kind)),
                   trailing: LucidPrivateText(
-                    formatMoney(account.balance, currency),
+                    formatBalance(account.balance, currency),
                     mask: maskedMoney(currency),
                     style: manrope(
                       size: 15,

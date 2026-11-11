@@ -108,4 +108,10 @@ void main() {
       expect(parseMoney('abc', PalierCurrency.xof), isNull);
     });
   });
+
+  test('un solde négatif garde son signe, un positif n’en a pas', () {
+    expect(formatBalance(-10000, PalierCurrency.xof), formatMoney(-10000, PalierCurrency.xof, signed: true));
+    expect(formatBalance(-10000, PalierCurrency.xof), startsWith('−'));
+    expect(formatBalance(25000, PalierCurrency.xof), formatMoney(25000, PalierCurrency.xof));
+  });
 }

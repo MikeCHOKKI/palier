@@ -15,6 +15,11 @@ String formatMoney(int minor, PalierCurrency currency, {bool signed = false, boo
   return withSymbol ? '$number ${currency.symbol}' : number;
 }
 
+/// Un solde : sans signe quand il est positif, avec « − » quand il est négatif.
+/// La couleur rouge ne suffit pas : elle disparaît quand les montants sont
+/// masqués, et ne se lit pas sans les couleurs.
+String formatBalance(int minor, PalierCurrency currency) => formatMoney(minor, currency, signed: minor < 0);
+
 /// Un montant masqué : la devise reste, pour reconnaître la ligne.
 String maskedMoney(PalierCurrency currency) => '••• ${currency.symbol}';
 

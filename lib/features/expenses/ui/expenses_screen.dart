@@ -108,7 +108,7 @@ class _Content extends ConsumerWidget {
                 alignment: Alignment.centerLeft,
                 fit: BoxFit.scaleDown,
                 child: LucidPrivateText(
-                  formatMoney(total, currency),
+                  formatBalance(total, currency),
                   mask: maskedMoney(currency),
                   style: text.displaySmall!.copyWith(
                     color: balanceColor(context, total),
@@ -235,7 +235,7 @@ class _AfterDues extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: LucidPrivateText(
-        l10n.expensesAfterDues(formatMoney(after, currency)),
+        l10n.expensesAfterDues(formatBalance(after, currency)),
         mask: l10n.expensesAfterDues(maskedMoney(currency)),
         style: manrope(
           size: 14,
@@ -278,7 +278,7 @@ class _AccountChip extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   LucidPrivateText(
-                    formatMoney(account.balance, currency),
+                    formatBalance(account.balance, currency),
                     mask: maskedMoney(currency),
                     style: manrope(
                       size: 15,
