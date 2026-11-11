@@ -110,6 +110,7 @@ class _ContentState extends ConsumerState<_Content> {
                       PopupMenuItem(value: Routes.expensesCategories, child: Text(l10n.expensesManageCategories)),
                       PopupMenuItem(value: Routes.expensesBudgets, child: Text(l10n.expensesManageBudgets)),
                       PopupMenuItem(value: Routes.expensesRecurrings, child: Text(l10n.expensesManageRecurrings)),
+                      PopupMenuItem(value: Routes.expensesTontines, child: Text(l10n.expensesManageTontines)),
                     ],
                   ),
                 ],

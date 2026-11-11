@@ -27,6 +27,9 @@ abstract final class Routes {
   static const expensesRecurrings = '/depenses/recurrentes';
   static const expensesRecurringNew = '/depenses/recurrentes/nouvelle';
   static String expensesRecurring(String id) => '/depenses/recurrentes/$id';
+  static const expensesTontines = '/depenses/tontines';
+  static const expensesTontineNew = '/depenses/tontines/nouvelle';
+  static String expensesTontine(String id) => '/depenses/tontines/$id';
 
   /// Régler l'échéance [day] (« 2026-11-05 ») d'une récurrence.
   static String expensesDue(String recurringId, String day) => '/depenses/echeances/$recurringId/$day';

@@ -9,6 +9,7 @@ import '../features/expenses/ui/categories_screen.dart';
 import '../features/expenses/ui/expenses_screen.dart';
 import '../features/expenses/ui/operation_screen.dart';
 import '../features/expenses/ui/recurrings_screen.dart';
+import '../features/expenses/ui/tontines_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/placeholders/coming_soon_screen.dart';
 import '../features/profiles/ui/loading_screen.dart';
@@ -116,6 +117,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       fullScreen('nouvelle', (_) => const RecurringFormScreen()),
                       fullScreen(':id', (s) => RecurringFormScreen(recurringId: s.pathParameters['id'])),
+                    ],
+                  ),
+                  fullScreen(
+                    'tontines',
+                    (_) => const TontinesScreen(),
+                    routes: [
+                      fullScreen('nouvelle', (_) => const TontineFormScreen()),
+                      fullScreen(':id', (s) => TontineFormScreen(tontineId: s.pathParameters['id'])),
                     ],
                   ),
                   fullScreen(

@@ -50,6 +50,8 @@ class RecurringsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final currency = ref.watch(activeProfileProvider)?.currency;
     final recurrings = ref.watch(recurringsProvider);
+    // Tenue chargée : toucher une pièce de tontine ouvre sa tontine.
+    ref.watch(tontinesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -100,7 +102,11 @@ class _RecurringsList extends ConsumerWidget {
               recurring: r,
               next: next[r.id],
               currency: currency,
-              onTap: () => context.push(Routes.expensesRecurring(r.id)),
+              // Une échéance de tontine se change avec sa tontine, jamais seule.
+              onTap: () => context.push(switch (ref.read(tontineOwningProvider(r.id))) {
+                final tontineId? => Routes.expensesTontine(tontineId),
+                null => Routes.expensesRecurring(r.id),
+              }),
             ),
         ],
       ),

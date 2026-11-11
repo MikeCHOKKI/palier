@@ -6,6 +6,7 @@ import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import '../domain/recurring.dart';
+import '../domain/tontines.dart';
 
 /// Identifiant du profil ouvert : ne change pas quand on renomme le profil.
 final activeProfileIdProvider = Provider<String?>((ref) => ref.watch(activeProfileProvider.select((p) => p?.id)));
@@ -132,6 +133,26 @@ final recurringsProvider = StreamProvider<List<Recurring>>((ref) async* {
   }
   await ref.watch(expensesSetupProvider(profileId).future);
   yield* ref.watch(expensesRepositoryProvider).watchRecurrings(profileId);
+});
+
+/// Les tontines du profil.
+final tontinesProvider = StreamProvider<List<Tontine>>((ref) async* {
+  final profileId = ref.watch(activeProfileIdProvider);
+  if (profileId == null) {
+    yield const [];
+    return;
+  }
+  await ref.watch(expensesSetupProvider(profileId).future);
+  yield* ref.watch(expensesRepositoryProvider).watchTontines(profileId);
+});
+
+/// La tontine qui porte un compte ou une récurrence, pour ouvrir la tontine
+/// plutôt que l'une de ses pièces, qui se désaccorderait des autres.
+final tontineOwningProvider = Provider.family<String?, String>((ref, id) {
+  for (final t in ref.watch(tontinesProvider).value ?? const <Tontine>[]) {
+    if (t.accountId == id || t.contributionId == id || t.handId == id) return t.id;
+  }
+  return null;
 });
 
 /// Les échéances arrivées et pas encore réglées, la plus ancienne d'abord.

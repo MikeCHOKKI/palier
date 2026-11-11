@@ -29,6 +29,8 @@ class AccountsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final currency = ref.watch(activeProfileProvider)?.currency;
     final accounts = ref.watch(accountsProvider).value;
+    // Tenue chargée : toucher le compte d'une tontine ouvre sa tontine.
+    ref.watch(tontinesProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.accountsTitle)),
@@ -62,7 +64,11 @@ class AccountsScreen extends ConsumerWidget {
                       color: balanceColor(context, account.balance),
                     ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
                   ),
-                  onTap: () => context.push(Routes.expensesAccount(account.id)),
+                  // Le compte d'une tontine s'ouvre sur sa tontine.
+                  onTap: () => context.push(switch (ref.read(tontineOwningProvider(account.id))) {
+                    final tontineId? => Routes.expensesTontine(tontineId),
+                    null => Routes.expensesAccount(account.id),
+                  }),
                 );
               },
             ),

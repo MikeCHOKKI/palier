@@ -9,6 +9,7 @@ import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
 import 'package:palier/features/expenses/domain/recurring.dart';
+import 'package:palier/features/expenses/domain/tontines.dart';
 import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
@@ -138,6 +139,20 @@ void main() {
 
     await tester.tap(find.byType(BackButton));
     await app.settle(tester);
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
+    await app.settle(tester);
+    await tester.tap(find.text('Tontines').last);
+    await app.settle(tester);
+    await capture(tester, '15-tontines');
+
+    await tester.tap(find.text('Tontine du marché'));
+    await app.settle(tester);
+    await capture(tester, '16-tontine');
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
     await tester.tap(find.text('Noter'));
     await app.settle(tester);
     for (final key in ['5', '0', '0', '0']) {
@@ -157,7 +172,7 @@ void main() {
 }
 
 /// Un mois fictif de Kofi : deux comptes et une épargne, un salaire, quelques dépenses, un
-/// virement, trois plafonds, et ce qui revient (salaire, loyer, abonnement).
+/// virement, trois plafonds, ce qui revient (salaire, loyer, abonnement) et une tontine.
 Future<void> _kofiMonth(TestApp app) async {
   // Tout est créé le 1er du mois : la date réelle du jour ne change rien aux captures.
   final repo = ExpensesRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
@@ -224,4 +239,20 @@ Future<void> _kofiMonth(TestApp app) async {
   // Le loyer du 5 attend d'être réglé ; l'abonnement tombe le 15.
   await recurring(35000, 'Loyer', 5, 'Loyer');
   await recurring(5000, 'Loisirs', 15, 'Canal+');
+  // Une tontine suivie en cours de route : trois vendredis déjà passés, la main au 6e tour.
+  await repo.createTontine(
+    kofi,
+    TontineDraft(
+      name: 'Tontine du marché',
+      accountId: momo.id,
+      terms: TontineTerms(
+        contribution: 5000,
+        members: 10,
+        rank: 6,
+        unit: LucidRecurrenceUnit.week,
+        firstRound: DateTime(2026, 10, 16),
+      ),
+    ),
+    notes: (contribution: (name) => 'Cotisation · $name', hand: (name) => 'Main · $name'),
+  );
 }
