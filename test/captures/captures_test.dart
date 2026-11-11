@@ -8,6 +8,7 @@ import 'package:palier/app/theme/palier_accent.dart';
 import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
+import 'package:palier/features/expenses/domain/loans.dart';
 import 'package:palier/features/expenses/domain/recurring.dart';
 import 'package:palier/features/expenses/domain/tontines.dart';
 import 'package:palier/features/expenses/ui/amount_pad.dart';
@@ -150,6 +151,19 @@ void main() {
     await capture(tester, '16-tontine');
     await tester.tap(find.byType(BackButton));
     await app.settle(tester);
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
+    await app.settle(tester);
+    await tester.tap(find.text('Prêts').last);
+    await app.settle(tester);
+    await capture(tester, '17-prets');
+
+    await tester.tap(find.text('Yao'));
+    await app.settle(tester);
+    await capture(tester, '18-pret');
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
 
     await tester.tap(find.byType(BackButton));
     await app.settle(tester);
@@ -172,7 +186,7 @@ void main() {
 }
 
 /// Un mois fictif de Kofi : deux comptes et une épargne, un salaire, quelques dépenses, un
-/// virement, trois plafonds, ce qui revient (salaire, loyer, abonnement) et une tontine.
+/// virement, trois plafonds, ce qui revient (salaire, loyer, abonnement), une tontine et deux prêts.
 Future<void> _kofiMonth(TestApp app) async {
   // Tout est créé le 1er du mois : la date réelle du jour ne change rien aux captures.
   final repo = ExpensesRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
@@ -239,6 +253,31 @@ Future<void> _kofiMonth(TestApp app) async {
   // Le loyer du 5 attend d'être réglé ; l'abonnement tombe le 15.
   await recurring(35000, 'Loyer', 5, 'Loyer');
   await recurring(5000, 'Loisirs', 15, 'Canal+');
+  // Un prêt à Yao, à moitié remboursé, et une dette d'avant Palier.
+  final notes = (
+    lent: (String n) => 'Prêt · $n',
+    borrowed: (String n) => 'Emprunt · $n',
+    repayment: (String n) => 'Remboursement · $n',
+  );
+  await repo.createLoan(
+    kofi,
+    LoanDraft(name: 'Yao', direction: LoanDirection.lent, amount: 20000, accountId: cash.id, day: at(4, 0)),
+    notes: notes,
+  );
+  final yao = (await repo.watchLoans(kofi).first).single;
+  await repo.repayLoan(kofi, yao, amount: 10000, accountId: cash.id, day: at(1, 0), notes: notes);
+  await repo.createLoan(
+    kofi,
+    LoanDraft(
+      name: 'Tante Afi',
+      direction: LoanDirection.borrowed,
+      amount: 60000,
+      accountId: momo.id,
+      day: DateTime(2026, 9, 2),
+      beforePalier: true,
+    ),
+    notes: notes,
+  );
   // Une tontine suivie en cours de route : trois vendredis déjà passés, la main au 6e tour.
   await repo.createTontine(
     kofi,

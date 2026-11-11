@@ -5,6 +5,7 @@ import '../../../app/providers.dart';
 import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
+import '../domain/loans.dart';
 import '../domain/recurring.dart';
 import '../domain/tontines.dart';
 
@@ -144,6 +145,25 @@ final tontinesProvider = StreamProvider<List<Tontine>>((ref) async* {
   }
   await ref.watch(expensesSetupProvider(profileId).future);
   yield* ref.watch(expensesRepositoryProvider).watchTontines(profileId);
+});
+
+/// Les prêts du profil.
+final loansProvider = StreamProvider<List<Loan>>((ref) async* {
+  final profileId = ref.watch(activeProfileIdProvider);
+  if (profileId == null) {
+    yield const [];
+    return;
+  }
+  await ref.watch(expensesSetupProvider(profileId).future);
+  yield* ref.watch(expensesRepositoryProvider).watchLoans(profileId);
+});
+
+/// Le prêt qui porte un compte : ouvrir le compte ouvre le prêt.
+final loanOwningProvider = Provider.family<String?, String>((ref, accountId) {
+  for (final loan in ref.watch(loansProvider).value ?? const <Loan>[]) {
+    if (loan.accountId == accountId) return loan.id;
+  }
+  return null;
 });
 
 /// La tontine qui porte un compte ou une récurrence, pour ouvrir la tontine
