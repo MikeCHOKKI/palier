@@ -98,6 +98,7 @@ class ExpensesRepository {
             name: draft.name.trim(),
             kind: draft.kind,
             openingBalance: Value(draft.openingBalance),
+            goal: Value(draft.goal),
             position: Value(last + 1),
           ),
         );
@@ -108,6 +109,7 @@ class ExpensesRepository {
       kind: draft.kind,
       openingBalance: draft.openingBalance,
       balance: draft.openingBalance,
+      goal: draft.goal,
     );
   }
 
@@ -117,6 +119,7 @@ class ExpensesRepository {
         name: Value(draft.name.trim()),
         kind: Value(draft.kind),
         openingBalance: Value(draft.openingBalance),
+        goal: Value(draft.goal),
         updatedAt: Value(_clock()),
       ),
     );
@@ -625,8 +628,14 @@ class ExpensesRepository {
     return row.read<int>('last');
   }
 
-  static Account _accountOf(AccountRow row, int balance) =>
-      Account(id: row.id, name: row.name, kind: row.kind, openingBalance: row.openingBalance, balance: balance);
+  static Account _accountOf(AccountRow row, int balance) => Account(
+    id: row.id,
+    name: row.name,
+    kind: row.kind,
+    openingBalance: row.openingBalance,
+    balance: balance,
+    goal: row.goal,
+  );
 
   static Category _toCategory(CategoryRow row) => Category(id: row.id, name: row.name, kind: row.kind, icon: row.icon);
 }

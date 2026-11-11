@@ -27,6 +27,7 @@ void main() {
     await expenses.ensureStarterKit(ama.id);
     final cash = (await expenses.watchAccounts(ama.id).first).single;
     final momo = await expenses.createAccount(ama.id, const AccountDraft(name: 'MoMo', kind: AccountKind.mobileMoney));
+    await expenses.createAccount(ama.id, const AccountDraft(name: 'Tabaski', kind: AccountKind.savings, goal: 100000));
     final food = (await expenses.watchCategories(ama.id).first).first;
     await expenses.addOperation(
       ama.id,
@@ -61,7 +62,9 @@ void main() {
 
     final restored = ExpensesRepository(newPhone);
     final balances = {for (final a in await restored.watchAccounts(ama.id).first) a.name: a.balance};
-    expect(balances, {'Espèces': -2500, 'MoMo': 0});
+    expect(balances, {'Espèces': -2500, 'MoMo': 0, 'Tabaski': 0});
+    final goals = {for (final a in await restored.watchAccounts(ama.id).first) a.name: a.goal};
+    expect(goals, {'Espèces': null, 'MoMo': null, 'Tabaski': 100000});
     expect(await restored.watchCategories(ama.id).first, await expenses.watchCategories(ama.id).first);
     final (from, to) = MonthView.bounds(DateTime(2026, 11));
     final entries = await restored.watchOperations(ama.id, from: from, to: to).first;

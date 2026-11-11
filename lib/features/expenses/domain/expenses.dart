@@ -11,6 +11,7 @@ class Account {
     required this.kind,
     required this.openingBalance,
     required this.balance,
+    this.goal,
   });
 
   final String id;
@@ -19,6 +20,17 @@ class Account {
   final int openingBalance;
   final int balance;
 
+  /// Somme visée par un compte d'épargne ; `null` sans objectif chiffré.
+  final int? goal;
+
+  /// Part de l'objectif atteinte, de 0 à 1 (au-delà quand on l'a dépassé) ;
+  /// `null` sans objectif. Un solde négatif compte pour zéro.
+  double? get goalProgress {
+    final target = goal;
+    if (target == null) return null;
+    return (balance < 0 ? 0 : balance) / target;
+  }
+
   @override
   bool operator ==(Object other) =>
       other is Account &&
@@ -26,19 +38,24 @@ class Account {
       other.name == name &&
       other.kind == kind &&
       other.openingBalance == openingBalance &&
-      other.balance == balance;
+      other.balance == balance &&
+      other.goal == goal;
 
   @override
-  int get hashCode => Object.hash(id, name, kind, openingBalance, balance);
+  int get hashCode => Object.hash(id, name, kind, openingBalance, balance, goal);
 }
 
 @immutable
 class AccountDraft {
-  const AccountDraft({required this.name, this.kind = AccountKind.cash, this.openingBalance = 0});
+  /// L'objectif ne se garde que pour un compte d'épargne : passer un compte
+  /// d'épargne en compte courant efface son objectif.
+  const AccountDraft({required this.name, this.kind = AccountKind.cash, this.openingBalance = 0, int? goal})
+    : goal = kind == AccountKind.savings ? goal : null;
 
   final String name;
   final AccountKind kind;
   final int openingBalance;
+  final int? goal;
 
   static const int maxNameLength = 40;
 }

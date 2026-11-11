@@ -219,6 +219,49 @@ void main() {
       expect(accounts.map((a) => a.name), ['Porte-monnaie', 'Banque']);
       expect(accounts.first.balance, 5000);
     });
+
+    test('d’épargne : les virements reçus remplissent l’objectif', () async {
+      final momo = await repo.createAccount(
+        ama,
+        const AccountDraft(name: 'MoMo', kind: AccountKind.mobileMoney, openingBalance: 60000),
+      );
+      final tabaski = await repo.createAccount(
+        ama,
+        const AccountDraft(name: 'Tabaski', kind: AccountKind.savings, openingBalance: 10000, goal: 100000),
+      );
+      await repo.addOperation(
+        ama,
+        OperationDraft(
+          kind: OperationKind.transfer,
+          amount: 15000,
+          accountId: momo.id,
+          toAccountId: tabaski.id,
+          occurredAt: now,
+        ),
+      );
+
+      final saved = (await repo.watchAccounts(ama).first).firstWhere((a) => a.id == tabaski.id);
+      expect((saved.balance, saved.goal, saved.goalProgress), (25000, 100000, 0.25));
+    });
+
+    test('seul un compte d’épargne garde un objectif', () async {
+      final bank = await repo.createAccount(
+        ama,
+        const AccountDraft(name: 'Banque', kind: AccountKind.bank, goal: 5000),
+      );
+      expect(bank.goal, isNull);
+
+      final box = await repo.createAccount(
+        ama,
+        const AccountDraft(name: 'Projet', kind: AccountKind.savings, goal: 50000),
+      );
+      // Redevenu compte courant, il perd son objectif ; sans montant, il n'en a pas.
+      await repo.updateAccount(box.id, const AccountDraft(name: 'Projet', kind: AccountKind.bank, goal: 50000));
+      expect((await repo.watchAccounts(ama).first).map((a) => a.goal), [null, null]);
+      await repo.updateAccount(box.id, const AccountDraft(name: 'Projet', kind: AccountKind.savings));
+      final reread = (await repo.watchAccounts(ama).first).last;
+      expect((reread.goal, reread.goalProgress), (null, null));
+    });
   });
 
   group('plafonds', () {
