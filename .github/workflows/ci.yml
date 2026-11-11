@@ -17,7 +17,11 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          # Version figée, la même que sur le poste : 3.50 rend material.dart
+          # obsolète (au profit de material_ui), et une CI qui change de Flutter
+          # d'elle-même échoue sans que le code ait bougé.
           channel: stable
+          flutter-version: 3.47.7
           cache: true
 
       - name: Dépendances (génère aussi les textes de l'interface)
