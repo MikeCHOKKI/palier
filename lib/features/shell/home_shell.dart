@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../expenses/ui/expenses_providers.dart';
 import '../expenses/ui/expenses_screen.dart';
 
 /// Les onglets du profil ouvert. Un module désactivé n'a pas d'onglet.
@@ -22,6 +23,7 @@ class HomeShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final profile = ref.watch(activeProfileProvider);
+    final dues = (profile?.expensesEnabled ?? false) ? ref.watch(duesProvider).length : 0;
 
     final tabs = <(int, NavigationDestination)>[
       (
@@ -36,8 +38,17 @@ class HomeShell extends ConsumerWidget {
         (
           _expenses,
           NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet_rounded),
+            // Le nombre d'échéances à valider, comme un message non lu.
+            icon: Badge.count(
+              count: dues,
+              isLabelVisible: dues > 0,
+              child: const Icon(Icons.account_balance_wallet_outlined),
+            ),
+            selectedIcon: Badge.count(
+              count: dues,
+              isLabelVisible: dues > 0,
+              child: const Icon(Icons.account_balance_wallet_rounded),
+            ),
             label: l10n.navExpenses,
           ),
         ),

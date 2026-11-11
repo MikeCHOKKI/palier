@@ -3,10 +3,12 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidRecurrence, LucidRecurrenceUnit;
 import 'package:palier/app/providers.dart';
 import 'package:palier/app/theme/palier_accent.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
+import 'package:palier/features/expenses/domain/recurring.dart';
 import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
@@ -112,7 +114,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Fermer'));
     await app.settle(tester);
-    await tester.tap(find.byTooltip('Comptes, catégories et budgets'));
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
     await app.settle(tester);
     await tester.tap(find.text('Comptes').last);
     await app.settle(tester);
@@ -120,16 +122,42 @@ void main() {
 
     await tester.tap(find.byType(BackButton));
     await app.settle(tester);
-    await tester.tap(find.byTooltip('Comptes, catégories et budgets'));
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
     await app.settle(tester);
     await tester.tap(find.text('Budgets').last);
     await app.settle(tester);
     await capture(tester, '12-budgets');
+
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
+    await app.settle(tester);
+    await tester.tap(find.text('Récurrentes').last);
+    await app.settle(tester);
+    await capture(tester, '13-recurrentes');
+
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    for (final key in ['5', '0', '0', '0']) {
+      await tester.tap(find.descendant(of: find.byType(AmountPad), matching: find.text(key)));
+      await tester.pump();
+    }
+    await tester.tap(find.text('Alimentation'));
+    await tester.pump();
+    final repeat = find.text('Revient régulièrement');
+    await tester.scrollUntilVisible(repeat, 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(repeat);
+    await app.settle(tester);
+    await tester.scrollUntilVisible(find.text('Sans fin'), 200, scrollable: find.byType(Scrollable).first);
+    await app.settle(tester);
+    await capture(tester, '14-repeter');
   });
 }
 
 /// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un
-/// virement, trois plafonds.
+/// virement, trois plafonds, et ce qui revient (salaire, loyer, abonnement).
 Future<void> _kofiMonth(TestApp app) async {
   final repo = app.container.read(expensesRepositoryProvider);
   final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
@@ -152,8 +180,10 @@ Future<void> _kofiMonth(TestApp app) async {
     String? category,
     String? to,
     String? note,
+    LucidRecurrence? repeat,
   }) => repo.addOperation(
     kofi,
+    repeat: repeat,
     OperationDraft(
       kind: kind,
       amount: amount,
@@ -165,7 +195,8 @@ Future<void> _kofiMonth(TestApp app) async {
     ),
   );
 
-  await add(OperationKind.income, 150000, momo.id, at(1, 9), category: 'Salaire');
+  final monthly = LucidRecurrence(unit: LucidRecurrenceUnit.month, start: now);
+  await add(OperationKind.income, 150000, momo.id, at(1, 9), category: 'Salaire', repeat: monthly);
   await add(OperationKind.transfer, 20000, momo.id, at(1, 12), to: cash.id, note: 'retrait');
   await add(OperationKind.expense, 12500, cash.id, at(1, 18), category: 'Alimentation', note: 'marché');
   await add(OperationKind.expense, 1000, momo.id, at(0, 8), category: 'Crédit et data');
@@ -173,4 +204,18 @@ Future<void> _kofiMonth(TestApp app) async {
   await repo.setBudget(kofi, categories['Alimentation']!, 60000);
   await repo.setBudget(kofi, categories['Transport']!, 15000);
   await repo.setBudget(kofi, categories['Crédit et data']!, 5000);
+  Future<void> recurring(int amount, String category, int day, String note) => repo.createRecurring(
+    kofi,
+    RecurringDraft(
+      kind: OperationKind.expense,
+      amount: amount,
+      accountId: momo.id,
+      categoryId: categories[category],
+      note: note,
+      rule: LucidRecurrence(unit: LucidRecurrenceUnit.month, start: DateTime(now.year, now.month, day)),
+    ),
+  );
+  // Le loyer du 5 attend d'être réglé ; l'abonnement tombe le 15.
+  await recurring(35000, 'Loyer', 5, 'Loyer');
+  await recurring(5000, 'Loisirs', 15, 'Canal+');
 }

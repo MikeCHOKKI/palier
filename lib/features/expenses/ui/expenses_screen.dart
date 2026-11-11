@@ -18,6 +18,7 @@ import 'budgets_screen.dart';
 import 'expense_visuals.dart';
 import 'expense_widgets.dart';
 import 'expenses_providers.dart';
+import 'recurrings_screen.dart';
 
 /// L'onglet Dépenses : ce qu'il y a sur les comptes, puis le mois jour par jour.
 class ExpensesScreen extends ConsumerWidget {
@@ -90,11 +91,13 @@ class _Content extends ConsumerWidget {
                       PopupMenuItem(value: Routes.expensesAccounts, child: Text(l10n.expensesManageAccounts)),
                       PopupMenuItem(value: Routes.expensesCategories, child: Text(l10n.expensesManageCategories)),
                       PopupMenuItem(value: Routes.expensesBudgets, child: Text(l10n.expensesManageBudgets)),
+                      PopupMenuItem(value: Routes.expensesRecurrings, child: Text(l10n.expensesManageRecurrings)),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: PalierSpace.lg),
+              DuesBlock(currency: currency),
               Row(
                 children: [
                   Expanded(child: Text(l10n.expensesBalanceLabel, style: text.labelMedium)),
@@ -113,6 +116,7 @@ class _Content extends ConsumerWidget {
                   ),
                 ),
               ),
+              _AfterDues(total: total, currency: currency),
               const SizedBox(height: PalierSpace.md),
             ],
           ),
@@ -210,6 +214,35 @@ class _Content extends ConsumerWidget {
       l10n.operationDeleted,
       undoLabel: l10n.operationUndo,
       onUndo: () => repo.restoreOperation(id),
+    );
+  }
+}
+
+/// Le solde une fois passées les échéances encore attendues ce mois-ci
+/// (retards compris) ; rien s'il n'y en a pas.
+class _AfterDues extends ConsumerWidget {
+  const _AfterDues({required this.total, required this.currency});
+
+  final int total;
+  final PalierCurrency currency;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final net = ref.watch(pendingNetProvider);
+    if (net == null) return const SizedBox.shrink();
+    final after = total + net;
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: LucidPrivateText(
+        l10n.expensesAfterDues(formatMoney(after, currency)),
+        mask: l10n.expensesAfterDues(maskedMoney(currency)),
+        style: manrope(
+          size: 14,
+          weight: FontWeight.w600,
+          color: after < 0 && !LucidPrivacyScope.isHidden(context) ? PalierColors.danger : PalierColors.textMid,
+        ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+      ),
     );
   }
 }

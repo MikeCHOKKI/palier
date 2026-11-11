@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart'
+    show LucidRecurrence, LucidRecurrenceField, LucidRecurrenceUnit;
 
 import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';
@@ -12,6 +14,7 @@ import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import '../domain/money.dart';
+import '../domain/recurring.dart';
 import 'accounts_screen.dart';
 import 'amount_pad.dart';
 import 'expense_visuals.dart';
@@ -19,14 +22,24 @@ import 'expense_widgets.dart';
 import 'expenses_providers.dart';
 import 'operation_fields.dart';
 
-/// Noter une opération en trois gestes (montant, catégorie, compte), ou la modifier.
+/// Noter une opération en trois gestes (montant, catégorie, compte), la
+/// modifier, ou régler l'échéance d'une récurrence.
 ///
 /// Le pavé et le bouton restent en bas, sous le pouce ; le reste défile au-dessus.
 class OperationScreen extends ConsumerStatefulWidget {
-  const OperationScreen({super.key, this.operationId});
+  const OperationScreen({super.key, this.operationId}) : dueRecurringId = null, dueDay = null;
+
+  /// Régler l'échéance [dueDay] (« 2026-11-05 ») d'une récurrence : les champs
+  /// reprennent ce qu'elle prévoit, et restent modifiables (une facture qui varie).
+  const OperationScreen.due({super.key, required String recurringId, required String day})
+    : operationId = null,
+      dueRecurringId = recurringId,
+      dueDay = day;
 
   /// `null` pour une nouvelle opération.
   final String? operationId;
+  final String? dueRecurringId;
+  final String? dueDay;
 
   @override
   ConsumerState<OperationScreen> createState() => _OperationScreenState();
@@ -43,11 +56,19 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
   OperationProblem? _problem;
   bool _saving = false;
 
+  /// « Revient régulièrement » : l'opération devient la première échéance de [_rule].
+  bool _repeat = false;
+  late LucidRecurrence _rule;
+
+  /// L'échéance que l'opération règle, une fois la récurrence chargée.
+  Due? _due;
+
   /// Vrai tant qu'une opération à modifier n'est pas chargée.
   bool _loading = false;
   bool _missing = false;
 
   bool get _editing => widget.operationId != null;
+  bool get _settling => widget.dueRecurringId != null;
 
   DateTime _now() => ref.read(clockProvider)();
 
@@ -57,6 +78,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     final currency = ref.read(activeProfileProvider)!.currency;
     _amount = AmountEntry.empty(currency);
     _occurredAt = _now();
+    _rule = LucidRecurrence(unit: LucidRecurrenceUnit.month, start: _occurredAt);
     // Un message encore affiché (« Dépense enregistrée. ») se poserait sur le
     // bouton d'enregistrement de cet écran : on ouvre la saisie sans lui.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -65,7 +87,32 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     if (_editing) {
       _loading = true;
       _load(widget.operationId!);
+    } else if (_settling) {
+      _loading = true;
+      _loadDue(widget.dueRecurringId!, parseDayKey(widget.dueDay!));
     }
+  }
+
+  Future<void> _loadDue(String recurringId, DateTime day) async {
+    final recurring = await ref.read(expensesRepositoryProvider).findRecurring(recurringId);
+    if (!mounted) return;
+    final now = _now();
+    setState(() {
+      _loading = false;
+      if (recurring == null) {
+        _missing = true;
+        return;
+      }
+      _due = Due(recurring: recurring, day: day);
+      _kind = recurring.kind;
+      _amount = AmountEntry.fromMinor(recurring.amount, _amount.currency);
+      _accountId = recurring.accountId;
+      _toAccountId = recurring.toAccountId;
+      _categoryId = recurring.categoryId;
+      _note.text = recurring.note ?? '';
+      // Daté du jour de l'échéance : le mois où elle tombe garde sa dépense.
+      _occurredAt = DateTime(day.year, day.month, day.day, now.hour, now.minute);
+    });
   }
 
   Future<void> _load(String id) async {
@@ -152,7 +199,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
       if (_editing) {
         await repo.updateOperation(widget.operationId!, draft);
       } else {
-        await repo.addOperation(profileId, draft);
+        await repo.addOperation(profileId, draft, repeat: _repeat ? _rule : null, due: _due);
       }
       final after = budget == null ? 0 : await repo.spentIn(profileId, budget.categoryId, from: from, to: to);
       if (!mounted) return;
@@ -232,14 +279,6 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     _update(() => _occurredAt = DateTime(day.year, day.month, day.day, now.hour, now.minute));
   }
 
-  String _problemText(AppLocalizations l10n, OperationProblem problem) => switch (problem) {
-    OperationProblem.noAmount => l10n.operationProblemAmount,
-    OperationProblem.noAccount => l10n.operationProblemAccount,
-    OperationProblem.noCategory => l10n.operationProblemCategory,
-    OperationProblem.noTargetAccount => l10n.operationProblemTarget,
-    OperationProblem.sameAccount => l10n.operationProblemSameAccount,
-  };
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -256,7 +295,13 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => context.pop(),
         ),
-        title: Text(_editing ? l10n.operationEditTitle : l10n.operationNewTitle),
+        title: Text(
+          _editing
+              ? l10n.operationEditTitle
+              : _settling
+              ? l10n.dueSettleTitle
+              : l10n.operationNewTitle,
+        ),
         actions: [
           if (_editing && !_loading && !_missing)
             IconButton(
@@ -307,7 +352,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
                   AmountPanel(
                     amount: _amount,
                     onAmountChanged: (value) => _update(() => _amount = value),
-                    problem: _problem == null ? null : _problemText(l10n, _problem!),
+                    problem: _problem == null ? null : operationProblemText(l10n, _problem!),
                     saveLabel: l10n.operationSave(_kind.name),
                     saving: _saving,
                     onSave: _save,
@@ -363,6 +408,27 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
           counterText: '',
         ),
       ),
+      // Seulement pour une opération nouvelle : modifier ou régler une échéance
+      // ne crée pas de récurrence.
+      if (!_editing && !_settling) ...[
+        const SizedBox(height: PalierSpace.sm),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          secondary: const Icon(Icons.repeat_rounded),
+          title: Text(l10n.operationRepeatLabel),
+          subtitle: Text(l10n.operationRepeatHint),
+          value: _repeat,
+          onChanged: (on) => _update(() => _repeat = on),
+        ),
+        if (_repeat)
+          LucidRecurrenceField(
+            // Le début est la date de l'opération : elle est la première échéance.
+            value: _rule.copyWith(start: day),
+            onChanged: (rule) => _update(() => _rule = rule),
+            showStart: false,
+            choiceBuilder: palierChoice,
+          ),
+      ],
     ];
   }
 }

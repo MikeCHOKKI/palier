@@ -7,9 +7,16 @@ import 'theme/palier_tokens.dart';
 /// icône selon ce qui vient de se passer. Le messager se capture avant tout
 /// `await` ou `pop`.
 abstract final class PalierSnack {
-  /// Une action réussie (enregistré, exporté…).
-  static void done(ScaffoldMessengerState messenger, String message) =>
-      LucidSnack.showOn(messenger, message: message, icon: Icons.check_rounded);
+  /// Une action réussie (enregistré, exporté…), que [onUndo] peut rattraper
+  /// quand un seul geste l'a faite.
+  static void done(ScaffoldMessengerState messenger, String message, {String? undoLabel, VoidCallback? onUndo}) =>
+      LucidSnack.showOn(
+        messenger,
+        message: message,
+        icon: Icons.check_rounded,
+        actionLabel: onUndo == null ? null : undoLabel,
+        onAction: onUndo,
+      );
 
   /// Une suppression, que [onUndo] peut rattraper.
   static void deleted(ScaffoldMessengerState messenger, String message, {String? undoLabel, VoidCallback? onUndo}) =>

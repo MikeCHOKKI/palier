@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidChoice;
 
 import '../../../app/routes.dart';
 import '../../../app/theme/palier_accent.dart';
@@ -10,6 +11,19 @@ import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
 import 'expense_visuals.dart';
 import 'expense_widgets.dart';
+
+/// Ce qu'il manque à une opération ou à une récurrence, dit à l'utilisateur.
+String operationProblemText(AppLocalizations l10n, OperationProblem problem) => switch (problem) {
+  OperationProblem.noAmount => l10n.operationProblemAmount,
+  OperationProblem.noAccount => l10n.operationProblemAccount,
+  OperationProblem.noCategory => l10n.operationProblemCategory,
+  OperationProblem.noTargetAccount => l10n.operationProblemTarget,
+  OperationProblem.sameAccount => l10n.operationProblemSameAccount,
+};
+
+/// Les choix d'une récurrence aux pastilles de Palier.
+Widget palierChoice(BuildContext context, LucidChoice choice) =>
+    ChoicePill(label: choice.label, selected: choice.selected, onTap: choice.onTap, icon: choice.icon);
 
 /// Ce qu'une opération et une récurrence ont en commun à choisir : la catégorie
 /// et le compte, ou les deux comptes d'un virement. Partagé par l'écran « Noter »

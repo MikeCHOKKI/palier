@@ -33,7 +33,7 @@ Future<TestApp> _openExpenses(WidgetTester tester) async {
 }
 
 Future<void> _openBudgets(WidgetTester tester, TestApp app) async {
-  await tester.tap(find.byTooltip('Comptes, catégories et budgets'));
+  await tester.tap(find.byTooltip('Gérer les dépenses'));
   await app.settle(tester);
   await tester.tap(find.text('Budgets').last);
   await app.settle(tester);

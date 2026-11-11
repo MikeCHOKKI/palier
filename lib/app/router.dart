@@ -8,6 +8,7 @@ import '../features/expenses/ui/budgets_screen.dart';
 import '../features/expenses/ui/categories_screen.dart';
 import '../features/expenses/ui/expenses_screen.dart';
 import '../features/expenses/ui/operation_screen.dart';
+import '../features/expenses/ui/recurrings_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/placeholders/coming_soon_screen.dart';
 import '../features/profiles/ui/loading_screen.dart';
@@ -108,6 +109,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                     'budgets',
                     (_) => const BudgetsScreen(),
                     routes: [fullScreen(':id', (s) => BudgetFormScreen(categoryId: s.pathParameters['id']!))],
+                  ),
+                  fullScreen(
+                    'recurrentes',
+                    (_) => const RecurringsScreen(),
+                    routes: [
+                      fullScreen('nouvelle', (_) => const RecurringFormScreen()),
+                      fullScreen(':id', (s) => RecurringFormScreen(recurringId: s.pathParameters['id'])),
+                    ],
+                  ),
+                  fullScreen(
+                    'echeances/:id/:day',
+                    (s) => OperationScreen.due(recurringId: s.pathParameters['id']!, day: s.pathParameters['day']!),
                   ),
                 ],
               ),

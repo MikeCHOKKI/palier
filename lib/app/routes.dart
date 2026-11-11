@@ -24,6 +24,12 @@ abstract final class Routes {
   static String expensesCategory(String id) => '/depenses/categories/$id';
   static const expensesBudgets = '/depenses/budgets';
   static String expensesBudget(String categoryId) => '/depenses/budgets/$categoryId';
+  static const expensesRecurrings = '/depenses/recurrentes';
+  static const expensesRecurringNew = '/depenses/recurrentes/nouvelle';
+  static String expensesRecurring(String id) => '/depenses/recurrentes/$id';
+
+  /// Régler l'échéance [day] (« 2026-11-05 ») d'une récurrence.
+  static String expensesDue(String recurringId, String day) => '/depenses/echeances/$recurringId/$day';
   static const sport = '/sport';
   static const settings = '/reglages';
   static const settingsProfile = '/reglages/profil';

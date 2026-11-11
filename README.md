@@ -22,6 +22,8 @@ pas de serveur, pas de publicité.
 
 <p align="center">
   <img src="docs/captures/12-budgets.png" width="220" alt="Budgets du mois et prévision">
+  <img src="docs/captures/13-recurrentes.png" width="220" alt="Opérations récurrentes">
+  <img src="docs/captures/14-repeter.png" width="220" alt="Noter une dépense qui revient">
 </p>
 
 ## Ce que fait Palier
@@ -32,7 +34,7 @@ suit, et son propre verrou.
 | Lot | Contenu | État |
 |---|---|---|
 | 1. Socle et profils | Profils personnalisés, profil d'enfant, code à 4-6 chiffres avec blocage progressif, empreinte, verrouillage après une minute en arrière-plan, export et import chiffrés | Fait |
-| 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | En cours : saisie, comptes, catégories, soldes, budgets et prévision faits |
+| 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | En cours : saisie, comptes, catégories, soldes, budgets, prévision et opérations récurrentes faits |
 | 3. Sport | Programme selon les réglages du profil, séances guidées, suivi des progrès | À venir |
 | 4. Progression | Habitudes, objectifs par étapes, bilan de la semaine | À venir |
 | 5. Options Android | Lecture des SMS Mobile Money (désactivée par défaut), nombre de pas | À venir |
