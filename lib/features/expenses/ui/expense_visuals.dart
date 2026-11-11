@@ -43,6 +43,7 @@ IconData accountIcon(AccountKind kind) => switch (kind) {
   AccountKind.cash => Icons.payments_outlined,
   AccountKind.mobileMoney => Icons.send_to_mobile_outlined,
   AccountKind.bank => Icons.account_balance_outlined,
+  AccountKind.savings => Icons.savings_outlined,
 };
 
 const IconData transferIcon = Icons.swap_horiz_rounded;

@@ -58,6 +58,11 @@ class Accounts extends Table with SyncColumns {
 
   /// Ordre d'affichage, du plus petit au plus grand.
   IntColumn get position => integer().withDefault(const Constant(0))();
+
+  /// Somme visée par un compte d'épargne, en unités mineures ; `null` sans
+  /// objectif chiffré, et toujours pour les autres types de compte.
+  // ignore: recursive_getters
+  IntColumn get goal => integer().nullable().check(goal.isBiggerThanValue(0))();
 }
 
 /// Une catégorie de dépenses ou de revenus d'un profil.
@@ -177,7 +182,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -197,6 +202,9 @@ class PalierDatabase extends _$PalierDatabase {
         await m.createTable(schema.recurrenceSkips);
         await m.addColumn(schema.operations, schema.operations.recurrenceId);
         await m.addColumn(schema.operations, schema.operations.dueOn);
+      },
+      from4To5: (m, schema) async {
+        await m.addColumn(schema.accounts, schema.accounts.goal);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

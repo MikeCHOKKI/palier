@@ -8,6 +8,7 @@ import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v4.dart' as v4;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -176,6 +177,40 @@ void main() {
     );
     await db.into(db.recurrenceSkips).insert(skip('s1'));
     await expectLater(db.into(db.recurrenceSkips).insert(skip('s2')), throwsA(isA<SqliteException>()));
+  });
+
+  test('v4 → v5 garde les comptes sans objectif, qu’un compte d’épargne peut ensuite recevoir', () async {
+    const at = '2026-11-11T09:00:00.000Z';
+    final schema = await verifier.schemaAt(4);
+    final oldDb = v4.DatabaseAtV4(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO accounts (id, created_at, updated_at, profile_id, name, kind, opening_balance) '
+          "VALUES ('a', '$at', '$at', 'p', 'Banque', 'bank', 80000)",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    final kept = await db.select(db.accounts).getSingle();
+    expect((kept.kind, kept.openingBalance, kept.goal), (AccountKind.bank, 80000, null));
+
+    final now = DateTime.utc(2026, 11, 11);
+    AccountsCompanion savings(String id, int goal) => AccountsCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      name: 'Tabaski',
+      kind: AccountKind.savings,
+      goal: Value(goal),
+    );
+    await db.into(db.accounts).insert(savings('e', 150000));
+    expect((await (db.select(db.accounts)..where((a) => a.id.equals('e'))).getSingle()).goal, 150000);
+    // Un objectif nul ou négatif n'a pas de sens : la base le refuse.
+    await expectLater(db.into(db.accounts).insert(savings('e0', 0)), throwsA(isA<SqliteException>()));
   });
 
   test('les clés étrangères sont appliquées', () async {

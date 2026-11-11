@@ -873,6 +873,16 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, AccountRow>
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _goalMeta = const VerificationMeta('goal');
+  @override
+  late final GeneratedColumn<int> goal = GeneratedColumn<int>(
+    'goal',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(goal).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -884,6 +894,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, AccountRow>
     kind,
     openingBalance,
     position,
+    goal,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -931,6 +942,9 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, AccountRow>
     if (data.containsKey('position')) {
       context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
     }
+    if (data.containsKey('goal')) {
+      context.handle(_goalMeta, goal.isAcceptableOrUnknown(data['goal']!, _goalMeta));
+    }
     return context;
   }
 
@@ -951,6 +965,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, AccountRow>
       ),
       openingBalance: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}opening_balance'])!,
       position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      goal: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}goal']),
     );
   }
 
@@ -979,6 +994,10 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
 
   /// Ordre d'affichage, du plus petit au plus grand.
   final int position;
+
+  /// Somme visée par un compte d'épargne, en unités mineures ; `null` sans
+  /// objectif chiffré, et toujours pour les autres types de compte.
+  final int? goal;
   const AccountRow({
     required this.id,
     required this.createdAt,
@@ -989,6 +1008,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     required this.kind,
     required this.openingBalance,
     required this.position,
+    this.goal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1006,6 +1026,9 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     }
     map['opening_balance'] = Variable<int>(openingBalance);
     map['position'] = Variable<int>(position);
+    if (!nullToAbsent || goal != null) {
+      map['goal'] = Variable<int>(goal);
+    }
     return map;
   }
 
@@ -1020,6 +1043,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       kind: Value(kind),
       openingBalance: Value(openingBalance),
       position: Value(position),
+      goal: goal == null && nullToAbsent ? const Value.absent() : Value(goal),
     );
   }
 
@@ -1035,6 +1059,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       kind: $AccountsTable.$converterkind.fromJson(serializer.fromJson<String>(json['kind'])),
       openingBalance: serializer.fromJson<int>(json['openingBalance']),
       position: serializer.fromJson<int>(json['position']),
+      goal: serializer.fromJson<int?>(json['goal']),
     );
   }
   @override
@@ -1050,6 +1075,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       'kind': serializer.toJson<String>($AccountsTable.$converterkind.toJson(kind)),
       'openingBalance': serializer.toJson<int>(openingBalance),
       'position': serializer.toJson<int>(position),
+      'goal': serializer.toJson<int?>(goal),
     };
   }
 
@@ -1063,6 +1089,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     AccountKind? kind,
     int? openingBalance,
     int? position,
+    Value<int?> goal = const Value.absent(),
   }) => AccountRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -1073,6 +1100,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     kind: kind ?? this.kind,
     openingBalance: openingBalance ?? this.openingBalance,
     position: position ?? this.position,
+    goal: goal.present ? goal.value : this.goal,
   );
   AccountRow copyWithCompanion(AccountsCompanion data) {
     return AccountRow(
@@ -1085,6 +1113,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       kind: data.kind.present ? data.kind.value : this.kind,
       openingBalance: data.openingBalance.present ? data.openingBalance.value : this.openingBalance,
       position: data.position.present ? data.position.value : this.position,
+      goal: data.goal.present ? data.goal.value : this.goal,
     );
   }
 
@@ -1099,13 +1128,15 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
           ..write('name: $name, ')
           ..write('kind: $kind, ')
           ..write('openingBalance: $openingBalance, ')
-          ..write('position: $position')
+          ..write('position: $position, ')
+          ..write('goal: $goal')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, createdAt, updatedAt, deletedAt, profileId, name, kind, openingBalance, position);
+  int get hashCode =>
+      Object.hash(id, createdAt, updatedAt, deletedAt, profileId, name, kind, openingBalance, position, goal);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1118,7 +1149,8 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
           other.name == this.name &&
           other.kind == this.kind &&
           other.openingBalance == this.openingBalance &&
-          other.position == this.position);
+          other.position == this.position &&
+          other.goal == this.goal);
 }
 
 class AccountsCompanion extends UpdateCompanion<AccountRow> {
@@ -1131,6 +1163,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
   final Value<AccountKind> kind;
   final Value<int> openingBalance;
   final Value<int> position;
+  final Value<int?> goal;
   final Value<int> rowid;
   const AccountsCompanion({
     this.id = const Value.absent(),
@@ -1142,6 +1175,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     this.kind = const Value.absent(),
     this.openingBalance = const Value.absent(),
     this.position = const Value.absent(),
+    this.goal = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AccountsCompanion.insert({
@@ -1154,6 +1188,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     required AccountKind kind,
     this.openingBalance = const Value.absent(),
     this.position = const Value.absent(),
+    this.goal = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -1171,6 +1206,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     Expression<String>? kind,
     Expression<int>? openingBalance,
     Expression<int>? position,
+    Expression<int>? goal,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1183,6 +1219,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
       if (kind != null) 'kind': kind,
       if (openingBalance != null) 'opening_balance': openingBalance,
       if (position != null) 'position': position,
+      if (goal != null) 'goal': goal,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1197,6 +1234,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     Value<AccountKind>? kind,
     Value<int>? openingBalance,
     Value<int>? position,
+    Value<int?>? goal,
     Value<int>? rowid,
   }) {
     return AccountsCompanion(
@@ -1209,6 +1247,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
       kind: kind ?? this.kind,
       openingBalance: openingBalance ?? this.openingBalance,
       position: position ?? this.position,
+      goal: goal ?? this.goal,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1243,6 +1282,9 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     if (position.present) {
       map['position'] = Variable<int>(position.value);
     }
+    if (goal.present) {
+      map['goal'] = Variable<int>(goal.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1261,6 +1303,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
           ..write('kind: $kind, ')
           ..write('openingBalance: $openingBalance, ')
           ..write('position: $position, ')
+          ..write('goal: $goal, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4769,6 +4812,7 @@ typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
   required AccountKind kind,
   Value<int> openingBalance,
   Value<int> position,
+  Value<int?> goal,
   Value<int> rowid,
 });
 typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
@@ -4781,6 +4825,7 @@ typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
   Value<AccountKind> kind,
   Value<int> openingBalance,
   Value<int> position,
+  Value<int?> goal,
   Value<int> rowid,
 });
 
@@ -4881,6 +4926,8 @@ class $$AccountsTableFilterComposer extends Composer<_$PalierDatabase, $Accounts
 
   ColumnFilters<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get goal => $composableBuilder(column: $table.goal, builder: (column) => ColumnFilters(column));
 
   $$ProfilesTableFilterComposer get profileId {
     final $$ProfilesTableFilterComposer composer = $composerBuilder(
@@ -5004,6 +5051,9 @@ class $$AccountsTableOrderingComposer extends Composer<_$PalierDatabase, $Accoun
   ColumnOrderings<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get goal =>
+      $composableBuilder(column: $table.goal, builder: (column) => ColumnOrderings(column));
+
   $$ProfilesTableOrderingComposer get profileId {
     final $$ProfilesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5048,6 +5098,8 @@ class $$AccountsTableAnnotationComposer extends Composer<_$PalierDatabase, $Acco
       $composableBuilder(column: $table.openingBalance, builder: (column) => column);
 
   GeneratedColumn<int> get position => $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<int> get goal => $composableBuilder(column: $table.goal, builder: (column) => column);
 
   $$ProfilesTableAnnotationComposer get profileId {
     final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
@@ -5184,6 +5236,7 @@ class $$AccountsTableTableManager
                 Value<AccountKind> kind = const Value.absent(),
                 Value<int> openingBalance = const Value.absent(),
                 Value<int> position = const Value.absent(),
+                Value<int?> goal = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AccountsCompanion(
                 id: id,
@@ -5195,6 +5248,7 @@ class $$AccountsTableTableManager
                 kind: kind,
                 openingBalance: openingBalance,
                 position: position,
+                goal: goal,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -5208,6 +5262,7 @@ class $$AccountsTableTableManager
                 required AccountKind kind,
                 Value<int> openingBalance = const Value.absent(),
                 Value<int> position = const Value.absent(),
+                Value<int?> goal = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AccountsCompanion.insert(
                 id: id,
@@ -5219,6 +5274,7 @@ class $$AccountsTableTableManager
                 kind: kind,
                 openingBalance: openingBalance,
                 position: position,
+                goal: goal,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
