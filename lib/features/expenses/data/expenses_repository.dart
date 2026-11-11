@@ -6,6 +6,7 @@ import '../../../data/database.dart';
 import '../domain/budgets.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
+import '../domain/loans.dart';
 import '../domain/recurring.dart';
 import '../domain/starter_kit.dart';
 import '../domain/tontines.dart';
@@ -659,6 +660,148 @@ class ExpensesRepository {
   static void _checkTontine(TontineDraft draft) {
     final problem = draft.problem;
     if (problem != null) throw ArgumentError.value(problem, 'draft', 'Tontine incomplète');
+  }
+
+  // ------------------------------------------------------------------ prêts
+
+  /// Les prêts du profil, avec le solde de leur compte.
+  Stream<List<Loan>> watchLoans(String profileId) async* {
+    yield await _loans(profileId);
+    final tables = <ResultSetImplementation<dynamic, dynamic>>[_db.loans, _db.accounts, _db.operations];
+    await for (final _ in _db.tableUpdates(TableUpdateQuery.onAllTables(tables))) {
+      yield await _loans(profileId);
+    }
+  }
+
+  /// Note un prêt : son compte, et le virement qui le fait (sauf prêt d'avant
+  /// Palier, dont le reste dû devient le solde de départ du compte).
+  Future<String> createLoan(String profileId, LoanDraft draft, {required LoanNotes notes}) {
+    final problem = draft.problem;
+    if (problem != null) throw ArgumentError.value(problem, 'draft', 'Prêt incomplet');
+    return _db.transaction(() async {
+      final now = _clock();
+      final name = draft.name.trim();
+      final account = await createAccount(
+        profileId,
+        AccountDraft(name: name, kind: AccountKind.loan, openingBalance: draft.beforePalier ? draft.signedAmount : 0),
+      );
+      if (!draft.beforePalier) {
+        final lent = draft.direction == LoanDirection.lent;
+        await addOperation(
+          profileId,
+          OperationDraft(
+            kind: OperationKind.transfer,
+            amount: draft.amount,
+            accountId: lent ? draft.accountId : account.id,
+            toAccountId: lent ? account.id : draft.accountId,
+            note: lent ? notes.lent(name) : notes.borrowed(name),
+            occurredAt: _onDay(draft.day, now),
+          ),
+        );
+      }
+      final id = _uuid.v4();
+      await _db
+          .into(_db.loans)
+          .insert(
+            LoansCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              accountId: account.id,
+              direction: draft.direction,
+              amount: draft.amount,
+              payAccountId: draft.accountId!,
+              startedOn: dayKey(draft.day),
+            ),
+          );
+      return id;
+    });
+  }
+
+  /// Note un remboursement, partiel ou complet : un virement en sens inverse
+  /// du prêt. Jamais plus que le reste dû.
+  Future<String> repayLoan(
+    String profileId,
+    Loan loan, {
+    required int amount,
+    required String? accountId,
+    required DateTime day,
+    required LoanNotes notes,
+  }) {
+    final problem = loan.repaymentProblem(amount, accountId);
+    if (problem != null) throw ArgumentError.value(problem, 'amount', 'Remboursement impossible');
+    final lent = loan.direction == LoanDirection.lent;
+    return addOperation(
+      profileId,
+      OperationDraft(
+        kind: OperationKind.transfer,
+        amount: amount,
+        accountId: lent ? loan.accountId : accountId,
+        toAccountId: lent ? accountId : loan.accountId,
+        note: notes.repayment(loan.name),
+        occurredAt: _onDay(day, _clock()),
+      ),
+    );
+  }
+
+  Future<void> renameLoan(String id, String name) async {
+    final row = await (_db.select(_db.loans)..where((l) => l.id.equals(id))).getSingle();
+    await (_db.update(_db.accounts)..where((a) => a.id.equals(row.accountId))).write(
+      AccountsCompanion(name: Value(name.trim()), updatedAt: Value(_clock())),
+    );
+  }
+
+  /// Supprime un prêt noté par erreur, avec ses opérations : les comptes
+  /// retrouvent leur solde d'avant.
+  Future<void> deleteLoan(String id) {
+    return _db.transaction(() async {
+      final row = await (_db.select(_db.loans)..where((l) => l.id.equals(id))).getSingle();
+      final now = _clock();
+      final gone = Value(now);
+      await (_db.update(_db.operations)
+            ..where((o) => (o.accountId.equals(row.accountId) | o.toAccountId.equals(row.accountId))))
+          .write(OperationsCompanion(deletedAt: gone, updatedAt: Value(now)));
+      await (_db.update(
+        _db.loans,
+      )..where((l) => l.id.equals(id))).write(LoansCompanion(deletedAt: gone, updatedAt: Value(now)));
+      await (_db.update(
+        _db.accounts,
+      )..where((a) => a.id.equals(row.accountId))).write(AccountsCompanion(deletedAt: gone, updatedAt: Value(now)));
+    });
+  }
+
+  /// Un instant du jour [day], à l'heure de [now] : la liste du mois garde l'ordre de saisie.
+  static DateTime _onDay(DateTime day, DateTime now) {
+    final local = now.toLocal();
+    return DateTime(day.year, day.month, day.day, local.hour, local.minute);
+  }
+
+  Future<List<Loan>> _loans(String profileId) async {
+    final rows =
+        await (_db.select(_db.loans)
+              ..where((l) => l.profileId.equals(profileId) & l.deletedAt.isNull())
+              ..orderBy([(l) => OrderingTerm.asc(l.createdAt)]))
+            .get();
+    if (rows.isEmpty) return const [];
+    final balances = {for (final a in await watchAccounts(profileId).first) a.id: a.balance};
+    final names = {
+      for (final a in await (_db.select(_db.accounts)..where((a) => a.profileId.equals(profileId))).get()) a.id: a.name,
+    };
+    return [
+      for (final row in rows)
+        Loan(
+          id: row.id,
+          name: names[row.accountId] ?? '',
+          direction: row.direction,
+          amount: row.amount,
+          accountId: row.accountId,
+          balance: balances[row.accountId] ?? 0,
+          payAccountId: row.payAccountId,
+          payAccountName: names[row.payAccountId] ?? '',
+          startedOn: parseDayKey(row.startedOn),
+        ),
+    ];
   }
 
   Future<List<Recurring>> _recurrings(String profileId) async {
