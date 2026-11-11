@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidSnack;
+import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidMeter, LucidSnack;
 import 'package:palier/app/providers.dart';
 import 'package:palier/app/theme/palier_tokens.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
@@ -286,5 +286,37 @@ void main() {
     expect(find.text('Mouvement enregistré.'), findsOneWidget);
     expect(find.text('Espèces → MTN MoMo'), findsOneWidget);
     expect(find.text(formatMoney(10000, _xof)), findsWidgets, reason: 'solde du compte MoMo');
+  });
+
+  testWidgets('un compte d’épargne a un objectif facultatif, suivi par une jauge dans la liste', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.byTooltip('Gérer les dépenses'));
+    await app.settle(tester);
+    await tester.tap(find.text('Comptes').last);
+    await app.settle(tester);
+    await tester.tap(find.text('Ajouter un compte'));
+    await app.settle(tester);
+
+    final goalField = find.byKey(const ValueKey('objectif'));
+    expect(goalField, findsNothing, reason: 'pas d’objectif pour un compte courant');
+    await tester.enterText(find.byType(TextFormField).first, 'Tabaski');
+    await tester.ensureVisible(find.text('Épargne'));
+    await tester.tap(find.text('Épargne'));
+    await app.settle(tester);
+    expect(goalField, findsOneWidget);
+    expect(find.textContaining('note un « Entre comptes » vers ce compte'), findsOneWidget);
+
+    await tester.enterText(find.descendant(of: goalField, matching: find.byType(TextFormField)), '0');
+    await tester.tap(find.text('Enregistrer'));
+    await app.settle(tester);
+    expect(find.text('Indique un montant supérieur à zéro, ou laisse vide.'), findsOneWidget);
+
+    await tester.enterText(find.descendant(of: goalField, matching: find.byType(TextFormField)), '100000');
+    await tester.tap(find.text('Enregistrer'));
+    await app.settle(tester);
+
+    expect(find.text('Épargne · 0 % de ${formatMoney(100000, _xof)}'), findsOneWidget);
+    expect(find.byType(LucidMeter), findsOneWidget);
+    expect(find.text('Espèces'), findsWidgets, reason: 'le compte Espèces garde son type seul, sans jauge');
   });
 }

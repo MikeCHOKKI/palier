@@ -11,6 +11,7 @@ import '../../../app/routes.dart';
 import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../profiles/domain/profile.dart';
 import '../data/expenses_repository.dart';
 import '../domain/expense_kinds.dart';
 import '../domain/expenses.dart';
@@ -49,7 +50,9 @@ class AccountsScreen extends ConsumerWidget {
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(accountIcon(account.kind)),
                   title: Text(account.name),
-                  subtitle: Text(l10n.accountKindName(account.kind)),
+                  subtitle: account.goal == null
+                      ? Text(l10n.accountKindName(account.kind))
+                      : SavingsGoal(account: account, currency: currency),
                   trailing: LucidPrivateText(
                     formatBalance(account.balance, currency),
                     mask: maskedMoney(currency),
@@ -90,6 +93,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _opening = TextEditingController();
+  final _goal = TextEditingController();
   AccountKind _kind = AccountKind.mobileMoney;
   bool _saving = false;
   bool _filled = false;
@@ -100,6 +104,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
   void dispose() {
     _name.dispose();
     _opening.dispose();
+    _goal.dispose();
     super.dispose();
   }
 
@@ -111,6 +116,8 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
     _name.text = account.name;
     _kind = account.kind;
     _opening.text = account.openingBalance == 0 ? '' : formatMoney(account.openingBalance, currency, withSymbol: false);
+    final goal = account.goal;
+    _goal.text = goal == null ? '' : formatMoney(goal, currency, withSymbol: false);
   }
 
   Future<void> _save(Account? existing) async {
@@ -122,6 +129,11 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
       name: _name.text,
       kind: _kind,
       openingBalance: parseMoney(_opening.text, profile.currency)!,
+      // Champ vide : la conversion donne 0, soit « pas d'objectif ».
+      goal: switch (parseMoney(_goal.text, profile.currency)) {
+        final amount? when amount > 0 => amount,
+        _ => null,
+      },
     );
     final repo = ref.read(expensesRepositoryProvider);
 
@@ -211,7 +223,11 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       validator: (value) => (value?.trim() ?? '').isEmpty ? l10n.accountNameRequired : null,
                     ),
                     FieldLabel(l10n.accountKindLabel),
-                    PillRow(
+                    // Sur deux lignes plutôt qu'en rangée qui défile : les quatre
+                    // types restent visibles, « Épargne » compris.
+                    Wrap(
+                      spacing: PalierSpace.sm,
+                      runSpacing: PalierSpace.sm,
                       children: [
                         for (final kind in AccountKind.values)
                           ChoicePill(
@@ -232,6 +248,23 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                       validator: (value) =>
                           parseMoney(value ?? '', currency) == null ? l10n.accountOpeningInvalid : null,
                     ),
+                    if (_kind == AccountKind.savings) ...[
+                      const SizedBox(height: PalierSpace.md),
+                      LucidTextField(
+                        key: const ValueKey('objectif'),
+                        controller: _goal,
+                        label: '${l10n.accountGoalLabel} (${currency.symbol})',
+                        keyboardType: TextInputType.numberWithOptions(decimal: currency.decimals > 0),
+                        textInputAction: TextInputAction.done,
+                        helperText: l10n.accountGoalHelp,
+                        validator: (value) {
+                          final text = value?.trim() ?? '';
+                          if (text.isEmpty) return null;
+                          final amount = parseMoney(text, currency);
+                          return amount == null || amount <= 0 ? l10n.accountGoalInvalid : null;
+                        },
+                      ),
+                    ],
                     const SizedBox(height: PalierSpace.xl),
                     LucidButton(
                       label: l10n.accountSave,
@@ -252,6 +285,58 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                 ),
               ),
             ),
+    );
+  }
+}
+
+/// Sous le nom d'un compte d'épargne : où en est son objectif, en pourcentage
+/// et en jauge. Vert, puisque s'approcher du but est une bonne nouvelle : pas
+/// d'ambre ni de rouge comme pour un plafond, et le dépasser reste du vert.
+class SavingsGoal extends StatelessWidget {
+  const SavingsGoal({super.key, required this.account, required this.currency});
+
+  final Account account;
+  final PalierCurrency currency;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final goal = account.goal!;
+    final saved = account.balance < 0 ? 0 : account.balance;
+    final reached = saved >= goal;
+    final percent = (account.goalProgress! * 100).floor();
+    final style = manrope(
+      size: 13,
+      weight: FontWeight.w500,
+      color: reached ? PalierColors.success : PalierColors.textLow,
+    );
+    final kind = l10n.accountKindName(account.kind);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LucidPrivateText(
+            '$kind · ${reached ? l10n.accountGoalReached(formatMoney(goal, currency)) : l10n.accountGoalProgress(percent, formatMoney(goal, currency))}',
+            mask:
+                '$kind · ${reached ? l10n.accountGoalReached(maskedMoney(currency)) : l10n.accountGoalProgress(percent, maskedMoney(currency))}',
+            style: style,
+          ),
+          const SizedBox(height: PalierSpace.xs + 2),
+          LucidMeter(
+            value: saved,
+            max: goal,
+            color: PalierColors.success,
+            warningColor: PalierColors.success,
+            overColor: PalierColors.success,
+            trackColor: PalierColors.indigo,
+            height: 4,
+            semanticLabel: l10n.accountGoalLabel,
+            semanticValue: l10n.accountGoalProgress(percent, formatMoney(goal, currency)),
+          ),
+        ],
+      ),
     );
   }
 }

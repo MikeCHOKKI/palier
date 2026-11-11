@@ -156,7 +156,7 @@ void main() {
   });
 }
 
-/// Un mois fictif de Kofi : deux comptes, un salaire, quelques dépenses, un
+/// Un mois fictif de Kofi : deux comptes et une épargne, un salaire, quelques dépenses, un
 /// virement, trois plafonds, et ce qui revient (salaire, loyer, abonnement).
 Future<void> _kofiMonth(TestApp app) async {
   // Tout est créé le 1er du mois : la date réelle du jour ne change rien aux captures.
@@ -168,6 +168,10 @@ Future<void> _kofiMonth(TestApp app) async {
   final momo = await repo.createAccount(
     kofi,
     const AccountDraft(name: 'MTN MoMo', kind: AccountKind.mobileMoney, openingBalance: 42500),
+  );
+  final tabaski = await repo.createAccount(
+    kofi,
+    const AccountDraft(name: 'Tabaski', kind: AccountKind.savings, openingBalance: 40000, goal: 150000),
   );
   final categories = {for (final c in await repo.watchCategories(kofi).first) c.name: c.id};
   final now = _day;
@@ -199,6 +203,7 @@ Future<void> _kofiMonth(TestApp app) async {
   final monthly = LucidRecurrence(unit: LucidRecurrenceUnit.month, start: now);
   await add(OperationKind.income, 150000, momo.id, at(1, 9), category: 'Salaire', repeat: monthly);
   await add(OperationKind.transfer, 20000, momo.id, at(1, 12), to: cash.id, note: 'retrait');
+  await add(OperationKind.transfer, 15000, momo.id, at(1, 13), to: tabaski.id, note: 'épargne');
   await add(OperationKind.expense, 12500, cash.id, at(1, 18), category: 'Alimentation', note: 'marché');
   await add(OperationKind.expense, 1000, momo.id, at(0, 8), category: 'Crédit et data');
   await add(OperationKind.expense, 700, cash.id, at(0, 9), category: 'Transport', note: 'zem');
