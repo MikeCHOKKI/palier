@@ -59,7 +59,7 @@ class ExpensesScreen extends ConsumerWidget {
   }
 }
 
-class _Content extends ConsumerWidget {
+class _Content extends ConsumerStatefulWidget {
   const _Content({required this.currency, required this.accounts, required this.month});
 
   final PalierCurrency currency;
@@ -67,7 +67,25 @@ class _Content extends ConsumerWidget {
   final MonthView month;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Content> createState() => _ContentState();
+}
+
+/// Les jours du mois se replient : seul le plus récent est ouvert d'office,
+/// les autres se résument à leur en-tête (date, nombre d'opérations, solde).
+class _ContentState extends ConsumerState<_Content> {
+  /// Les jours dont on a changé l'état d'office (ouvert ou replié).
+  final _toggled = <DateTime>{};
+
+  bool _isOpen(int index, DateTime day) => (index == 0) != _toggled.contains(day);
+
+  void _toggle(DateTime day) => setState(() => _toggled.contains(day) ? _toggled.remove(day) : _toggled.add(day));
+
+  PalierCurrency get currency => widget.currency;
+  List<Account> get accounts => widget.accounts;
+  MonthView get month => widget.month;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final dayFormat = DateFormat.MMMMEEEEd('fr');
@@ -159,41 +177,45 @@ class _Content extends ConsumerWidget {
             sliver: SliverToBoxAdapter(child: _EmptyMonth()),
           )
         else
-          for (final day in month.days)
+          for (final (index, day) in month.days.indexed)
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(PalierSpace.page, PalierSpace.lg, PalierSpace.page, 0),
+              padding: const EdgeInsets.fromLTRB(PalierSpace.page, PalierSpace.md, PalierSpace.page, 0),
               sliver: SliverList.list(
                 children: [
                   _DayHeader(
                     label: dayLabel(l10n, day.day, dayFormat.format, now: now),
                     net: day.received - day.spent,
+                    count: day.entries.length,
+                    open: _isOpen(index, day.day),
+                    onTap: () => _toggle(day.day),
                     currency: currency,
                   ),
-                  for (final entry in day.entries)
-                    // Glisser n'est qu'un raccourci : le toucher ouvre aussi la ligne.
-                    LucidSwipeActions(
-                      key: ValueKey(entry.id),
-                      borderRadius: BorderRadius.circular(PalierRadius.sm),
-                      startAction: LucidSwipeAction(
-                        icon: Icons.delete_outline_rounded,
-                        label: l10n.delete,
-                        color: PalierColors.danger,
-                        removesItem: true,
-                        threshold: 0.4,
-                        onTriggered: () => _delete(context, ref, entry.id),
+                  if (_isOpen(index, day.day))
+                    for (final entry in day.entries)
+                      // Glisser n'est qu'un raccourci : le toucher ouvre aussi la ligne.
+                      LucidSwipeActions(
+                        key: ValueKey(entry.id),
+                        borderRadius: BorderRadius.circular(PalierRadius.sm),
+                        startAction: LucidSwipeAction(
+                          icon: Icons.delete_outline_rounded,
+                          label: l10n.delete,
+                          color: PalierColors.danger,
+                          removesItem: true,
+                          threshold: 0.4,
+                          onTriggered: () => _delete(context, entry.id),
+                        ),
+                        endAction: LucidSwipeAction(
+                          icon: Icons.edit_outlined,
+                          label: l10n.operationEditTitle,
+                          threshold: 0.25,
+                          onTriggered: () => context.push(Routes.expensesOperation(entry.id)),
+                        ),
+                        child: OperationTile(
+                          entry: entry,
+                          currency: currency,
+                          onTap: () => context.push(Routes.expensesOperation(entry.id)),
+                        ),
                       ),
-                      endAction: LucidSwipeAction(
-                        icon: Icons.edit_outlined,
-                        label: l10n.operationEditTitle,
-                        threshold: 0.25,
-                        onTriggered: () => context.push(Routes.expensesOperation(entry.id)),
-                      ),
-                      child: OperationTile(
-                        entry: entry,
-                        currency: currency,
-                        onTap: () => context.push(Routes.expensesOperation(entry.id)),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -204,7 +226,7 @@ class _Content extends ConsumerWidget {
   }
 
   /// Suppression d'un glissement : pas de confirmation, « Annuler » la rattrape.
-  Future<void> _delete(BuildContext context, WidgetRef ref, String id) async {
+  Future<void> _delete(BuildContext context, String id) async {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final repo = ref.read(expensesRepositoryProvider);
@@ -484,30 +506,68 @@ class _BudgetsBlock extends ConsumerWidget {
   }
 }
 
+/// L'en-tête d'un jour : le toucher ouvre ou replie ses opérations.
 class _DayHeader extends StatelessWidget {
-  const _DayHeader({required this.label, required this.net, required this.currency});
+  const _DayHeader({
+    required this.label,
+    required this.net,
+    required this.count,
+    required this.open,
+    required this.onTap,
+    required this.currency,
+  });
 
   final String label;
   final int net;
+  final int count;
+  final bool open;
+  final VoidCallback onTap;
   final PalierCurrency currency;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: PalierSpace.xs),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(label, style: text.labelLarge!.copyWith(color: PalierColors.textMid)),
+    return Semantics(
+      button: true,
+      expanded: open,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(PalierRadius.sm),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kPalierMinTarget),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    text: label,
+                    children: [
+                      if (!open)
+                        TextSpan(
+                          text: ' · ${l10n.expensesDayCount(count)}',
+                          style: text.labelMedium!.copyWith(color: PalierColors.textLow),
+                        ),
+                    ],
+                  ),
+                  style: text.labelLarge!.copyWith(color: PalierColors.textMid),
+                ),
+              ),
+              if (net != 0)
+                LucidPrivateText(
+                  formatMoney(net, currency, signed: true),
+                  mask: maskedMoney(currency),
+                  style: text.labelMedium!.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+                ),
+              const SizedBox(width: PalierSpace.xs),
+              AnimatedRotation(
+                turns: open ? 0.5 : 0,
+                duration: const Duration(milliseconds: 180),
+                child: const Icon(Icons.expand_more_rounded, size: 20, color: PalierColors.textLow),
+              ),
+            ],
           ),
-          if (net != 0)
-            LucidPrivateText(
-              formatMoney(net, currency, signed: true),
-              mask: maskedMoney(currency),
-              style: text.labelMedium!.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
-            ),
-        ],
+        ),
       ),
     );
   }

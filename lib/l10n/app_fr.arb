@@ -105,6 +105,8 @@
   "expensesManageCategories": "Catégories",
   "expensesManageBudgets": "Budgets",
   "expensesManageRecurrings": "Récurrentes",
+  "expensesDayCount": "{count, plural, =1{1 opération} other{{count} opérations}}",
+  "@expensesDayCount": { "placeholders": { "count": { "type": "int" } } },
   "expensesAfterDues": "Après les échéances du mois : {amount}",
   "@expensesAfterDues": { "placeholders": { "amount": { "type": "String" } } },
   "expensesToday": "Aujourd’hui",
