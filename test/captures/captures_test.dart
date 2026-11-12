@@ -16,6 +16,7 @@ import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 import 'package:palier/features/sport/data/sport_repository.dart';
 import 'package:palier/features/sport/domain/circuits.dart';
+import 'package:palier/features/sport/domain/program.dart';
 import 'package:palier/features/sport/domain/sport.dart';
 
 import '../helpers/pump_app.dart';
@@ -189,9 +190,10 @@ void main() {
 
   testWidgets('sport, séance, réglages', (tester) async {
     final app = await TestApp.pump(tester, now: _day, seed: family);
+    // Les données d'abord : écrire pendant que l'accueil suit le programme bloquerait le test.
+    await tester.runAsync(() => _kofiSport(app));
     await tester.tap(find.text('Kofi'));
     await app.settle(tester);
-    await tester.runAsync(() => _kofiSport(app));
     await tester.tap(find.text('Sport'));
     await app.settle(tester);
     await capture(tester, '19-sport');
@@ -218,14 +220,21 @@ void main() {
     await tester.tap(find.text('Maison'));
     await app.settle(tester);
     await capture(tester, '22-circuit');
+
+    await tester.tap(find.byTooltip('Fermer'));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Mon programme'));
+    await app.settle(tester);
+    await capture(tester, '24-programme');
   });
 
   testWidgets('séance guidée', (tester) async {
     var now = _day;
     final app = await TestApp.pump(tester, clock: () => now, seed: family);
+    // Les données d'abord : écrire pendant que l'accueil suit le programme bloquerait le test.
+    await tester.runAsync(() => _kofiSport(app));
     await tester.tap(find.text('Kofi'));
     await app.settle(tester);
-    await tester.runAsync(() => _kofiSport(app));
     await tester.tap(find.text('Sport'));
     await app.settle(tester);
     await tester.tap(find.byTooltip('Lancer Maison'));
@@ -253,7 +262,7 @@ Future<void> _kofiSport(TestApp app) async {
       weeklyGoalMinutes: 150,
     ),
   );
-  await repo.createCircuit(
+  final maison = await repo.createCircuit(
     kofi,
     const CircuitDraft(
       name: 'Maison',
@@ -266,6 +275,15 @@ Future<void> _kofiSport(TestApp app) async {
       ],
     ),
   );
+  // Le programme : le circuit le lundi, la course le mercredi, la marche le vendredi et le samedi (jour des captures).
+  for (final draft in [
+    PlanItemDraft.circuit(weekday: DateTime.monday, circuitId: maison.id),
+    const PlanItemDraft(weekday: DateTime.wednesday, activity: WorkoutActivity.run, targetMinutes: 30),
+    const PlanItemDraft(weekday: DateTime.friday, activity: WorkoutActivity.walk, targetMinutes: 45),
+    const PlanItemDraft(weekday: DateTime.saturday, activity: WorkoutActivity.walk, targetMinutes: 40),
+  ]) {
+    await repo.addPlanItem(kofi, draft);
+  }
   DateTime at(int daysAgo, int hour) => DateTime(_day.year, _day.month, _day.day - daysAgo, hour);
   for (final draft in [
     WorkoutDraft(

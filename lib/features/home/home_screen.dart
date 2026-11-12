@@ -10,6 +10,8 @@ import '../../app/theme/palier_tokens.dart';
 import '../../core/ui/palier_mark.dart';
 import '../../core/ui/profile_avatar.dart';
 import '../../l10n/app_localizations.dart';
+import '../sport/ui/sport_providers.dart';
+import '../sport/ui/today_plan.dart';
 
 /// Accueil du profil : salutation, conseils utiles, puis (lot 4) le bilan.
 class HomeScreen extends ConsumerWidget {
@@ -44,6 +46,10 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: PalierSpace.xl),
+          if (profile.sportEnabled && ref.watch(todayPlanProvider).isNotEmpty) ...[
+            const TodayPlanCard(),
+            const SizedBox(height: PalierSpace.lg),
+          ],
           if (!profile.hasPin) ...[
             _Tip(
               icon: Icons.lock_outline_rounded,

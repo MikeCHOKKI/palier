@@ -35,6 +35,7 @@ pas de serveur, pas de publicité.
 <p align="center">
   <img src="docs/captures/22-circuit.png" width="220" alt="Composer un circuit de renforcement">
   <img src="docs/captures/23-seance-guidee.png" width="220" alt="Séance guidée, décompte d'un exercice">
+  <img src="docs/captures/24-programme.png" width="220" alt="Programme de la semaine">
 </p>
 
 ## Ce que fait Palier
@@ -46,7 +47,7 @@ suit, et son propre verrou.
 |---|---|---|
 | 1. Socle et profils | Profils personnalisés, profil d'enfant, code à 4-6 chiffres avec blocage progressif, empreinte, verrouillage après une minute en arrière-plan, export et import chiffrés | Fait |
 | 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | Fait |
-| 3. Sport | Marche, course et renforcement : journal des séances, semaine face à l'objectif choisi, séances guidées, programme, suivi des progrès | En cours : réglages, journal, semaine et séances guidées faits |
+| 3. Sport | Marche, course et renforcement : journal des séances, semaine face à l'objectif choisi, séances guidées, programme, suivi des progrès | En cours : réglages, journal, semaine, séances guidées et programme faits ; reste le suivi des progrès |
 | 4. Progression | Habitudes, objectifs par étapes, bilan de la semaine | À venir |
 | 5. Options Android | Lecture des SMS Mobile Money (désactivée par défaut), nombre de pas | À venir |
 

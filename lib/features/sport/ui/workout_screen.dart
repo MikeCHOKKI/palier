@@ -17,13 +17,24 @@ import 'sport_visuals.dart';
 /// Noter une séance, ou la modifier : activité, durée, distance pour la marche
 /// et la course, ressenti, jour et note.
 class WorkoutScreen extends ConsumerStatefulWidget {
-  const WorkoutScreen({super.key, this.workoutId});
+  const WorkoutScreen({super.key, this.workoutId, this.prefill});
 
   /// `null` pour une nouvelle séance.
   final String? workoutId;
 
+  /// Une séance du programme à noter : l'activité et la durée visée, déjà remplies.
+  final WorkoutPrefill? prefill;
+
   @override
   ConsumerState<WorkoutScreen> createState() => _WorkoutScreenState();
+}
+
+/// Ce que le programme prévoit pour une séance à noter.
+class WorkoutPrefill {
+  const WorkoutPrefill({required this.activity, this.minutes});
+
+  final WorkoutActivity activity;
+  final int? minutes;
 }
 
 class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
@@ -57,6 +68,9 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     if (_editing) {
       _loading = true;
       _load(widget.workoutId!);
+    } else if (widget.prefill case final prefill?) {
+      _activity = prefill.activity;
+      if (prefill.minutes case final minutes?) _minutes.text = '$minutes';
     }
   }
 

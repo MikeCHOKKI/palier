@@ -15,6 +15,7 @@ import '../domain/circuits.dart';
 import '../domain/sport.dart';
 import 'sport_providers.dart';
 import 'sport_visuals.dart';
+import 'today_plan.dart';
 
 /// Les séances affichées sous la semaine ; les plus anciennes viendront avec le suivi des progrès.
 const _recentCount = 20;
@@ -81,6 +82,11 @@ class _Content extends ConsumerWidget {
                 children: [
                   Expanded(child: Text(l10n.sportTitle, style: text.headlineMedium)),
                   IconButton(
+                    tooltip: l10n.sportProgramMenu,
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    onPressed: () => context.push(Routes.sportProgram),
+                  ),
+                  IconButton(
                     tooltip: l10n.sportSettingsMenu,
                     icon: const Icon(Icons.tune_rounded),
                     onPressed: () => context.push(Routes.sportSettings),
@@ -89,7 +95,21 @@ class _Content extends ConsumerWidget {
               ),
               const SizedBox(height: PalierSpace.lg),
               if (settings == null) ...[const _SetupCard(), const SizedBox(height: PalierSpace.lg)],
+              if (ref.watch(todayPlanProvider).isNotEmpty) ...[
+                const TodayPlanCard(),
+                const SizedBox(height: PalierSpace.lg),
+              ],
               _WeekBlock(week: week, today: now.weekday),
+              if (ref.watch(planProvider).value?.isEmpty ?? false)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                    onPressed: () => context.push(Routes.sportProgram),
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    label: Text(l10n.todayEmptyPlan),
+                  ),
+                ),
               if (circuits.isNotEmpty ||
                   (settings ?? SportSettings.initial).activities.contains(WorkoutActivity.strength)) ...[
                 const SizedBox(height: PalierSpace.xl),
