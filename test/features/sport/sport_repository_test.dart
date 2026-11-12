@@ -7,6 +7,7 @@ import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 import 'package:palier/features/sport/data/sport_repository.dart';
 import 'package:palier/features/sport/domain/circuits.dart';
+import 'package:palier/features/sport/domain/program.dart';
 import 'package:palier/features/sport/domain/sport.dart';
 
 import '../../helpers/test_database.dart';
@@ -152,6 +153,34 @@ void main() {
     });
   });
 
+  test('le programme se remplit jour par jour, se vide et se rattrape', () async {
+    final circuit = await repo.createCircuit(
+      ama,
+      const CircuitDraft(
+        name: 'Maison',
+        exercises: [CircuitExercise(name: 'Pompes', reps: 10)],
+      ),
+    );
+    await repo.addPlanItem(ama, const PlanItemDraft(weekday: 3, activity: WorkoutActivity.walk, targetMinutes: 30));
+    final id = await repo.addPlanItem(ama, PlanItemDraft.circuit(weekday: 1, circuitId: circuit.id));
+    await repo.addPlanItem(ama, const PlanItemDraft(weekday: 1, activity: WorkoutActivity.run));
+
+    final plan = await repo.watchPlan(ama).first;
+    expect(
+      [for (final p in plan) (p.weekday, p.activity, p.circuitId != null, p.targetMinutes)],
+      [
+        (1, WorkoutActivity.strength, true, null),
+        (1, WorkoutActivity.run, false, null),
+        (3, WorkoutActivity.walk, false, 30),
+      ],
+    );
+
+    await repo.removePlanItem(id);
+    expect(await repo.watchPlan(ama).first, hasLength(2));
+    await repo.restorePlanItem(id);
+    expect(await repo.watchPlan(ama).first, hasLength(3));
+  });
+
   test('le sport suit le profil dans son export chiffré, et l’import le remplace', () async {
     const password = 'lune-baobab-42';
     BackupService serviceFor(PalierDatabase db) =>
@@ -167,6 +196,7 @@ void main() {
       ),
     );
     await repo.createWorkout(ama, run(DateTime.utc(2026, 11, 10, 6), meters: 5200, note: 'bord de mer'));
+    await repo.addPlanItem(ama, PlanItemDraft.circuit(weekday: 2, circuitId: circuit.id));
     final deleted = await repo.createWorkout(ama, run(DateTime.utc(2026, 11, 11)));
     await repo.deleteWorkout(deleted.id);
     final file = await serviceFor(db).exportProfile(ama, password);
@@ -181,6 +211,7 @@ void main() {
     expect(workouts.single.note, 'bord de mer');
     expect(workouts.single.occurredAt, DateTime.utc(2026, 11, 10, 6));
     expect(workouts.single.distanceMeters, 5200);
+    expect((await restored.watchPlan(ama).first).single.circuitId, circuit.id);
     final circuits = await restored.watchCircuits(ama).first;
     expect(circuits.single.id, circuit.id);
     expect(circuits.single.exercises.single.reps, 10);

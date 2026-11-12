@@ -21,10 +21,12 @@ class SportBackupSection implements BackupSection {
     final workouts = await (_db.select(_db.workouts)..where((w) => w.profileId.equals(profileId))).get();
     final circuits = await (_db.select(_db.circuits)..where((c) => c.profileId.equals(profileId))).get();
     final exercises = await (_db.select(_db.circuitExercises)..where((e) => e.profileId.equals(profileId))).get();
+    final plan = await (_db.select(_db.planItems)..where((p) => p.profileId.equals(profileId))).get();
     return [
       for (final row in settings) {_tableKey: 'sportSettings', ...row.toJson()},
       for (final row in circuits) {_tableKey: 'circuits', ...row.toJson()},
       for (final row in exercises) {_tableKey: 'circuitExercises', ...row.toJson()},
+      for (final row in plan) {_tableKey: 'planItems', ...row.toJson()},
       for (final row in workouts) {_tableKey: 'workouts', ...row.toJson()},
     ];
   }
@@ -37,8 +39,9 @@ class SportBackupSection implements BackupSection {
         if (row[_tableKey] == table) {...row}..remove(_tableKey),
     ];
 
-    // Ce qui pointe vers un circuit part d'abord : séances, puis exercices.
+    // Ce qui pointe vers un circuit part d'abord : séances, programme, puis exercices.
     await (_db.delete(_db.workouts)..where((w) => w.profileId.equals(profileId))).go();
+    await (_db.delete(_db.planItems)..where((p) => p.profileId.equals(profileId))).go();
     await (_db.delete(_db.circuitExercises)..where((e) => e.profileId.equals(profileId))).go();
     await (_db.delete(_db.circuits)..where((c) => c.profileId.equals(profileId))).go();
     await (_db.delete(_db.sportSettingsTable)..where((s) => s.profileId.equals(profileId))).go();
@@ -55,6 +58,10 @@ class SportBackupSection implements BackupSection {
     for (final json in of('circuitExercises')) {
       final row = CircuitExerciseRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
       await _db.into(_db.circuitExercises).insert(row.toCompanion(false));
+    }
+    for (final json in of('planItems')) {
+      final row = PlanItemRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);
+      await _db.into(_db.planItems).insert(row.toCompanion(false));
     }
     for (final json in of('workouts')) {
       final row = WorkoutRow.fromJson(json, serializer: _utc).copyWith(profileId: profileId);

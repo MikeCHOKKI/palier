@@ -166,7 +166,14 @@ class SportWeek {
   });
 
   /// Additionne les séances de la semaine de [now] (heure locale du téléphone).
-  factory SportWeek.of(List<Workout> workouts, SportSettings settings, {required DateTime now}) {
+  ///
+  /// Les jours prévus sont ceux des réglages, plus ceux du programme ([planDays]).
+  factory SportWeek.of(
+    List<Workout> workouts,
+    SportSettings settings, {
+    required DateTime now,
+    Set<int> planDays = const {},
+  }) {
     final start = weekStartOf(now);
     final end = DateTime(start.year, start.month, start.day + 7);
     var seconds = 0;
@@ -187,7 +194,7 @@ class SportWeek {
       sessions: sessions,
       distanceMeters: meters,
       doneDays: done,
-      plannedDays: settings.trainingDays,
+      plannedDays: {...settings.trainingDays, ...planDays},
       goalMinutes: settings.weeklyGoalMinutes,
     );
   }

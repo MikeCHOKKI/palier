@@ -14,6 +14,7 @@ import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
 import 'generated/schema_v7.dart' as v7;
 import 'generated/schema_v8.dart' as v8;
+import 'generated/schema_v9.dart' as v9;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -422,6 +423,38 @@ void main() {
           ),
       throwsA(isA<SqliteException>()),
     );
+  });
+
+  test('v9 → v10 garde les circuits, et un jour du programme va de 1 à 7', () async {
+    const at = '2026-11-12T09:00:00.000Z';
+    final schema = await verifier.schemaAt(9);
+    final oldDb = v9.DatabaseAtV9(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO circuits (id, created_at, updated_at, profile_id, name, rounds) '
+          "VALUES ('c', '$at', '$at', 'p', 'Maison', 3)",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    expect((await db.select(db.circuits).getSingle()).name, 'Maison');
+
+    final now = DateTime.utc(2026, 11, 12);
+    PlanItemsCompanion item(String id, int weekday) => PlanItemsCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      weekday: weekday,
+      activity: WorkoutActivity.strength,
+      circuitId: const Value('c'),
+    );
+    await expectLater(db.into(db.planItems).insert(item('zero', 0)), throwsA(isA<SqliteException>()));
+    await expectLater(db.into(db.planItems).insert(item('huit', 8)), throwsA(isA<SqliteException>()));
+    await db.into(db.planItems).insert(item('dimanche', 7));
   });
 
   test('les clés étrangères sont appliquées', () async {

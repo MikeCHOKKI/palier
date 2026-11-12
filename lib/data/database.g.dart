@@ -6619,6 +6619,539 @@ class CircuitExercisesCompanion extends UpdateCompanion<CircuitExerciseRow> {
   }
 }
 
+class $PlanItemsTable extends PlanItems with TableInfo<$PlanItemsTable, PlanItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlanItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta('weekday');
+  @override
+  late final GeneratedColumn<int> weekday = GeneratedColumn<int>(
+    'weekday',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(weekday).isBetweenValues(1, 7),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<WorkoutActivity, String> activity = GeneratedColumn<String>(
+    'activity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<WorkoutActivity>($PlanItemsTable.$converteractivity);
+  static const VerificationMeta _circuitIdMeta = const VerificationMeta('circuitId');
+  @override
+  late final GeneratedColumn<String> circuitId = GeneratedColumn<String>(
+    'circuit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES circuits (id)'),
+  );
+  static const VerificationMeta _targetMinutesMeta = const VerificationMeta('targetMinutes');
+  @override
+  late final GeneratedColumn<int> targetMinutes = GeneratedColumn<int>(
+    'target_minutes',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(targetMinutes).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    weekday,
+    activity,
+    circuitId,
+    targetMinutes,
+    position,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'plan_items';
+  @override
+  VerificationContext validateIntegrity(Insertable<PlanItemRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('weekday')) {
+      context.handle(_weekdayMeta, weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta));
+    } else if (isInserting) {
+      context.missing(_weekdayMeta);
+    }
+    if (data.containsKey('circuit_id')) {
+      context.handle(_circuitIdMeta, circuitId.isAcceptableOrUnknown(data['circuit_id']!, _circuitIdMeta));
+    }
+    if (data.containsKey('target_minutes')) {
+      context.handle(
+        _targetMinutesMeta,
+        targetMinutes.isAcceptableOrUnknown(data['target_minutes']!, _targetMinutesMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlanItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlanItemRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      weekday: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}weekday'])!,
+      activity: $PlanItemsTable.$converteractivity.fromSql(
+        attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}activity'])!,
+      ),
+      circuitId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}circuit_id']),
+      targetMinutes: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}target_minutes']),
+      position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+    );
+  }
+
+  @override
+  $PlanItemsTable createAlias(String alias) {
+    return $PlanItemsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<WorkoutActivity, String, String> $converteractivity =
+      const EnumNameConverter<WorkoutActivity>(WorkoutActivity.values);
+}
+
+class PlanItemRow extends DataClass implements Insertable<PlanItemRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+
+  /// De 1 (lundi) à 7 (dimanche).
+  final int weekday;
+  final WorkoutActivity activity;
+  final String? circuitId;
+
+  /// Durée visée en minutes, choisie par la personne ; `null` sans durée.
+  final int? targetMinutes;
+  final int position;
+  const PlanItemRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.weekday,
+    required this.activity,
+    this.circuitId,
+    this.targetMinutes,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['weekday'] = Variable<int>(weekday);
+    {
+      map['activity'] = Variable<String>($PlanItemsTable.$converteractivity.toSql(activity));
+    }
+    if (!nullToAbsent || circuitId != null) {
+      map['circuit_id'] = Variable<String>(circuitId);
+    }
+    if (!nullToAbsent || targetMinutes != null) {
+      map['target_minutes'] = Variable<int>(targetMinutes);
+    }
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  PlanItemsCompanion toCompanion(bool nullToAbsent) {
+    return PlanItemsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      weekday: Value(weekday),
+      activity: Value(activity),
+      circuitId: circuitId == null && nullToAbsent ? const Value.absent() : Value(circuitId),
+      targetMinutes: targetMinutes == null && nullToAbsent ? const Value.absent() : Value(targetMinutes),
+      position: Value(position),
+    );
+  }
+
+  factory PlanItemRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlanItemRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      weekday: serializer.fromJson<int>(json['weekday']),
+      activity: $PlanItemsTable.$converteractivity.fromJson(serializer.fromJson<String>(json['activity'])),
+      circuitId: serializer.fromJson<String?>(json['circuitId']),
+      targetMinutes: serializer.fromJson<int?>(json['targetMinutes']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'weekday': serializer.toJson<int>(weekday),
+      'activity': serializer.toJson<String>($PlanItemsTable.$converteractivity.toJson(activity)),
+      'circuitId': serializer.toJson<String?>(circuitId),
+      'targetMinutes': serializer.toJson<int?>(targetMinutes),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  PlanItemRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    int? weekday,
+    WorkoutActivity? activity,
+    Value<String?> circuitId = const Value.absent(),
+    Value<int?> targetMinutes = const Value.absent(),
+    int? position,
+  }) => PlanItemRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    weekday: weekday ?? this.weekday,
+    activity: activity ?? this.activity,
+    circuitId: circuitId.present ? circuitId.value : this.circuitId,
+    targetMinutes: targetMinutes.present ? targetMinutes.value : this.targetMinutes,
+    position: position ?? this.position,
+  );
+  PlanItemRow copyWithCompanion(PlanItemsCompanion data) {
+    return PlanItemRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
+      activity: data.activity.present ? data.activity.value : this.activity,
+      circuitId: data.circuitId.present ? data.circuitId.value : this.circuitId,
+      targetMinutes: data.targetMinutes.present ? data.targetMinutes.value : this.targetMinutes,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlanItemRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('weekday: $weekday, ')
+          ..write('activity: $activity, ')
+          ..write('circuitId: $circuitId, ')
+          ..write('targetMinutes: $targetMinutes, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    weekday,
+    activity,
+    circuitId,
+    targetMinutes,
+    position,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlanItemRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.weekday == this.weekday &&
+          other.activity == this.activity &&
+          other.circuitId == this.circuitId &&
+          other.targetMinutes == this.targetMinutes &&
+          other.position == this.position);
+}
+
+class PlanItemsCompanion extends UpdateCompanion<PlanItemRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<int> weekday;
+  final Value<WorkoutActivity> activity;
+  final Value<String?> circuitId;
+  final Value<int?> targetMinutes;
+  final Value<int> position;
+  final Value<int> rowid;
+  const PlanItemsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.weekday = const Value.absent(),
+    this.activity = const Value.absent(),
+    this.circuitId = const Value.absent(),
+    this.targetMinutes = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlanItemsCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required int weekday,
+    required WorkoutActivity activity,
+    this.circuitId = const Value.absent(),
+    this.targetMinutes = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       weekday = Value(weekday),
+       activity = Value(activity);
+  static Insertable<PlanItemRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<int>? weekday,
+    Expression<String>? activity,
+    Expression<String>? circuitId,
+    Expression<int>? targetMinutes,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (weekday != null) 'weekday': weekday,
+      if (activity != null) 'activity': activity,
+      if (circuitId != null) 'circuit_id': circuitId,
+      if (targetMinutes != null) 'target_minutes': targetMinutes,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlanItemsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<int>? weekday,
+    Value<WorkoutActivity>? activity,
+    Value<String?>? circuitId,
+    Value<int?>? targetMinutes,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return PlanItemsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      weekday: weekday ?? this.weekday,
+      activity: activity ?? this.activity,
+      circuitId: circuitId ?? this.circuitId,
+      targetMinutes: targetMinutes ?? this.targetMinutes,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (weekday.present) {
+      map['weekday'] = Variable<int>(weekday.value);
+    }
+    if (activity.present) {
+      map['activity'] = Variable<String>($PlanItemsTable.$converteractivity.toSql(activity.value));
+    }
+    if (circuitId.present) {
+      map['circuit_id'] = Variable<String>(circuitId.value);
+    }
+    if (targetMinutes.present) {
+      map['target_minutes'] = Variable<int>(targetMinutes.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlanItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('weekday: $weekday, ')
+          ..write('activity: $activity, ')
+          ..write('circuitId: $circuitId, ')
+          ..write('targetMinutes: $targetMinutes, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -7259,6 +7792,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
   late final $SportSettingsTableTable sportSettingsTable = $SportSettingsTableTable(this);
   late final $CircuitsTable circuits = $CircuitsTable(this);
   late final $CircuitExercisesTable circuitExercises = $CircuitExercisesTable(this);
+  late final $PlanItemsTable planItems = $PlanItemsTable(this);
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
   late final Index operationsProfileDate = Index(
     'operations_profile_date',
@@ -7284,6 +7818,7 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
     sportSettingsTable,
     circuits,
     circuitExercises,
+    planItems,
     workouts,
     operationsProfileDate,
     workoutsProfileDate,
@@ -7477,6 +8012,19 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_circuitExercisesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$PlanItemsTable, List<PlanItemRow>> _planItemsRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.planItems, aliasName: 'profiles__id__plan_items__profile_id');
+
+  $$PlanItemsTableProcessedTableManager get planItemsRefs {
+    final manager = $$PlanItemsTableTableManager(
+      $_db,
+      $_db.planItems,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_planItemsRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
@@ -7738,6 +8286,24 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
           $$CircuitExercisesTableFilterComposer(
             $db: $db,
             $table: $db.circuitExercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> planItemsRefs(Expression<bool> Function($$PlanItemsTableFilterComposer f) f) {
+    final $$PlanItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.planItems,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$PlanItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.planItems,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -8071,6 +8637,24 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     return f(composer);
   }
 
+  Expression<T> planItemsRefs<T extends Object>(Expression<T> Function($$PlanItemsTableAnnotationComposer a) f) {
+    final $$PlanItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.planItems,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$PlanItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.planItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> workoutsRefs<T extends Object>(Expression<T> Function($$WorkoutsTableAnnotationComposer a) f) {
     final $$WorkoutsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -8115,6 +8699,7 @@ class $$ProfilesTableTableManager
             bool sportSettingsTableRefs,
             bool circuitsRefs,
             bool circuitExercisesRefs,
+            bool planItemsRefs,
             bool workoutsRefs,
           })
         > {
@@ -8218,6 +8803,7 @@ class $$ProfilesTableTableManager
                 sportSettingsTableRefs = false,
                 circuitsRefs = false,
                 circuitExercisesRefs = false,
+                planItemsRefs = false,
                 workoutsRefs = false,
               }) {
                 return PrefetchHooks(
@@ -8234,6 +8820,7 @@ class $$ProfilesTableTableManager
                     if (sportSettingsTableRefs) db.sportSettingsTable,
                     if (circuitsRefs) db.circuits,
                     if (circuitExercisesRefs) db.circuitExercises,
+                    if (planItemsRefs) db.planItems,
                     if (workoutsRefs) db.workouts,
                   ],
                   addJoins: null,
@@ -8359,6 +8946,15 @@ class $$ProfilesTableTableManager
                           referencedColumn: 'profile_id',
                           typedResults: items,
                         ),
+                      if (planItemsRefs)
+                        await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, PlanItemRow, $PlanItemsTable>(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._planItemsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).planItemsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
                       if (workoutsRefs)
                         await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, WorkoutRow, $WorkoutsTable>(
                           currentTable: table,
@@ -8400,6 +8996,7 @@ typedef $$ProfilesTableProcessedTableManager =
         bool sportSettingsTableRefs,
         bool circuitsRefs,
         bool circuitExercisesRefs,
+        bool planItemsRefs,
         bool workoutsRefs,
       })
     >;
@@ -13288,6 +13885,19 @@ final class $$CircuitsTableReferences extends BaseReferences<_$PalierDatabase, $
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
+  static MultiTypedResultKey<$PlanItemsTable, List<PlanItemRow>> _planItemsRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.planItems, aliasName: 'circuits__id__plan_items__circuit_id');
+
+  $$PlanItemsTableProcessedTableManager get planItemsRefs {
+    final manager = $$PlanItemsTableTableManager(
+      $_db,
+      $_db.planItems,
+    ).filter((f) => f.circuitId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_planItemsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
   static MultiTypedResultKey<$WorkoutsTable, List<WorkoutRow>> _workoutsRefsTable(_$PalierDatabase db) =>
       MultiTypedResultKey.fromTable(db.workouts, aliasName: 'circuits__id__workouts__circuit_id');
 
@@ -13360,6 +13970,24 @@ class $$CircuitsTableFilterComposer extends Composer<_$PalierDatabase, $Circuits
           $$CircuitExercisesTableFilterComposer(
             $db: $db,
             $table: $db.circuitExercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> planItemsRefs(Expression<bool> Function($$PlanItemsTableFilterComposer f) f) {
+    final $$PlanItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.planItems,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$PlanItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.planItems,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -13500,6 +14128,24 @@ class $$CircuitsTableAnnotationComposer extends Composer<_$PalierDatabase, $Circ
     return f(composer);
   }
 
+  Expression<T> planItemsRefs<T extends Object>(Expression<T> Function($$PlanItemsTableAnnotationComposer a) f) {
+    final $$PlanItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.planItems,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$PlanItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.planItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> workoutsRefs<T extends Object>(Expression<T> Function($$WorkoutsTableAnnotationComposer a) f) {
     final $$WorkoutsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -13532,7 +14178,7 @@ class $$CircuitsTableTableManager
           $$CircuitsTableUpdateCompanionBuilder,
           (CircuitRow, $$CircuitsTableReferences),
           CircuitRow,
-          PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool workoutsRefs})
+          PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool planItemsRefs, bool workoutsRefs})
         > {
   $$CircuitsTableTableManager(_$PalierDatabase db, $CircuitsTable table)
     : super(
@@ -13593,66 +14239,80 @@ class $$CircuitsTableTableManager
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable<$CircuitsTable, CircuitRow>(table), $$CircuitsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({profileId = false, circuitExercisesRefs = false, workoutsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (circuitExercisesRefs) db.circuitExercises, if (workoutsRefs) db.workouts],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.profileId,
-                        referencedTable: $$CircuitsTableReferences._profileIdTable(db),
-                        referencedColumn: $$CircuitsTableReferences._profileIdTable(db).id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({profileId = false, circuitExercisesRefs = false, planItemsRefs = false, workoutsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (circuitExercisesRefs) db.circuitExercises,
+                    if (planItemsRefs) db.planItems,
+                    if (workoutsRefs) db.workouts,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.profileId,
+                            referencedTable: $$CircuitsTableReferences._profileIdTable(db),
+                            referencedColumn: $$CircuitsTableReferences._profileIdTable(db).id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (circuitExercisesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          CircuitRow,
+                          $CircuitsTable,
+                          CircuitExerciseRow,
+                          $CircuitExercisesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CircuitsTableReferences._circuitExercisesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).circuitExercisesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'circuit_id',
+                          typedResults: items,
+                        ),
+                      if (planItemsRefs)
+                        await $_getPrefetchedDataByColumns<CircuitRow, $CircuitsTable, PlanItemRow, $PlanItemsTable>(
+                          currentTable: table,
+                          referencedTable: $$CircuitsTableReferences._planItemsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).planItemsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'circuit_id',
+                          typedResults: items,
+                        ),
+                      if (workoutsRefs)
+                        await $_getPrefetchedDataByColumns<CircuitRow, $CircuitsTable, WorkoutRow, $WorkoutsTable>(
+                          currentTable: table,
+                          referencedTable: $$CircuitsTableReferences._workoutsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).workoutsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'circuit_id',
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (circuitExercisesRefs)
-                    await $_getPrefetchedDataByColumns<
-                      CircuitRow,
-                      $CircuitsTable,
-                      CircuitExerciseRow,
-                      $CircuitExercisesTable
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CircuitsTableReferences._circuitExercisesRefsTable(db),
-                      managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).circuitExercisesRefs,
-                      currentColumn: 'id',
-                      referencedColumn: 'circuit_id',
-                      typedResults: items,
-                    ),
-                  if (workoutsRefs)
-                    await $_getPrefetchedDataByColumns<CircuitRow, $CircuitsTable, WorkoutRow, $WorkoutsTable>(
-                      currentTable: table,
-                      referencedTable: $$CircuitsTableReferences._workoutsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).workoutsRefs,
-                      currentColumn: 'id',
-                      referencedColumn: 'circuit_id',
-                      typedResults: items,
-                    ),
-                ];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -13669,7 +14329,7 @@ typedef $$CircuitsTableProcessedTableManager =
       $$CircuitsTableUpdateCompanionBuilder,
       (CircuitRow, $$CircuitsTableReferences),
       CircuitRow,
-      PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool workoutsRefs})
+      PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool planItemsRefs, bool workoutsRefs})
     >;
 typedef $$CircuitExercisesTableCreateCompanionBuilder = CircuitExercisesCompanion Function({
   required String id,
@@ -14079,6 +14739,400 @@ typedef $$CircuitExercisesTableProcessedTableManager =
       $$CircuitExercisesTableUpdateCompanionBuilder,
       (CircuitExerciseRow, $$CircuitExercisesTableReferences),
       CircuitExerciseRow,
+      PrefetchHooks Function({bool profileId, bool circuitId})
+    >;
+typedef $$PlanItemsTableCreateCompanionBuilder = PlanItemsCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required int weekday,
+  required WorkoutActivity activity,
+  Value<String?> circuitId,
+  Value<int?> targetMinutes,
+  Value<int> position,
+  Value<int> rowid,
+});
+typedef $$PlanItemsTableUpdateCompanionBuilder = PlanItemsCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<int> weekday,
+  Value<WorkoutActivity> activity,
+  Value<String?> circuitId,
+  Value<int?> targetMinutes,
+  Value<int> position,
+  Value<int> rowid,
+});
+
+final class $$PlanItemsTableReferences extends BaseReferences<_$PalierDatabase, $PlanItemsTable, PlanItemRow> {
+  $$PlanItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('plan_items__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $CircuitsTable _circuitIdTable(_$PalierDatabase db) =>
+      db.circuits.createAlias('plan_items__circuit_id__circuits__id');
+
+  $$CircuitsTableProcessedTableManager? get circuitId {
+    final $_column = $_itemColumn<String>('circuit_id');
+    if ($_column == null) return null;
+    final manager = $$CircuitsTableTableManager($_db, $_db.circuits).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_circuitIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$PlanItemsTableFilterComposer extends Composer<_$PalierDatabase, $PlanItemsTable> {
+  $$PlanItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<WorkoutActivity, WorkoutActivity, String> get activity =>
+      $composableBuilder(column: $table.activity, builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<int> get targetMinutes =>
+      $composableBuilder(column: $table.targetMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableFilterComposer get circuitId {
+    final $$CircuitsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableFilterComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PlanItemsTableOrderingComposer extends Composer<_$PalierDatabase, $PlanItemsTable> {
+  $$PlanItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get activity =>
+      $composableBuilder(column: $table.activity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get targetMinutes =>
+      $composableBuilder(column: $table.targetMinutes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableOrderingComposer get circuitId {
+    final $$CircuitsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableOrderingComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PlanItemsTableAnnotationComposer extends Composer<_$PalierDatabase, $PlanItemsTable> {
+  $$PlanItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get weekday => $composableBuilder(column: $table.weekday, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<WorkoutActivity, String> get activity =>
+      $composableBuilder(column: $table.activity, builder: (column) => column);
+
+  GeneratedColumn<int> get targetMinutes =>
+      $composableBuilder(column: $table.targetMinutes, builder: (column) => column);
+
+  GeneratedColumn<int> get position => $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableAnnotationComposer get circuitId {
+    final $$CircuitsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PlanItemsTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $PlanItemsTable,
+          PlanItemRow,
+          $$PlanItemsTableFilterComposer,
+          $$PlanItemsTableOrderingComposer,
+          $$PlanItemsTableAnnotationComposer,
+          $$PlanItemsTableCreateCompanionBuilder,
+          $$PlanItemsTableUpdateCompanionBuilder,
+          (PlanItemRow, $$PlanItemsTableReferences),
+          PlanItemRow,
+          PrefetchHooks Function({bool profileId, bool circuitId})
+        > {
+  $$PlanItemsTableTableManager(_$PalierDatabase db, $PlanItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$PlanItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$PlanItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$PlanItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<int> weekday = const Value.absent(),
+                Value<WorkoutActivity> activity = const Value.absent(),
+                Value<String?> circuitId = const Value.absent(),
+                Value<int?> targetMinutes = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlanItemsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                weekday: weekday,
+                activity: activity,
+                circuitId: circuitId,
+                targetMinutes: targetMinutes,
+                position: position,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required int weekday,
+                required WorkoutActivity activity,
+                Value<String?> circuitId = const Value.absent(),
+                Value<int?> targetMinutes = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlanItemsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                weekday: weekday,
+                activity: activity,
+                circuitId: circuitId,
+                targetMinutes: targetMinutes,
+                position: position,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable<$PlanItemsTable, PlanItemRow>(table), $$PlanItemsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({profileId = false, circuitId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$PlanItemsTableReferences._profileIdTable(db),
+                        referencedColumn: $$PlanItemsTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+                    if (circuitId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.circuitId,
+                        referencedTable: $$PlanItemsTableReferences._circuitIdTable(db),
+                        referencedColumn: $$PlanItemsTableReferences._circuitIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PlanItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $PlanItemsTable,
+      PlanItemRow,
+      $$PlanItemsTableFilterComposer,
+      $$PlanItemsTableOrderingComposer,
+      $$PlanItemsTableAnnotationComposer,
+      $$PlanItemsTableCreateCompanionBuilder,
+      $$PlanItemsTableUpdateCompanionBuilder,
+      (PlanItemRow, $$PlanItemsTableReferences),
+      PlanItemRow,
       PrefetchHooks Function({bool profileId, bool circuitId})
     >;
 typedef $$WorkoutsTableCreateCompanionBuilder = WorkoutsCompanion Function({
@@ -14524,5 +15578,6 @@ class $PalierDatabaseManager {
   $$CircuitsTableTableManager get circuits => $$CircuitsTableTableManager(_db, _db.circuits);
   $$CircuitExercisesTableTableManager get circuitExercises =>
       $$CircuitExercisesTableTableManager(_db, _db.circuitExercises);
+  $$PlanItemsTableTableManager get planItems => $$PlanItemsTableTableManager(_db, _db.planItems);
   $$WorkoutsTableTableManager get workouts => $$WorkoutsTableTableManager(_db, _db.workouts);
 }

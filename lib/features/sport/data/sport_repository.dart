@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../data/database.dart';
 import '../domain/circuits.dart';
+import '../domain/program.dart';
 import '../domain/sport.dart';
 
 /// Réglages et séances de sport d'un profil.
@@ -292,6 +293,66 @@ class SportRepository {
   Future<void> _setCircuitDeleted(String id, DateTime? at) => (_db.update(
     _db.circuits,
   )..where((c) => c.id.equals(id))).write(CircuitsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
+
+  // ---------------------------------------------------------------- programme
+
+  /// Le programme du profil : les séances prévues, jour par jour, dans l'ordre d'ajout.
+  Stream<List<PlanItem>> watchPlan(String profileId) {
+    final query = _db.select(_db.planItems)
+      ..where((p) => p.profileId.equals(profileId) & p.deletedAt.isNull())
+      ..orderBy([(p) => OrderingTerm.asc(p.weekday), (p) => OrderingTerm.asc(p.position)]);
+    return query.watch().map(
+      (rows) => [
+        for (final row in rows)
+          PlanItem(
+            id: row.id,
+            weekday: row.weekday,
+            activity: row.activity,
+            circuitId: row.circuitId,
+            targetMinutes: row.targetMinutes,
+          ),
+      ],
+    );
+  }
+
+  Future<String> addPlanItem(String profileId, PlanItemDraft draft) {
+    assert(draft.isValid, 'séance prévue incomplète');
+    return _db.transaction(() async {
+      final now = _clock();
+      final id = _uuid.v4();
+      final last =
+          await (_db.selectOnly(_db.planItems)
+                ..addColumns([_db.planItems.position.max()])
+                ..where(_db.planItems.profileId.equals(profileId) & _db.planItems.weekday.equals(draft.weekday)))
+              .map((r) => r.read(_db.planItems.position.max()))
+              .getSingle();
+      await _db
+          .into(_db.planItems)
+          .insert(
+            PlanItemsCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              weekday: draft.weekday,
+              activity: draft.activity,
+              circuitId: Value(draft.circuitId),
+              targetMinutes: Value(draft.targetMinutes),
+              position: Value((last ?? -1) + 1),
+            ),
+          );
+      return id;
+    });
+  }
+
+  /// Suppression douce : « Annuler » la rattrape par [restorePlanItem].
+  Future<void> removePlanItem(String id) => _setPlanDeleted(id, _clock());
+
+  Future<void> restorePlanItem(String id) => _setPlanDeleted(id, null);
+
+  Future<void> _setPlanDeleted(String id, DateTime? at) => (_db.update(
+    _db.planItems,
+  )..where((p) => p.id.equals(id))).write(PlanItemsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
 
   static String? _clean(String? note) {
     final trimmed = note?.trim();

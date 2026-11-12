@@ -280,6 +280,23 @@ class CircuitExercises extends Table with SyncColumns {
   List<String> get customConstraints => ['CHECK ((reps IS NULL) <> (seconds IS NULL))'];
 }
 
+/// Une séance prévue au programme de la semaine : une activité, ou un circuit.
+@DataClassName('PlanItemRow')
+class PlanItems extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+
+  /// De 1 (lundi) à 7 (dimanche).
+  // ignore: recursive_getters
+  IntColumn get weekday => integer().check(weekday.isBetweenValues(1, 7))();
+  TextColumn get activity => textEnum<WorkoutActivity>()();
+  TextColumn get circuitId => text().nullable().references(Circuits, #id)();
+
+  /// Durée visée en minutes, choisie par la personne ; `null` sans durée.
+  // ignore: recursive_getters
+  IntColumn get targetMinutes => integer().nullable().check(targetMinutes.isBiggerThanValue(0))();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+}
+
 /// Une séance de sport notée.
 @DataClassName('WorkoutRow')
 @TableIndex(name: 'workouts_profile_date', columns: {#profileId, #occurredAt})
@@ -318,6 +335,7 @@ class Workouts extends Table with SyncColumns {
     SportSettingsTable,
     Circuits,
     CircuitExercises,
+    PlanItems,
     Workouts,
   ],
 )
@@ -328,7 +346,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -367,6 +385,9 @@ class PalierDatabase extends _$PalierDatabase {
         await m.createTable(schema.circuits);
         await m.createTable(schema.circuitExercises);
         await m.addColumn(schema.workouts, schema.workouts.circuitId);
+      },
+      from9To10: (m, schema) async {
+        await m.createTable(schema.planItems);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.
