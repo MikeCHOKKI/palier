@@ -17,7 +17,7 @@ import 'sport_providers.dart';
 import 'sport_visuals.dart';
 import 'today_plan.dart';
 
-/// Les séances affichées sous la semaine ; les plus anciennes viendront avec le suivi des progrès.
+/// Les séances affichées sous la semaine ; toutes sont dans « Mes progrès ».
 const _recentCount = 20;
 
 /// L'onglet Sport : la semaine face à ses réglages, puis les dernières séances.
@@ -82,6 +82,11 @@ class _Content extends ConsumerWidget {
                 children: [
                   Expanded(child: Text(l10n.sportTitle, style: text.headlineMedium)),
                   IconButton(
+                    tooltip: l10n.sportProgressMenu,
+                    icon: const Icon(Icons.bar_chart_rounded),
+                    onPressed: () => context.push(Routes.sportProgress),
+                  ),
+                  IconButton(
                     tooltip: l10n.sportProgramMenu,
                     icon: const Icon(Icons.calendar_month_outlined),
                     onPressed: () => context.push(Routes.sportProgram),
@@ -142,6 +147,20 @@ class _Content extends ConsumerWidget {
                 workout: recent[i],
                 now: now,
                 onTap: () => context.push(Routes.sportWorkout(recent[i].id)),
+              ),
+            ),
+          ),
+        if (workouts.length > recent.length)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: PalierSpace.page),
+            sliver: SliverToBoxAdapter(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  onPressed: () => context.push(Routes.sportProgress),
+                  child: Text(l10n.sportSeeAll),
+                ),
               ),
             ),
           ),

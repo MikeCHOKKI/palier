@@ -228,6 +228,21 @@ void main() {
     await capture(tester, '24-programme');
   });
 
+  testWidgets('progrès', (tester) async {
+    final app = await TestApp.pump(tester, now: _day, seed: family);
+    await tester.runAsync(() async {
+      await _kofiSport(app);
+      await _kofiHistory(app);
+    });
+    await tester.tap(find.text('Kofi'));
+    await app.settle(tester);
+    await tester.tap(find.text('Sport'));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Mes progrès'));
+    await app.settle(tester);
+    await capture(tester, '25-progres');
+  });
+
   testWidgets('séance guidée', (tester) async {
     var now = _day;
     final app = await TestApp.pump(tester, clock: () => now, seed: family);
@@ -423,4 +438,41 @@ Future<void> _kofiMonth(TestApp app) async {
     ),
     notes: (contribution: (name) => 'Cotisation · $name', hand: (name) => 'Main · $name'),
   );
+}
+
+/// Les semaines d'avant de Kofi, pour les progrès : il reprend à la marche, ajoute
+/// la course puis le renforcement ; une semaine sans rien au milieu.
+Future<void> _kofiHistory(TestApp app) async {
+  final repo = SportRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
+  final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
+  const walk = WorkoutActivity.walk;
+  const run = WorkoutActivity.run;
+  const strength = WorkoutActivity.strength;
+  // Semaines en arrière : (jour de la semaine, activité, minutes, mètres).
+  const weeks = <int, List<(int, WorkoutActivity, int, int?)>>{
+    11: [(2, walk, 30, 2400)],
+    10: [(1, walk, 35, 2800), (5, walk, 30, 2500)],
+    8: [(2, walk, 40, 3200), (6, run, 20, 3000)],
+    7: [(1, run, 22, 3400), (4, strength, 20, null)],
+    6: [(1, walk, 45, 3600), (3, run, 25, 3900), (5, strength, 20, null)],
+    5: [(2, run, 25, 4000), (6, strength, 25, null)],
+    4: [(1, walk, 40, 3300), (3, run, 26, 4200), (5, strength, 25, null)],
+    3: [(3, run, 27, 4500), (6, walk, 50, 4000)],
+    2: [(1, run, 28, 4700), (3, strength, 25, null), (6, walk, 45, 3700)],
+  };
+  // Le lundi de la semaine des captures.
+  final monday = DateTime(_day.year, _day.month, _day.day - (_day.weekday - DateTime.monday));
+  for (final MapEntry(key: back, value: sessions) in weeks.entries) {
+    for (final (weekday, activity, minutes, meters) in sessions) {
+      await repo.createWorkout(
+        kofi,
+        WorkoutDraft(
+          activity: activity,
+          occurredAt: DateTime(monday.year, monday.month, monday.day - 7 * back + weekday - 1, 7),
+          durationSeconds: minutes * 60,
+          distanceMeters: meters,
+        ),
+      );
+    }
+  }
 }

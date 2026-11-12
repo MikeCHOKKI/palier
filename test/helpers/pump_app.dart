@@ -33,6 +33,10 @@ class TestApp {
     WidgetTester tester, {
     Size size = const Size(390, 844),
     Future<void> Function(ProfilesRepository repo)? seed,
+
+    /// Données à poser après [seed], avant le premier affichage : écrire en base
+    /// pendant que des écrans suivent des flux drift peut bloquer un test.
+    Future<void> Function(TestApp app)? prepare,
     DateTime? now,
 
     /// Une horloge qui avance (séances guidées) ; prime sur [now].
@@ -69,6 +73,7 @@ class TestApp {
     final app = TestApp._(db, container, biometric, files, screen);
 
     if (seed != null) await tester.runAsync(() => seed(app.profiles));
+    if (prepare != null) await tester.runAsync(() => prepare(app));
 
     final notifier = LucidThemeNotifier();
     await tester.pumpWidget(

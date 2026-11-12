@@ -24,6 +24,7 @@ import '../features/shell/home_shell.dart';
 import '../features/sport/ui/circuit_form_screen.dart';
 import '../features/sport/ui/circuit_player_screen.dart';
 import '../features/sport/ui/program_screen.dart';
+import '../features/sport/ui/progress_screen.dart';
 import '../features/sport/ui/sport_screen.dart';
 import '../features/sport/ui/sport_settings_screen.dart';
 import '../features/sport/ui/workout_screen.dart';
@@ -159,6 +160,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   fullScreen('seances/:id', (s) => WorkoutScreen(workoutId: s.pathParameters['id'])),
                   fullScreen('reglages', (_) => const SportSettingsScreen()),
                   fullScreen('programme', (_) => const ProgramScreen()),
+                  fullScreen('progres', (_) => const ProgressScreen()),
                   fullScreen('circuits/nouveau', (_) => const CircuitFormScreen()),
                   fullScreen(
                     'circuits/:id',
