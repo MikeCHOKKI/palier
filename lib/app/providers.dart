@@ -9,6 +9,8 @@ import '../features/expenses/data/expenses_backup_section.dart';
 import '../features/expenses/data/expenses_repository.dart';
 import '../features/profiles/data/profiles_repository.dart';
 import '../features/profiles/domain/profile.dart';
+import '../features/sport/data/sport_backup_section.dart';
+import '../features/sport/data/sport_repository.dart';
 
 /// La base SQLite ; remplacée dans `main` (téléphone) et dans les tests (mémoire).
 /// Les réglages propres à ce téléphone, lus avant le premier affichage.
@@ -32,8 +34,10 @@ final expensesRepositoryProvider = Provider<ExpensesRepository>(
   (ref) => ExpensesRepository(ref.watch(databaseProvider)),
 );
 
+final sportRepositoryProvider = Provider<SportRepository>((ref) => SportRepository(ref.watch(databaseProvider)));
+
 /// Les modules dont les données partent dans l'export d'un profil.
-List<BackupSection> backupSections(PalierDatabase db) => [ExpensesBackupSection(db)];
+List<BackupSection> backupSections(PalierDatabase db) => [ExpensesBackupSection(db), SportBackupSection(db)];
 
 final backupServiceProvider = Provider<BackupService>((ref) {
   final db = ref.watch(databaseProvider);

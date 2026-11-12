@@ -4,6 +4,7 @@ import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:palier/data/database.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
+import 'package:palier/features/sport/domain/sport.dart';
 
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
@@ -11,6 +12,7 @@ import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
+import 'generated/schema_v7.dart' as v7;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -323,6 +325,50 @@ void main() {
     await expectLater(db.into(db.loans).insert(loan('zero', 0)), throwsA(isA<SqliteException>()));
     await db.into(db.loans).insert(loan('ok', 30000));
     expect((await db.select(db.loans).getSingle()).direction, LoanDirection.lent);
+  });
+
+  test('v7 → v8 garde les profils, qui peuvent ensuite noter des séances valables', () async {
+    const at = '2026-11-12T09:00:00.000Z';
+    final schema = await verifier.schemaAt(7);
+    final oldDb = v7.DatabaseAtV7(schema.newConnection());
+    await oldDb.customStatement(
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+    );
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    expect((await db.select(db.profiles).getSingle()).name, 'Ama');
+
+    final now = DateTime.utc(2026, 11, 12);
+    WorkoutsCompanion workout(String id, int seconds, {int? meters}) => WorkoutsCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      activity: WorkoutActivity.run,
+      occurredAt: now,
+      durationSeconds: seconds,
+      distanceMeters: Value(meters),
+    );
+    await expectLater(db.into(db.workouts).insert(workout('zero', 0)), throwsA(isA<SqliteException>()));
+    await expectLater(
+      db.into(db.workouts).insert(workout('sans-distance', 600, meters: 0)),
+      throwsA(isA<SqliteException>()),
+    );
+    await db.into(db.workouts).insert(workout('ok', 1800, meters: 5000));
+    expect((await db.select(db.workouts).getSingle()).distanceMeters, 5000);
+
+    SportSettingsTableCompanion settings(String id) => SportSettingsTableCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      activities: 'walk,strength',
+    );
+    await db.into(db.sportSettingsTable).insert(settings('r1'));
+    // Une seule ligne de réglages par profil.
+    await expectLater(db.into(db.sportSettingsTable).insert(settings('r2')), throwsA(isA<SqliteException>()));
   });
 
   test('les clés étrangères sont appliquées', () async {

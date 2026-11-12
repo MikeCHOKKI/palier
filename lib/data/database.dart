@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import '../features/expenses/domain/expense_kinds.dart';
+import '../features/sport/domain/sport.dart';
 import 'database.steps.dart';
 
 part 'database.g.dart';
@@ -222,8 +223,61 @@ class Loans extends Table with SyncColumns {
   TextColumn get startedOn => text()();
 }
 
+/// Les réglages de sport d'un profil : une ligne au plus, créée quand la
+/// personne les enregistre pour la première fois.
+@DataClassName('SportSettingsRow')
+class SportSettingsTable extends Table with SyncColumns {
+  @override
+  String get tableName => 'sport_settings';
+
+  TextColumn get profileId => text().unique().references(Profiles, #id)();
+
+  /// Activités suivies, séparées par des virgules (« walk,run »).
+  TextColumn get activities => text()();
+
+  /// Jours d'entraînement, de 1 (lundi) à 7, séparés par des virgules ; vide sans jour choisi.
+  TextColumn get trainingDays => text().withDefault(const Constant(''))();
+
+  /// Objectif de la semaine en minutes, choisi par la personne ; `null` sans objectif.
+  // ignore: recursive_getters
+  IntColumn get weeklyGoalMinutes => integer().nullable().check(weeklyGoalMinutes.isBiggerThanValue(0))();
+}
+
+/// Une séance de sport notée.
+@DataClassName('WorkoutRow')
+@TableIndex(name: 'workouts_profile_date', columns: {#profileId, #occurredAt})
+class Workouts extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get activity => textEnum<WorkoutActivity>()();
+
+  /// Moment de la séance (UTC).
+  DateTimeColumn get occurredAt => dateTime()();
+
+  /// En secondes : la saisie se fait en minutes, les séances guidées comptent à la seconde.
+  // ignore: recursive_getters
+  IntColumn get durationSeconds => integer().check(durationSeconds.isBiggerThanValue(0))();
+
+  /// En mètres, pour la marche et la course ; `null` si non notée.
+  // ignore: recursive_getters
+  IntColumn get distanceMeters => integer().nullable().check(distanceMeters.isBiggerThanValue(0))();
+  TextColumn get effort => textEnum<WorkoutEffort>().nullable()();
+  TextColumn get note => text().withLength(max: 120).nullable()();
+}
+
 @DriftDatabase(
-  tables: [Profiles, Accounts, Categories, Operations, Budgets, Recurrences, RecurrenceSkips, Tontines, Loans],
+  tables: [
+    Profiles,
+    Accounts,
+    Categories,
+    Operations,
+    Budgets,
+    Recurrences,
+    RecurrenceSkips,
+    Tontines,
+    Loans,
+    SportSettingsTable,
+    Workouts,
+  ],
 )
 class PalierDatabase extends _$PalierDatabase {
   PalierDatabase(super.executor);
@@ -232,7 +286,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -261,6 +315,11 @@ class PalierDatabase extends _$PalierDatabase {
       },
       from6To7: (m, schema) async {
         await m.createTable(schema.loans);
+      },
+      from7To8: (m, schema) async {
+        await m.createTable(schema.sportSettings);
+        await m.createTable(schema.workouts);
+        await m.createIndex(schema.workoutsProfileDate);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.
