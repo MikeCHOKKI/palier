@@ -52,6 +52,25 @@ void main() {
     expect(find.textContaining('ta main le 25 nov.'), findsOneWidget);
   });
 
+  testWidgets('une tontine toutes les 3 semaines : la main tombe au bon tour', (tester) async {
+    final app = await _openTontines(tester);
+    await tester.tap(find.text('Ajouter une tontine'));
+    await app.settle(tester);
+
+    await tester.enterText(find.byType(TextFormField).first, 'Collègues');
+    await tester.enterText(_field('cotisation'), '10000');
+    await tester.enterText(_field('membres'), '6');
+    await tester.enterText(_field('rang'), '3');
+    final rhythm = find.text('Toutes les 3 semaines');
+    await tester.ensureVisible(rhythm);
+    await tester.tap(rhythm);
+    await app.settle(tester);
+
+    // Depuis aujourd'hui, 11 novembre : 3e tour six semaines plus tard.
+    expect(find.textContaining('Tu reçois ${formatMoney(60000, PalierCurrency.xof)}'), findsOneWidget);
+    expect(find.textContaining('le 23 déc. 2026, au tour 3 sur 6'), findsOneWidget);
+  });
+
   testWidgets('un rang au-delà des membres est refusé', (tester) async {
     final app = await _openTontines(tester);
     await tester.tap(find.text('Ajouter une tontine'));

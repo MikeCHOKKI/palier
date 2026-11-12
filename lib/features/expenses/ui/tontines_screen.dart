@@ -25,10 +25,12 @@ import 'operation_fields.dart';
 
 const _figures = [FontFeature.tabularFigures()];
 
-/// Les rythmes d'une tontine : pas d'année, mais la quinzaine, courante.
+/// Les rythmes d'une tontine : pas d'année, mais la quinzaine et les trois
+/// semaines, courantes.
 const List<LucidRecurrenceFrequency> _rhythms = [
   (unit: LucidRecurrenceUnit.week, interval: 1),
   (unit: LucidRecurrenceUnit.week, interval: 2),
+  (unit: LucidRecurrenceUnit.week, interval: 3),
   (unit: LucidRecurrenceUnit.month, interval: 1),
 ];
 
