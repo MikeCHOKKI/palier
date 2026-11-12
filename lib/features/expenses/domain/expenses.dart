@@ -2,6 +2,14 @@ import 'package:flutter/foundation.dart';
 
 import 'expense_kinds.dart';
 
+/// L'argent dont on dispose : la somme des comptes, sans les tontines ni les
+/// prêts. Leur solde est une créance ou une dette (ce qu'on a avancé au groupe,
+/// ce qu'on nous doit, ce qu'on doit), pas de l'argent en main : l'ajouter
+/// gonflait le total.
+int availableBalance(Iterable<Account> accounts) => accounts
+    .where((a) => a.kind != AccountKind.tontine && a.kind != AccountKind.loan)
+    .fold(0, (sum, a) => sum + a.balance);
+
 /// Un compte et son solde du moment, en unités mineures.
 @immutable
 class Account {

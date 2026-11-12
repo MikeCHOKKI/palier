@@ -82,4 +82,17 @@ void main() {
     expect(from, DateTime(2026, 12).toUtc());
     expect(to, DateTime(2027).toUtc());
   });
+
+  test('l’argent disponible : ni les tontines ni les prêts, l’épargne si', () {
+    Account account(AccountKind kind, int balance) =>
+        Account(id: kind.name, name: kind.name, kind: kind, openingBalance: 0, balance: balance);
+    final accounts = [
+      account(AccountKind.cash, 10000),
+      account(AccountKind.mobileMoney, 50000),
+      account(AccountKind.savings, 20000),
+      account(AccountKind.tontine, 15000),
+      account(AccountKind.loan, -60000),
+    ];
+    expect(availableBalance(accounts), 80000);
+  });
 }

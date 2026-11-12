@@ -90,7 +90,7 @@ class _ContentState extends ConsumerState<_Content> {
     final text = Theme.of(context).textTheme;
     final dayFormat = DateFormat.MMMMEEEEd('fr');
     final now = ref.watch(clockProvider)();
-    final total = accounts.fold(0, (sum, a) => sum + a.balance);
+    final total = availableBalance(accounts);
 
     return CustomScrollView(
       slivers: [
