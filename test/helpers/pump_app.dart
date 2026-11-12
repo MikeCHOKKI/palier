@@ -16,12 +16,13 @@ import 'test_database.dart';
 
 /// L'application complète sur une base en mémoire, avec empreinte et fichiers simulés.
 class TestApp {
-  TestApp._(this.db, this.container, this.biometric, this.files);
+  TestApp._(this.db, this.container, this.biometric, this.files, this.screen);
 
   final PalierDatabase db;
   final ProviderContainer container;
   final FakeBiometricGate biometric;
   final FakeBackupFiles files;
+  final FakeScreenAwake screen;
 
   /// Peu d'itérations : on teste le comportement, pas la résistance.
   static const hasher = PinHasher(iterations: 1000);
@@ -33,6 +34,9 @@ class TestApp {
     Size size = const Size(390, 844),
     Future<void> Function(ProfilesRepository repo)? seed,
     DateTime? now,
+
+    /// Une horloge qui avance (séances guidées) ; prime sur [now].
+    DateTime Function()? clock,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
@@ -44,6 +48,7 @@ class TestApp {
     final db = openTestDatabase();
     final biometric = FakeBiometricGate();
     final files = FakeBackupFiles();
+    final screen = FakeScreenAwake();
     final container = ProviderContainer(
       overrides: [
         preferencesProvider.overrideWithValue(preferences),
@@ -54,10 +59,14 @@ class TestApp {
         ),
         biometricGateProvider.overrideWithValue(biometric),
         backupFilesProvider.overrideWithValue(files),
-        if (now != null) clockProvider.overrideWithValue(() => now),
+        screenAwakeProvider.overrideWithValue(screen),
+        if (clock != null)
+          clockProvider.overrideWithValue(clock)
+        else if (now != null)
+          clockProvider.overrideWithValue(() => now),
       ],
     );
-    final app = TestApp._(db, container, biometric, files);
+    final app = TestApp._(db, container, biometric, files, screen);
 
     if (seed != null) await tester.runAsync(() => seed(app.profiles));
 

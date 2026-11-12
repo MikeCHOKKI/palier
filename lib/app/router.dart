@@ -21,6 +21,8 @@ import '../features/profiles/ui/unlock_screen.dart';
 import '../features/profiles/ui/welcome_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/shell/home_shell.dart';
+import '../features/sport/ui/circuit_form_screen.dart';
+import '../features/sport/ui/circuit_player_screen.dart';
 import '../features/sport/ui/sport_screen.dart';
 import '../features/sport/ui/sport_settings_screen.dart';
 import '../features/sport/ui/workout_screen.dart';
@@ -155,6 +157,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   fullScreen('noter', (_) => const WorkoutScreen()),
                   fullScreen('seances/:id', (s) => WorkoutScreen(workoutId: s.pathParameters['id'])),
                   fullScreen('reglages', (_) => const SportSettingsScreen()),
+                  fullScreen('circuits/nouveau', (_) => const CircuitFormScreen()),
+                  fullScreen(
+                    'circuits/:id',
+                    (s) => CircuitFormScreen(circuitId: s.pathParameters['id']),
+                    routes: [fullScreen('seance', (s) => CircuitPlayerScreen(circuitId: s.pathParameters['id']!))],
+                  ),
                 ],
               ),
             ],

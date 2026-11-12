@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../expenses/ui/expenses_providers.dart' show activeProfileIdProvider;
+import '../domain/circuits.dart';
 import '../domain/sport.dart';
 
 /// Les réglages de sport du profil ouvert, ou `null` tant qu'il ne les a pas enregistrés.
@@ -30,4 +31,11 @@ final sportWeekProvider = Provider<AsyncValue<SportWeek>>((ref) {
       AsyncValue.data(SportWeek.of(list, s ?? SportSettings.initial, now: now)),
     _ => const AsyncValue.loading(),
   };
+});
+
+/// Les circuits du profil ouvert, avec leurs exercices.
+final circuitsProvider = StreamProvider<List<Circuit>>((ref) {
+  final profileId = ref.watch(activeProfileIdProvider);
+  if (profileId == null) return Stream.value(const []);
+  return ref.watch(sportRepositoryProvider).watchCircuits(profileId);
 });

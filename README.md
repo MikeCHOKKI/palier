@@ -32,6 +32,11 @@ pas de serveur, pas de publicité.
   <img src="docs/captures/21-sport-reglages.png" width="220" alt="Activités, jours et objectif">
 </p>
 
+<p align="center">
+  <img src="docs/captures/22-circuit.png" width="220" alt="Composer un circuit de renforcement">
+  <img src="docs/captures/23-seance-guidee.png" width="220" alt="Séance guidée, décompte d'un exercice">
+</p>
+
 ## Ce que fait Palier
 
 Chaque membre de la famille a son profil : son prénom, sa couleur, sa devise, les modules qu'il
@@ -41,7 +46,7 @@ suit, et son propre verrou.
 |---|---|---|
 | 1. Socle et profils | Profils personnalisés, profil d'enfant, code à 4-6 chiffres avec blocage progressif, empreinte, verrouillage après une minute en arrière-plan, export et import chiffrés | Fait |
 | 2. Dépenses | Saisie rapide, comptes (espèces, Mobile Money, banque), budgets, dépenses récurrentes, prévision de fin de mois, épargne, tontines et prêts | Fait |
-| 3. Sport | Marche, course et renforcement : journal des séances, semaine face à l'objectif choisi, séances guidées, programme, suivi des progrès | En cours : réglages, journal et semaine faits |
+| 3. Sport | Marche, course et renforcement : journal des séances, semaine face à l'objectif choisi, séances guidées, programme, suivi des progrès | En cours : réglages, journal, semaine et séances guidées faits |
 | 4. Progression | Habitudes, objectifs par étapes, bilan de la semaine | À venir |
 | 5. Options Android | Lecture des SMS Mobile Money (désactivée par défaut), nombre de pas | À venir |
 

@@ -15,6 +15,7 @@ import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
 import 'package:palier/features/sport/data/sport_repository.dart';
+import 'package:palier/features/sport/domain/circuits.dart';
 import 'package:palier/features/sport/domain/sport.dart';
 
 import '../helpers/pump_app.dart';
@@ -211,6 +212,31 @@ void main() {
     await tester.tap(find.byTooltip('Régler mon sport'));
     await app.settle(tester);
     await capture(tester, '21-sport-reglages');
+
+    await tester.tap(find.byType(BackButton));
+    await app.settle(tester);
+    await tester.tap(find.text('Maison'));
+    await app.settle(tester);
+    await capture(tester, '22-circuit');
+  });
+
+  testWidgets('séance guidée', (tester) async {
+    var now = _day;
+    final app = await TestApp.pump(tester, clock: () => now, seed: family);
+    await tester.tap(find.text('Kofi'));
+    await app.settle(tester);
+    await tester.runAsync(() => _kofiSport(app));
+    await tester.tap(find.text('Sport'));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Lancer Maison'));
+    await app.settle(tester);
+    await tester.tap(find.text('Commencer'));
+    await tester.pump();
+    // Les squats faits, le repos passé : le gainage a commencé il y a 12 secondes.
+    await tester.tap(find.text('Fait'));
+    now = now.add(const Duration(seconds: 42));
+    await tester.pump(const Duration(milliseconds: 250));
+    await capture(tester, '23-seance-guidee');
   });
 }
 
@@ -225,6 +251,19 @@ Future<void> _kofiSport(TestApp app) async {
       activities: {WorkoutActivity.walk, WorkoutActivity.run, WorkoutActivity.strength},
       trainingDays: {1, 3, 5},
       weeklyGoalMinutes: 150,
+    ),
+  );
+  await repo.createCircuit(
+    kofi,
+    const CircuitDraft(
+      name: 'Maison',
+      rounds: 3,
+      roundRestSeconds: 60,
+      exercises: [
+        CircuitExercise(name: 'Squats', reps: 15, restSeconds: 30),
+        CircuitExercise(name: 'Gainage', seconds: 40, restSeconds: 30),
+        CircuitExercise(name: 'Pompes', reps: 10, restSeconds: 0),
+      ],
     ),
   );
   DateTime at(int daysAgo, int hour) => DateTime(_day.year, _day.month, _day.day - daysAgo, hour);

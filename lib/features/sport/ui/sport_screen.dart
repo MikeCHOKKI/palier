@@ -11,6 +11,7 @@ import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../expenses/ui/expense_widgets.dart' show dayLabel;
+import '../domain/circuits.dart';
 import '../domain/sport.dart';
 import 'sport_providers.dart';
 import 'sport_visuals.dart';
@@ -68,6 +69,7 @@ class _Content extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final now = ref.watch(clockProvider)();
     final recent = workouts.take(_recentCount).toList();
+    final circuits = ref.watch(circuitsProvider).value ?? const <Circuit>[];
 
     return CustomScrollView(
       slivers: [
@@ -88,6 +90,11 @@ class _Content extends ConsumerWidget {
               const SizedBox(height: PalierSpace.lg),
               if (settings == null) ...[const _SetupCard(), const SizedBox(height: PalierSpace.lg)],
               _WeekBlock(week: week, today: now.weekday),
+              if (circuits.isNotEmpty ||
+                  (settings ?? SportSettings.initial).activities.contains(WorkoutActivity.strength)) ...[
+                const SizedBox(height: PalierSpace.xl),
+                _CircuitsBlock(circuits: circuits),
+              ],
               const SizedBox(height: PalierSpace.xl),
               Text(l10n.sportRecentTitle, style: text.titleMedium),
               const SizedBox(height: PalierSpace.sm),
@@ -120,6 +127,78 @@ class _Content extends ConsumerWidget {
           ),
         // De la place pour le bouton « Noter une séance ».
         const SliverToBoxAdapter(child: SizedBox(height: 96)),
+      ],
+    );
+  }
+}
+
+/// Les circuits de renforcement : les lancer d'un geste, ou en composer un.
+class _CircuitsBlock extends StatelessWidget {
+  const _CircuitsBlock({required this.circuits});
+
+  final List<Circuit> circuits;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final accent = Theme.of(context).colorScheme.primary;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.sportCircuitsTitle, style: text.titleMedium),
+        const SizedBox(height: PalierSpace.sm),
+        if (circuits.isEmpty)
+          Text(
+            l10n.sportCircuitsEmpty,
+            style: manrope(size: 14, weight: FontWeight.w500, color: PalierColors.textMid),
+          ),
+        for (final circuit in circuits)
+          Padding(
+            padding: const EdgeInsets.only(bottom: PalierSpace.sm),
+            child: Material(
+              color: PalierColors.surface,
+              borderRadius: BorderRadius.circular(PalierRadius.md),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => context.push(Routes.sportCircuit(circuit.id)),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(PalierSpace.md, PalierSpace.sm, PalierSpace.sm, PalierSpace.sm),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(circuit.name, style: manrope(size: 15, weight: FontWeight.w600)),
+                            Text(
+                              [
+                                l10n.circuitRounds(circuit.rounds),
+                                l10n.circuitExerciseCount(circuit.exercises.length),
+                              ].join(' · '),
+                              style: manrope(size: 13, weight: FontWeight.w500, color: PalierColors.textLow),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton.filled(
+                        tooltip: l10n.circuitStart(circuit.name),
+                        style: IconButton.styleFrom(backgroundColor: accent, foregroundColor: PalierColors.night),
+                        onPressed: () => context.push(Routes.sportCircuitPlay(circuit.id)),
+                        icon: const Icon(Icons.play_arrow_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        TextButton.icon(
+          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+          onPressed: () => context.push(Routes.sportCircuitNew),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(l10n.circuitAdd),
+        ),
       ],
     );
   }

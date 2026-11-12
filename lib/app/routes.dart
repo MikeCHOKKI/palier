@@ -40,6 +40,9 @@ abstract final class Routes {
   static const sportNew = '/sport/noter';
   static String sportWorkout(String id) => '/sport/seances/$id';
   static const sportSettings = '/sport/reglages';
+  static const sportCircuitNew = '/sport/circuits/nouveau';
+  static String sportCircuit(String id) => '/sport/circuits/$id';
+  static String sportCircuitPlay(String id) => '/sport/circuits/$id/seance';
   static const settings = '/reglages';
   static const settingsProfile = '/reglages/profil';
   static const settingsLock = '/reglages/verrou';

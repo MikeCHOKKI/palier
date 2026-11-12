@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:palier/core/platform/screen_awake.dart';
 import 'package:palier/core/security/biometric_gate.dart';
 import 'package:palier/features/backup/data/backup_files.dart';
 
@@ -32,4 +33,12 @@ class FakeBackupFiles implements BackupFiles {
 
   @override
   Future<PickedFile?> pick() async => toPick;
+}
+
+/// L'écran allumé, sans téléphone : on retient seulement le dernier état demandé.
+class FakeScreenAwake implements ScreenAwake {
+  bool on = false;
+
+  @override
+  Future<void> keepOn(bool on) async => this.on = on;
 }
