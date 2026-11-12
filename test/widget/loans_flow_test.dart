@@ -67,4 +67,29 @@ void main() {
     expect(find.text('Soldé'), findsOneWidget);
     expect(find.text('Noter le remboursement'), findsNothing);
   });
+
+  testWidgets('renommer puis annuler, ou valider : la fenêtre se ferme sans erreur', (tester) async {
+    final app = await _openLoans(tester);
+    await tester.tap(find.text('Noter un prêt'));
+    await app.settle(tester);
+    await tester.enterText(find.byType(TextFormField).first, 'Koffi');
+    await tester.enterText(_field('montant'), '30000');
+    await _tapVisible(tester, app, find.text('Enregistrer le prêt'));
+    await tester.tap(find.text('Koffi'));
+    await app.settle(tester);
+
+    await tester.tap(find.byTooltip('Renommer'));
+    await app.settle(tester);
+    await tester.enterText(find.byType(TextField).last, 'Koffi A.');
+    await tester.tap(find.text('Annuler'));
+    await app.settle(tester);
+    expect(find.text('Koffi'), findsWidgets);
+
+    await tester.tap(find.byTooltip('Renommer'));
+    await app.settle(tester);
+    await tester.enterText(find.byType(TextField).last, 'Koffi A.');
+    await tester.tap(find.widgetWithText(TextButton, 'Renommer'));
+    await app.settle(tester);
+    expect(find.text('Koffi A.'), findsWidgets);
+  });
 }

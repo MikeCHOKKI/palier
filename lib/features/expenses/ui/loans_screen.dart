@@ -445,25 +445,10 @@ class _LoanScreenState extends ConsumerState<LoanScreen> {
   }
 
   Future<void> _rename(Loan loan) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(text: loan.name);
     final name = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.loanRename),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-          inputFormatters: [LengthLimitingTextInputFormatter(LoanDraft.maxNameLength)],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(l10n.loanRename)),
-        ],
-      ),
+      builder: (context) => _RenameDialog(name: loan.name),
     );
-    controller.dispose();
     if (name == null || name.trim().isEmpty || !mounted) return;
     await ref.read(expensesRepositoryProvider).renameLoan(loan.id, name);
   }
@@ -612,6 +597,46 @@ class _LoanScreenState extends ConsumerState<LoanScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// La fenêtre « Renommer » : elle garde son champ jusqu'à la fin de son
+/// animation de fermeture. Libéré dès le retour de showDialog, le champ
+/// servait encore à la fenêtre qui s'effaçait (écran rouge en annulant).
+class _RenameDialog extends StatefulWidget {
+  const _RenameDialog({required this.name});
+
+  final String name;
+
+  @override
+  State<_RenameDialog> createState() => _RenameDialogState();
+}
+
+class _RenameDialogState extends State<_RenameDialog> {
+  late final _controller = TextEditingController(text: widget.name);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.loanRename),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        textCapitalization: TextCapitalization.words,
+        inputFormatters: [LengthLimitingTextInputFormatter(LoanDraft.maxNameLength)],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(onPressed: () => Navigator.pop(context, _controller.text), child: Text(l10n.loanRename)),
+      ],
     );
   }
 }
