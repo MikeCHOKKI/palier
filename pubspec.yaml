@@ -38,6 +38,9 @@ dependencies:
 
   intl: ^0.20.3
 
+  # Graphiques des progrès (lot 3) et, plus tard, de la progression (lot 4).
+  fl_chart: ^1.3.0
+
   # Réglages d'affichage propres au téléphone (déjà tiré par lucid_core_flutter).
   shared_preferences: ^2.5.6
 
