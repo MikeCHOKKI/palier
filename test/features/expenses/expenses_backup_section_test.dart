@@ -8,6 +8,7 @@ import 'package:palier/features/expenses/data/expenses_repository.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';
 import 'package:palier/features/expenses/domain/expenses.dart';
 import 'package:palier/features/expenses/domain/recurring.dart';
+import 'package:palier/features/expenses/domain/starter_kit.dart';
 import 'package:palier/features/expenses/domain/tontines.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
@@ -89,7 +90,7 @@ void main() {
     await serviceFor(phone).import(await serviceFor(phone).open(file, password));
 
     expect((await expenses.watchAccounts(ama.id).first).map((a) => a.name), ['Espèces']);
-    expect(await expenses.watchCategories(ama.id).first, hasLength(15));
+    expect(await expenses.watchCategories(ama.id).first, hasLength(StarterKit.categories.length));
     expect(await expenses.watchBudgets(ama.id).first, isEmpty);
   });
 

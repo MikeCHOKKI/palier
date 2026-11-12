@@ -158,10 +158,12 @@ class OperationEntry {
 }
 
 /// Pourquoi une opération ne peut pas encore être enregistrée.
-enum OperationProblem { noAmount, noAccount, noCategory, noTargetAccount, sameAccount }
+enum OperationProblem { noAmount, noAccount, noCategory, noTargetAccount, sameAccount, badFee }
 
 @immutable
 class OperationDraft {
+  /// Les frais ne se gardent que pour un virement : ailleurs, ils font partie
+  /// du montant.
   const OperationDraft({
     required this.kind,
     required this.amount,
@@ -170,7 +172,8 @@ class OperationDraft {
     this.toAccountId,
     this.categoryId,
     this.note,
-  });
+    int fee = 0,
+  }) : fee = kind == OperationKind.transfer ? fee : 0;
 
   final OperationKind kind;
   final int amount;
@@ -179,6 +182,11 @@ class OperationDraft {
   final String? categoryId;
   final String? note;
   final DateTime occurredAt;
+
+  /// Frais d'un virement (Wave vers MTN, par exemple), pris en plus sur le
+  /// compte de départ : [amount] reste ce qui arrive. Ils deviennent une
+  /// dépense à part, pour compter dans le mois et dans les plafonds.
+  final int fee;
 
   static const int maxNoteLength = 120;
 
@@ -189,7 +197,7 @@ class OperationDraft {
     if (kind == OperationKind.transfer) {
       if (toAccountId == null) return OperationProblem.noTargetAccount;
       if (toAccountId == accountId) return OperationProblem.sameAccount;
-      return null;
+      return fee < 0 ? OperationProblem.badFee : null;
     }
     return categoryId == null ? OperationProblem.noCategory : null;
   }

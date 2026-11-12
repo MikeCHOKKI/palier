@@ -19,6 +19,7 @@ String operationProblemText(AppLocalizations l10n, OperationProblem problem) => 
   OperationProblem.noCategory => l10n.operationProblemCategory,
   OperationProblem.noTargetAccount => l10n.operationProblemTarget,
   OperationProblem.sameAccount => l10n.operationProblemSameAccount,
+  OperationProblem.badFee => l10n.operationProblemFee,
 };
 
 /// Les choix d'une récurrence aux pastilles de Palier.

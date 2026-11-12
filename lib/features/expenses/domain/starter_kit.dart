@@ -7,6 +7,10 @@ import 'expenses.dart';
 abstract final class StarterKit {
   static const account = AccountDraft(name: 'Espèces');
 
+  /// Où vont les frais d'un virement. Un profil qui ne l'a pas (créé avant, ou
+  /// qui l'a supprimée) la retrouve au premier virement avec frais.
+  static const feesCategory = CategoryDraft(name: 'Frais et taxes', kind: CategoryKind.expense, icon: 'fees');
+
   static const categories = <CategoryDraft>[
     CategoryDraft(name: 'Alimentation', kind: CategoryKind.expense, icon: 'basket'),
     CategoryDraft(name: 'Transport', kind: CategoryKind.expense, icon: 'moto'),
@@ -18,6 +22,7 @@ abstract final class StarterKit {
     CategoryDraft(name: 'Scolarité', kind: CategoryKind.expense, icon: 'school'),
     CategoryDraft(name: 'Famille et dons', kind: CategoryKind.expense, icon: 'family'),
     CategoryDraft(name: 'Loisirs', kind: CategoryKind.expense, icon: 'party'),
+    feesCategory,
     CategoryDraft(name: 'Divers', kind: CategoryKind.expense, icon: 'more'),
     CategoryDraft(name: 'Salaire', kind: CategoryKind.income, icon: 'salary'),
     CategoryDraft(name: 'Ventes', kind: CategoryKind.income, icon: 'shop'),

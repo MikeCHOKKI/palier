@@ -260,8 +260,49 @@ class ExpensesRepository {
               dueOn: Value(dueOn == null ? null : dayKey(dueOn)),
             ),
           );
+      if (draft.fee > 0) await _addTransferFee(profileId, draft, now);
       return id;
     });
+  }
+
+  /// Les frais d'un virement : une dépense à part, sur le compte de départ, à
+  /// la même date. Elle ne dépend pas du virement : on la modifie ou la
+  /// supprime comme n'importe quelle dépense.
+  Future<void> _addTransferFee(String profileId, OperationDraft draft, DateTime now) async {
+    final target = await (_db.select(_db.accounts)..where((a) => a.id.equals(draft.toAccountId!))).getSingle();
+    await _db
+        .into(_db.operations)
+        .insert(
+          OperationsCompanion.insert(
+            id: _uuid.v4(),
+            createdAt: now,
+            updatedAt: now,
+            profileId: profileId,
+            kind: OperationKind.expense,
+            amount: draft.fee,
+            accountId: draft.accountId!,
+            categoryId: Value(await _feesCategoryId(profileId)),
+            note: Value('Frais du virement vers ${target.name}'),
+            occurredAt: draft.occurredAt.toUtc(),
+          ),
+        );
+  }
+
+  /// La catégorie des frais du profil, retrouvée par son nom, ou créée.
+  Future<String> _feesCategoryId(String profileId) async {
+    final fees = StarterKit.feesCategory;
+    final existing =
+        await (_db.select(_db.categories)
+              ..where(
+                (c) =>
+                    c.profileId.equals(profileId) &
+                    c.deletedAt.isNull() &
+                    c.kind.equalsValue(fees.kind) &
+                    c.name.equals(fees.name),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    return existing?.id ?? (await createCategory(profileId, fees)).id;
   }
 
   Future<void> updateOperation(String id, OperationDraft draft) {

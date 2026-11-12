@@ -288,6 +288,39 @@ void main() {
     expect(find.text(formatMoney(10000, _xof)), findsWidgets, reason: 'solde du compte MoMo');
   });
 
+  testWidgets('les frais d’un mouvement sortent du compte de départ, en dépense à part', (tester) async {
+    final app = await _openExpenses(tester);
+    await tester.tap(find.text('Noter'));
+    await app.settle(tester);
+    await tester.tap(find.text('Entre comptes'));
+    await app.settle(tester);
+    await tester.tap(find.text('Ajouter un compte'));
+    await app.settle(tester);
+    await tester.enterText(find.byType(TextFormField).first, 'MTN MoMo');
+    await tester.tap(find.text('Enregistrer'));
+    await app.settle(tester);
+
+    await _pad(tester, ['1', '0', 'Trois zéros']);
+    final fee = find.byKey(const ValueKey('frais'));
+    await tester.ensureVisible(fee);
+    // Le franc CFA n'a pas de centimes : « 1,5 » n'est pas un montant.
+    await tester.enterText(fee, '1,5');
+    await tester.tap(find.text('Enregistrer le mouvement'));
+    await app.settle(tester);
+    expect(find.text('Les frais ne sont pas un montant valide.'), findsOneWidget);
+
+    await tester.enterText(fee, '200');
+    await tester.tap(find.text('Enregistrer le mouvement'));
+    await app.settle(tester);
+
+    expect(find.text('Mouvement enregistré.'), findsOneWidget);
+    expect(find.text('Espèces → MTN MoMo'), findsOneWidget);
+    expect(find.text('Frais et taxes'), findsOneWidget);
+    expect(find.text(formatMoney(-200, _xof, signed: true)), findsWidgets);
+    expect(find.text(formatBalance(-10200, _xof)), findsWidgets, reason: 'solde du compte Espèces');
+    expect(find.text(formatMoney(10000, _xof)), findsWidgets, reason: 'solde du compte MoMo');
+  });
+
   testWidgets('un compte d’épargne a un objectif facultatif, suivi par une jauge dans la liste', (tester) async {
     final app = await _openExpenses(tester);
     await tester.tap(find.byTooltip('Gérer les dépenses'));

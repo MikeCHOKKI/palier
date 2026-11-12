@@ -33,6 +33,7 @@ const Map<String, IconData> categoryIcons = {
   'salary': Icons.work_outline_rounded,
   'shop': Icons.storefront_outlined,
   'gift': Icons.redeem_rounded,
+  'fees': Icons.receipt_long_outlined,
   'plus': Icons.add_card_outlined,
   'more': Icons.more_horiz_rounded,
 };

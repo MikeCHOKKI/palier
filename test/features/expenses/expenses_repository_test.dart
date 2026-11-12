@@ -193,6 +193,79 @@ void main() {
     });
   });
 
+  group('frais d’un virement', () {
+    late Account wave;
+    late Account mtn;
+
+    setUp(() async {
+      wave = await repo.createAccount(
+        ama,
+        const AccountDraft(name: 'Wave', kind: AccountKind.mobileMoney, openingBalance: 50000),
+      );
+      mtn = await repo.createAccount(ama, const AccountDraft(name: 'MTN', kind: AccountKind.mobileMoney));
+    });
+
+    OperationDraft send(int amount, {int fee = 0}) => OperationDraft(
+      kind: OperationKind.transfer,
+      amount: amount,
+      accountId: wave.id,
+      toAccountId: mtn.id,
+      occurredAt: now,
+      fee: fee,
+    );
+
+    test('sortent du compte de départ, en dépense « Frais et taxes »', () async {
+      await repo.addOperation(ama, send(20000, fee: 300));
+
+      final balances = {for (final a in await repo.watchAccounts(ama).first) a.name: a.balance};
+      expect(balances, {'Wave': 50000 - 20000 - 300, 'MTN': 20000});
+      final (from, to) = MonthView.bounds(now);
+      final month = await repo.watchOperations(ama, from: from, to: to).first;
+      final fee = month.singleWhere((e) => e.kind == OperationKind.expense);
+      expect(fee.amount, 300);
+      expect(fee.accountId, wave.id);
+      expect(fee.categoryName, StarterKit.feesCategory.name);
+      expect(fee.note, 'Frais du virement vers MTN');
+      expect(month.where((e) => e.kind == OperationKind.transfer).single.amount, 20000);
+    });
+
+    test('réutilisent la catégorie des frais, et la recréent si elle a été supprimée', () async {
+      await repo.addOperation(ama, send(1000, fee: 100));
+      await repo.addOperation(ama, send(1000, fee: 100));
+      final fees = (await repo.watchCategories(ama).first).where((c) => c.name == StarterKit.feesCategory.name);
+      expect(fees, hasLength(1));
+
+      await repo.deleteCategory(fees.single.id);
+      await repo.addOperation(ama, send(1000, fee: 100));
+      expect(
+        (await repo.watchCategories(ama).first).where((c) => c.name == StarterKit.feesCategory.name),
+        hasLength(1),
+      );
+    });
+
+    test('sans frais, ou hors virement, aucune dépense en plus', () async {
+      await repo.addOperation(ama, send(1000));
+      final food = await repo.createCategory(
+        ama,
+        const CategoryDraft(name: 'Alimentation', kind: CategoryKind.expense, icon: 'basket'),
+      );
+      await repo.addOperation(
+        ama,
+        OperationDraft(
+          kind: OperationKind.expense,
+          amount: 500,
+          accountId: wave.id,
+          categoryId: food.id,
+          occurredAt: now,
+          fee: 200,
+        ),
+      );
+
+      final (from, to) = MonthView.bounds(now);
+      expect(await repo.watchOperations(ama, from: from, to: to).first, hasLength(2));
+    });
+  });
+
   group('comptes', () {
     test('se suppriment seulement sans opération', () async {
       final cash = await repo.createAccount(ama, const AccountDraft(name: 'Espèces'));

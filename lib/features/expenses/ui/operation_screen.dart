@@ -47,6 +47,7 @@ class OperationScreen extends ConsumerStatefulWidget {
 
 class _OperationScreenState extends ConsumerState<OperationScreen> {
   final _note = TextEditingController();
+  final _fee = TextEditingController();
   OperationKind _kind = OperationKind.expense;
   late AmountEntry _amount;
   String? _accountId;
@@ -69,6 +70,10 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
 
   bool get _editing => widget.operationId != null;
   bool get _settling => widget.dueRecurringId != null;
+
+  /// Les frais se notent avec un nouveau virement ; ensuite, ils sont une
+  /// dépense à part, qu'on modifie elle-même.
+  bool get _withFee => _kind == OperationKind.transfer && !_editing;
 
   DateTime _now() => ref.read(clockProvider)();
 
@@ -137,6 +142,7 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
   @override
   void dispose() {
     _note.dispose();
+    _fee.dispose();
     super.dispose();
   }
 
@@ -148,6 +154,9 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
     categoryId: _categoryId,
     note: _note.text,
     occurredAt: _occurredAt,
+    // Un texte qui n'est pas un montant devient -1 : le brouillon le refuse
+    // avec son message (OperationProblem.badFee).
+    fee: _withFee ? parseMoney(_fee.text, _amount.currency) ?? -1 : 0,
   );
 
   void _update(VoidCallback change) => setState(() {
@@ -384,6 +393,21 @@ class _OperationScreenState extends ConsumerState<OperationScreen> {
         onCategory: (id) => _update(() => _categoryId = id),
         onAddTargetAccount: _addTargetAccount,
       ),
+      if (_withFee && accounts.length >= 2) ...[
+        const SizedBox(height: PalierSpace.lg),
+        TextField(
+          key: const ValueKey('frais'),
+          controller: _fee,
+          keyboardType: TextInputType.numberWithOptions(decimal: _amount.currency.decimals > 0),
+          onChanged: (_) => _update(() {}),
+          decoration: InputDecoration(
+            labelText: l10n.operationFeeLabel,
+            suffixText: _amount.currency.symbol,
+            helperText: l10n.operationFeeHelp,
+            helperMaxLines: 2,
+          ),
+        ),
+      ],
       FieldLabel(l10n.operationDateLabel),
       PillRow(
         children: [
