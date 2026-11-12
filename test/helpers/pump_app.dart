@@ -73,6 +73,9 @@ class TestApp {
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
       container.dispose();
+      // Les requêtes suivies se libèrent sur un minuteur du temps simulé : sans
+      // le faire avancer, la fermeture de la base attend sans fin (Flutter 3.50).
+      await tester.pump(const Duration(seconds: 1));
       await tester.runAsync(db.close);
       notifier.dispose();
     });
