@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/platform/screen_awake.dart';
 import '../core/security/biometric_gate.dart';
 import '../data/database.dart';
 import '../features/backup/data/backup_files.dart';
@@ -47,6 +48,8 @@ final backupServiceProvider = Provider<BackupService>((ref) {
 final backupFilesProvider = Provider<BackupFiles>((ref) => const DeviceBackupFiles());
 
 final biometricGateProvider = Provider<BiometricGate>((ref) => DeviceBiometricGate());
+
+final screenAwakeProvider = Provider<ScreenAwake>((ref) => const DeviceScreenAwake());
 
 /// Les profils de la famille, tenus à jour par la base.
 final profilesProvider = StreamProvider<List<Profile>>((ref) => ref.watch(profilesRepositoryProvider).watchAll());
