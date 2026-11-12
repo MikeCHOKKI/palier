@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../features/expenses/ui/expenses_providers.dart';
 import '../l10n/app_localizations.dart';

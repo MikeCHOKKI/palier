@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:palier/app/palier_app.dart';
 import 'package:palier/app/providers.dart';
 import 'package:palier/core/security/pin_hasher.dart';

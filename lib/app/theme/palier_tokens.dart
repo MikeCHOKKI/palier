@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Couleurs de Palier, relevées dans l'univers Ekim (voir branding/LISEZMOI.md).
 ///

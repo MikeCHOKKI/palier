@@ -14,7 +14,11 @@ dependencies:
     sdk: flutter
 
   # Socle partagé : thème, widgets, stockage (https://pub.dev/packages/lucid_core_flutter).
-  lucid_core_flutter: ^0.8.0
+  lucid_core_flutter: ^0.9.0
+
+  # Composants Material, sortis du SDK depuis Flutter 3.50 : le socle s'en sert
+  # déjà, et ses types (ThemeData…) doivent être les mêmes des deux côtés.
+  material_ui: ^1.11.0
 
   # État et navigation.
   flutter_riverpod: ^3.5.0

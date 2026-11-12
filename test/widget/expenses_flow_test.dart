@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidMeter, LucidSnack;
+import 'package:material_ui/material_ui.dart';
 import 'package:palier/app/providers.dart';
 import 'package:palier/app/theme/palier_tokens.dart';
 import 'package:palier/features/expenses/domain/expense_kinds.dart';

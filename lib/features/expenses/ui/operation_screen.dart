@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart'
     show LucidRecurrence, LucidRecurrenceField, LucidRecurrenceUnit;
+import 'package:material_ui/material_ui.dart';
 
 import '../../../app/palier_snack.dart';
 import '../../../app/providers.dart';

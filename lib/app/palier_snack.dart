@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidSnack;
+import 'package:material_ui/material_ui.dart';
 
 import 'theme/palier_tokens.dart';
 

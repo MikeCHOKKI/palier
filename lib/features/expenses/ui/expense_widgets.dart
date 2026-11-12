@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:lucid_core_flutter/lucid_core_flutter.dart' show LucidPrivacyScope, LucidPrivateText;
+import 'package:material_ui/material_ui.dart';
 
 import '../../../app/theme/palier_theme.dart';
 import '../../../app/theme/palier_tokens.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Couleur d'accent choisie par chaque profil : c'est elle qui colore les
 /// boutons, l'onglet actif et les réussites de la personne.
