@@ -81,6 +81,7 @@ class Workout {
     this.distanceMeters,
     this.effort,
     this.note,
+    this.circuitId,
   });
 
   final String id;
@@ -94,6 +95,9 @@ class Workout {
   final int? distanceMeters;
   final WorkoutEffort? effort;
   final String? note;
+
+  /// Le circuit suivi pour une séance guidée ; `null` pour une séance notée à la main.
+  final String? circuitId;
 
   int get durationMinutes => (durationSeconds / 60).round();
 
@@ -114,6 +118,7 @@ class WorkoutDraft {
     int? distanceMeters,
     this.effort,
     this.note,
+    this.circuitId,
   }) : distanceMeters = activity == WorkoutActivity.strength ? null : distanceMeters;
 
   final WorkoutActivity activity;
@@ -122,6 +127,7 @@ class WorkoutDraft {
   final int? distanceMeters;
   final WorkoutEffort? effort;
   final String? note;
+  final String? circuitId;
 
   static const maxNoteLength = 120;
 

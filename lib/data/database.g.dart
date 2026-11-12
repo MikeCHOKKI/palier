@@ -5566,6 +5566,1059 @@ class SportSettingsTableCompanion extends UpdateCompanion<SportSettingsRow> {
   }
 }
 
+class $CircuitsTable extends Circuits with TableInfo<$CircuitsTable, CircuitRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CircuitsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 40),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roundsMeta = const VerificationMeta('rounds');
+  @override
+  late final GeneratedColumn<int> rounds = GeneratedColumn<int>(
+    'rounds',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(rounds).isBetweenValues(1, 20),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roundRestSecondsMeta = const VerificationMeta('roundRestSeconds');
+  @override
+  late final GeneratedColumn<int> roundRestSeconds = GeneratedColumn<int>(
+    'round_rest_seconds',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(roundRestSeconds).isBetweenValues(0, 600),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(60),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    name,
+    rounds,
+    roundRestSeconds,
+    position,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'circuits';
+  @override
+  VerificationContext validateIntegrity(Insertable<CircuitRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('rounds')) {
+      context.handle(_roundsMeta, rounds.isAcceptableOrUnknown(data['rounds']!, _roundsMeta));
+    } else if (isInserting) {
+      context.missing(_roundsMeta);
+    }
+    if (data.containsKey('round_rest_seconds')) {
+      context.handle(
+        _roundRestSecondsMeta,
+        roundRestSeconds.isAcceptableOrUnknown(data['round_rest_seconds']!, _roundRestSecondsMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CircuitRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CircuitRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      rounds: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}rounds'])!,
+      roundRestSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}round_rest_seconds'],
+      )!,
+      position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+    );
+  }
+
+  @override
+  $CircuitsTable createAlias(String alias) {
+    return $CircuitsTable(attachedDatabase, alias);
+  }
+}
+
+class CircuitRow extends DataClass implements Insertable<CircuitRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final String name;
+  final int rounds;
+
+  /// Repos entre deux tours, en secondes ; 0 pour enchaîner.
+  final int roundRestSeconds;
+  final int position;
+  const CircuitRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.name,
+    required this.rounds,
+    required this.roundRestSeconds,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['name'] = Variable<String>(name);
+    map['rounds'] = Variable<int>(rounds);
+    map['round_rest_seconds'] = Variable<int>(roundRestSeconds);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  CircuitsCompanion toCompanion(bool nullToAbsent) {
+    return CircuitsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      name: Value(name),
+      rounds: Value(rounds),
+      roundRestSeconds: Value(roundRestSeconds),
+      position: Value(position),
+    );
+  }
+
+  factory CircuitRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CircuitRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      name: serializer.fromJson<String>(json['name']),
+      rounds: serializer.fromJson<int>(json['rounds']),
+      roundRestSeconds: serializer.fromJson<int>(json['roundRestSeconds']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'name': serializer.toJson<String>(name),
+      'rounds': serializer.toJson<int>(rounds),
+      'roundRestSeconds': serializer.toJson<int>(roundRestSeconds),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  CircuitRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    String? name,
+    int? rounds,
+    int? roundRestSeconds,
+    int? position,
+  }) => CircuitRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    name: name ?? this.name,
+    rounds: rounds ?? this.rounds,
+    roundRestSeconds: roundRestSeconds ?? this.roundRestSeconds,
+    position: position ?? this.position,
+  );
+  CircuitRow copyWithCompanion(CircuitsCompanion data) {
+    return CircuitRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      name: data.name.present ? data.name.value : this.name,
+      rounds: data.rounds.present ? data.rounds.value : this.rounds,
+      roundRestSeconds: data.roundRestSeconds.present ? data.roundRestSeconds.value : this.roundRestSeconds,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CircuitRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('name: $name, ')
+          ..write('rounds: $rounds, ')
+          ..write('roundRestSeconds: $roundRestSeconds, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, createdAt, updatedAt, deletedAt, profileId, name, rounds, roundRestSeconds, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CircuitRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.name == this.name &&
+          other.rounds == this.rounds &&
+          other.roundRestSeconds == this.roundRestSeconds &&
+          other.position == this.position);
+}
+
+class CircuitsCompanion extends UpdateCompanion<CircuitRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<String> name;
+  final Value<int> rounds;
+  final Value<int> roundRestSeconds;
+  final Value<int> position;
+  final Value<int> rowid;
+  const CircuitsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.rounds = const Value.absent(),
+    this.roundRestSeconds = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CircuitsCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required String name,
+    required int rounds,
+    this.roundRestSeconds = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       name = Value(name),
+       rounds = Value(rounds);
+  static Insertable<CircuitRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? name,
+    Expression<int>? rounds,
+    Expression<int>? roundRestSeconds,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (name != null) 'name': name,
+      if (rounds != null) 'rounds': rounds,
+      if (roundRestSeconds != null) 'round_rest_seconds': roundRestSeconds,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CircuitsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<String>? name,
+    Value<int>? rounds,
+    Value<int>? roundRestSeconds,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return CircuitsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      name: name ?? this.name,
+      rounds: rounds ?? this.rounds,
+      roundRestSeconds: roundRestSeconds ?? this.roundRestSeconds,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (rounds.present) {
+      map['rounds'] = Variable<int>(rounds.value);
+    }
+    if (roundRestSeconds.present) {
+      map['round_rest_seconds'] = Variable<int>(roundRestSeconds.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CircuitsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('name: $name, ')
+          ..write('rounds: $rounds, ')
+          ..write('roundRestSeconds: $roundRestSeconds, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CircuitExercisesTable extends CircuitExercises with TableInfo<$CircuitExercisesTable, CircuitExerciseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CircuitExercisesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES profiles (id)'),
+  );
+  static const VerificationMeta _circuitIdMeta = const VerificationMeta('circuitId');
+  @override
+  late final GeneratedColumn<String> circuitId = GeneratedColumn<String>(
+    'circuit_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES circuits (id)'),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 40),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _repsMeta = const VerificationMeta('reps');
+  @override
+  late final GeneratedColumn<int> reps = GeneratedColumn<int>(
+    'reps',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(reps).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _secondsMeta = const VerificationMeta('seconds');
+  @override
+  late final GeneratedColumn<int> seconds = GeneratedColumn<int>(
+    'seconds',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(seconds).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _restSecondsMeta = const VerificationMeta('restSeconds');
+  @override
+  late final GeneratedColumn<int> restSeconds = GeneratedColumn<int>(
+    'rest_seconds',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(restSeconds).isBetweenValues(0, 600),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(30),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    circuitId,
+    position,
+    name,
+    reps,
+    seconds,
+    restSeconds,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'circuit_exercises';
+  @override
+  VerificationContext validateIntegrity(Insertable<CircuitExerciseRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta, profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('circuit_id')) {
+      context.handle(_circuitIdMeta, circuitId.isAcceptableOrUnknown(data['circuit_id']!, _circuitIdMeta));
+    } else if (isInserting) {
+      context.missing(_circuitIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('reps')) {
+      context.handle(_repsMeta, reps.isAcceptableOrUnknown(data['reps']!, _repsMeta));
+    }
+    if (data.containsKey('seconds')) {
+      context.handle(_secondsMeta, seconds.isAcceptableOrUnknown(data['seconds']!, _secondsMeta));
+    }
+    if (data.containsKey('rest_seconds')) {
+      context.handle(_restSecondsMeta, restSeconds.isAcceptableOrUnknown(data['rest_seconds']!, _restSecondsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CircuitExerciseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CircuitExerciseRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+      profileId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}profile_id'])!,
+      circuitId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}circuit_id'])!,
+      position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      reps: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}reps']),
+      seconds: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}seconds']),
+      restSeconds: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}rest_seconds'])!,
+    );
+  }
+
+  @override
+  $CircuitExercisesTable createAlias(String alias) {
+    return $CircuitExercisesTable(attachedDatabase, alias);
+  }
+}
+
+class CircuitExerciseRow extends DataClass implements Insertable<CircuitExerciseRow> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String profileId;
+  final String circuitId;
+  final int position;
+  final String name;
+  final int? reps;
+  final int? seconds;
+
+  /// Repos après l'exercice, en secondes ; 0 pour enchaîner.
+  final int restSeconds;
+  const CircuitExerciseRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.profileId,
+    required this.circuitId,
+    required this.position,
+    required this.name,
+    this.reps,
+    this.seconds,
+    required this.restSeconds,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['profile_id'] = Variable<String>(profileId);
+    map['circuit_id'] = Variable<String>(circuitId);
+    map['position'] = Variable<int>(position);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || reps != null) {
+      map['reps'] = Variable<int>(reps);
+    }
+    if (!nullToAbsent || seconds != null) {
+      map['seconds'] = Variable<int>(seconds);
+    }
+    map['rest_seconds'] = Variable<int>(restSeconds);
+    return map;
+  }
+
+  CircuitExercisesCompanion toCompanion(bool nullToAbsent) {
+    return CircuitExercisesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+      profileId: Value(profileId),
+      circuitId: Value(circuitId),
+      position: Value(position),
+      name: Value(name),
+      reps: reps == null && nullToAbsent ? const Value.absent() : Value(reps),
+      seconds: seconds == null && nullToAbsent ? const Value.absent() : Value(seconds),
+      restSeconds: Value(restSeconds),
+    );
+  }
+
+  factory CircuitExerciseRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CircuitExerciseRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      circuitId: serializer.fromJson<String>(json['circuitId']),
+      position: serializer.fromJson<int>(json['position']),
+      name: serializer.fromJson<String>(json['name']),
+      reps: serializer.fromJson<int?>(json['reps']),
+      seconds: serializer.fromJson<int?>(json['seconds']),
+      restSeconds: serializer.fromJson<int>(json['restSeconds']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'profileId': serializer.toJson<String>(profileId),
+      'circuitId': serializer.toJson<String>(circuitId),
+      'position': serializer.toJson<int>(position),
+      'name': serializer.toJson<String>(name),
+      'reps': serializer.toJson<int?>(reps),
+      'seconds': serializer.toJson<int?>(seconds),
+      'restSeconds': serializer.toJson<int>(restSeconds),
+    };
+  }
+
+  CircuitExerciseRow copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? profileId,
+    String? circuitId,
+    int? position,
+    String? name,
+    Value<int?> reps = const Value.absent(),
+    Value<int?> seconds = const Value.absent(),
+    int? restSeconds,
+  }) => CircuitExerciseRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    profileId: profileId ?? this.profileId,
+    circuitId: circuitId ?? this.circuitId,
+    position: position ?? this.position,
+    name: name ?? this.name,
+    reps: reps.present ? reps.value : this.reps,
+    seconds: seconds.present ? seconds.value : this.seconds,
+    restSeconds: restSeconds ?? this.restSeconds,
+  );
+  CircuitExerciseRow copyWithCompanion(CircuitExercisesCompanion data) {
+    return CircuitExerciseRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      circuitId: data.circuitId.present ? data.circuitId.value : this.circuitId,
+      position: data.position.present ? data.position.value : this.position,
+      name: data.name.present ? data.name.value : this.name,
+      reps: data.reps.present ? data.reps.value : this.reps,
+      seconds: data.seconds.present ? data.seconds.value : this.seconds,
+      restSeconds: data.restSeconds.present ? data.restSeconds.value : this.restSeconds,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CircuitExerciseRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('circuitId: $circuitId, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('reps: $reps, ')
+          ..write('seconds: $seconds, ')
+          ..write('restSeconds: $restSeconds')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    profileId,
+    circuitId,
+    position,
+    name,
+    reps,
+    seconds,
+    restSeconds,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CircuitExerciseRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.profileId == this.profileId &&
+          other.circuitId == this.circuitId &&
+          other.position == this.position &&
+          other.name == this.name &&
+          other.reps == this.reps &&
+          other.seconds == this.seconds &&
+          other.restSeconds == this.restSeconds);
+}
+
+class CircuitExercisesCompanion extends UpdateCompanion<CircuitExerciseRow> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> profileId;
+  final Value<String> circuitId;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<int?> reps;
+  final Value<int?> seconds;
+  final Value<int> restSeconds;
+  final Value<int> rowid;
+  const CircuitExercisesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.circuitId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.seconds = const Value.absent(),
+    this.restSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CircuitExercisesCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String profileId,
+    required String circuitId,
+    required int position,
+    required String name,
+    this.reps = const Value.absent(),
+    this.seconds = const Value.absent(),
+    this.restSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       profileId = Value(profileId),
+       circuitId = Value(circuitId),
+       position = Value(position),
+       name = Value(name);
+  static Insertable<CircuitExerciseRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? profileId,
+    Expression<String>? circuitId,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<int>? reps,
+    Expression<int>? seconds,
+    Expression<int>? restSeconds,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (profileId != null) 'profile_id': profileId,
+      if (circuitId != null) 'circuit_id': circuitId,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (reps != null) 'reps': reps,
+      if (seconds != null) 'seconds': seconds,
+      if (restSeconds != null) 'rest_seconds': restSeconds,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CircuitExercisesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? profileId,
+    Value<String>? circuitId,
+    Value<int>? position,
+    Value<String>? name,
+    Value<int?>? reps,
+    Value<int?>? seconds,
+    Value<int>? restSeconds,
+    Value<int>? rowid,
+  }) {
+    return CircuitExercisesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      profileId: profileId ?? this.profileId,
+      circuitId: circuitId ?? this.circuitId,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      reps: reps ?? this.reps,
+      seconds: seconds ?? this.seconds,
+      restSeconds: restSeconds ?? this.restSeconds,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (circuitId.present) {
+      map['circuit_id'] = Variable<String>(circuitId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (reps.present) {
+      map['reps'] = Variable<int>(reps.value);
+    }
+    if (seconds.present) {
+      map['seconds'] = Variable<int>(seconds.value);
+    }
+    if (restSeconds.present) {
+      map['rest_seconds'] = Variable<int>(restSeconds.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CircuitExercisesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('profileId: $profileId, ')
+          ..write('circuitId: $circuitId, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('reps: $reps, ')
+          ..write('seconds: $seconds, ')
+          ..write('restSeconds: $restSeconds, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5672,6 +6725,16 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow>
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _circuitIdMeta = const VerificationMeta('circuitId');
+  @override
+  late final GeneratedColumn<String> circuitId = GeneratedColumn<String>(
+    'circuit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES circuits (id)'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5685,6 +6748,7 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow>
     distanceMeters,
     effort,
     note,
+    circuitId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5740,6 +6804,9 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow>
     if (data.containsKey('note')) {
       context.handle(_noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
     }
+    if (data.containsKey('circuit_id')) {
+      context.handle(_circuitIdMeta, circuitId.isAcceptableOrUnknown(data['circuit_id']!, _circuitIdMeta));
+    }
     return context;
   }
 
@@ -5764,6 +6831,7 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, WorkoutRow>
         attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}effort']),
       ),
       note: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}note']),
+      circuitId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}circuit_id']),
     );
   }
 
@@ -5800,6 +6868,9 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
   final int? distanceMeters;
   final WorkoutEffort? effort;
   final String? note;
+
+  /// Le circuit suivi pour une séance guidée ; `null` pour une séance notée à la main.
+  final String? circuitId;
   const WorkoutRow({
     required this.id,
     required this.createdAt,
@@ -5812,6 +6883,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
     this.distanceMeters,
     this.effort,
     this.note,
+    this.circuitId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5837,6 +6909,9 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
+    if (!nullToAbsent || circuitId != null) {
+      map['circuit_id'] = Variable<String>(circuitId);
+    }
     return map;
   }
 
@@ -5853,6 +6928,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
       distanceMeters: distanceMeters == null && nullToAbsent ? const Value.absent() : Value(distanceMeters),
       effort: effort == null && nullToAbsent ? const Value.absent() : Value(effort),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      circuitId: circuitId == null && nullToAbsent ? const Value.absent() : Value(circuitId),
     );
   }
 
@@ -5870,6 +6946,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
       distanceMeters: serializer.fromJson<int?>(json['distanceMeters']),
       effort: $WorkoutsTable.$convertereffortn.fromJson(serializer.fromJson<String?>(json['effort'])),
       note: serializer.fromJson<String?>(json['note']),
+      circuitId: serializer.fromJson<String?>(json['circuitId']),
     );
   }
   @override
@@ -5887,6 +6964,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
       'distanceMeters': serializer.toJson<int?>(distanceMeters),
       'effort': serializer.toJson<String?>($WorkoutsTable.$convertereffortn.toJson(effort)),
       'note': serializer.toJson<String?>(note),
+      'circuitId': serializer.toJson<String?>(circuitId),
     };
   }
 
@@ -5902,6 +6980,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
     Value<int?> distanceMeters = const Value.absent(),
     Value<WorkoutEffort?> effort = const Value.absent(),
     Value<String?> note = const Value.absent(),
+    Value<String?> circuitId = const Value.absent(),
   }) => WorkoutRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -5914,6 +6993,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
     distanceMeters: distanceMeters.present ? distanceMeters.value : this.distanceMeters,
     effort: effort.present ? effort.value : this.effort,
     note: note.present ? note.value : this.note,
+    circuitId: circuitId.present ? circuitId.value : this.circuitId,
   );
   WorkoutRow copyWithCompanion(WorkoutsCompanion data) {
     return WorkoutRow(
@@ -5928,6 +7008,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
       distanceMeters: data.distanceMeters.present ? data.distanceMeters.value : this.distanceMeters,
       effort: data.effort.present ? data.effort.value : this.effort,
       note: data.note.present ? data.note.value : this.note,
+      circuitId: data.circuitId.present ? data.circuitId.value : this.circuitId,
     );
   }
 
@@ -5944,7 +7025,8 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
           ..write('durationSeconds: $durationSeconds, ')
           ..write('distanceMeters: $distanceMeters, ')
           ..write('effort: $effort, ')
-          ..write('note: $note')
+          ..write('note: $note, ')
+          ..write('circuitId: $circuitId')
           ..write(')'))
         .toString();
   }
@@ -5962,6 +7044,7 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
     distanceMeters,
     effort,
     note,
+    circuitId,
   );
   @override
   bool operator ==(Object other) =>
@@ -5977,7 +7060,8 @@ class WorkoutRow extends DataClass implements Insertable<WorkoutRow> {
           other.durationSeconds == this.durationSeconds &&
           other.distanceMeters == this.distanceMeters &&
           other.effort == this.effort &&
-          other.note == this.note);
+          other.note == this.note &&
+          other.circuitId == this.circuitId);
 }
 
 class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
@@ -5992,6 +7076,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
   final Value<int?> distanceMeters;
   final Value<WorkoutEffort?> effort;
   final Value<String?> note;
+  final Value<String?> circuitId;
   final Value<int> rowid;
   const WorkoutsCompanion({
     this.id = const Value.absent(),
@@ -6005,6 +7090,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
     this.distanceMeters = const Value.absent(),
     this.effort = const Value.absent(),
     this.note = const Value.absent(),
+    this.circuitId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WorkoutsCompanion.insert({
@@ -6019,6 +7105,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
     this.distanceMeters = const Value.absent(),
     this.effort = const Value.absent(),
     this.note = const Value.absent(),
+    this.circuitId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -6039,6 +7126,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
     Expression<int>? distanceMeters,
     Expression<String>? effort,
     Expression<String>? note,
+    Expression<String>? circuitId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6053,6 +7141,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
       if (distanceMeters != null) 'distance_meters': distanceMeters,
       if (effort != null) 'effort': effort,
       if (note != null) 'note': note,
+      if (circuitId != null) 'circuit_id': circuitId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6069,6 +7158,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
     Value<int?>? distanceMeters,
     Value<WorkoutEffort?>? effort,
     Value<String?>? note,
+    Value<String?>? circuitId,
     Value<int>? rowid,
   }) {
     return WorkoutsCompanion(
@@ -6083,6 +7173,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
       distanceMeters: distanceMeters ?? this.distanceMeters,
       effort: effort ?? this.effort,
       note: note ?? this.note,
+      circuitId: circuitId ?? this.circuitId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6123,6 +7214,9 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
+    if (circuitId.present) {
+      map['circuit_id'] = Variable<String>(circuitId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6143,6 +7237,7 @@ class WorkoutsCompanion extends UpdateCompanion<WorkoutRow> {
           ..write('distanceMeters: $distanceMeters, ')
           ..write('effort: $effort, ')
           ..write('note: $note, ')
+          ..write('circuitId: $circuitId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6162,6 +7257,8 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
   late final $TontinesTable tontines = $TontinesTable(this);
   late final $LoansTable loans = $LoansTable(this);
   late final $SportSettingsTableTable sportSettingsTable = $SportSettingsTableTable(this);
+  late final $CircuitsTable circuits = $CircuitsTable(this);
+  late final $CircuitExercisesTable circuitExercises = $CircuitExercisesTable(this);
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
   late final Index operationsProfileDate = Index(
     'operations_profile_date',
@@ -6185,6 +7282,8 @@ abstract class _$PalierDatabase extends GeneratedDatabase {
     tontines,
     loans,
     sportSettingsTable,
+    circuits,
+    circuitExercises,
     workouts,
     operationsProfileDate,
     workoutsProfileDate,
@@ -6351,6 +7450,33 @@ final class $$ProfilesTableReferences extends BaseReferences<_$PalierDatabase, $
     ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_sportSettingsTableRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$CircuitsTable, List<CircuitRow>> _circuitsRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.circuits, aliasName: 'profiles__id__circuits__profile_id');
+
+  $$CircuitsTableProcessedTableManager get circuitsRefs {
+    final manager = $$CircuitsTableTableManager(
+      $_db,
+      $_db.circuits,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_circuitsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$CircuitExercisesTable, List<CircuitExerciseRow>> _circuitExercisesRefsTable(
+    _$PalierDatabase db,
+  ) => MultiTypedResultKey.fromTable(db.circuitExercises, aliasName: 'profiles__id__circuit_exercises__profile_id');
+
+  $$CircuitExercisesTableProcessedTableManager get circuitExercisesRefs {
+    final manager = $$CircuitExercisesTableTableManager(
+      $_db,
+      $_db.circuitExercises,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_circuitExercisesRefsTable($_db));
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
@@ -6576,6 +7702,42 @@ class $$ProfilesTableFilterComposer extends Composer<_$PalierDatabase, $Profiles
           $$SportSettingsTableTableFilterComposer(
             $db: $db,
             $table: $db.sportSettingsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> circuitsRefs(Expression<bool> Function($$CircuitsTableFilterComposer f) f) {
+    final $$CircuitsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableFilterComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> circuitExercisesRefs(Expression<bool> Function($$CircuitExercisesTableFilterComposer f) f) {
+    final $$CircuitExercisesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuitExercises,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitExercisesTableFilterComposer(
+            $db: $db,
+            $table: $db.circuitExercises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -6871,6 +8033,44 @@ class $$ProfilesTableAnnotationComposer extends Composer<_$PalierDatabase, $Prof
     return f(composer);
   }
 
+  Expression<T> circuitsRefs<T extends Object>(Expression<T> Function($$CircuitsTableAnnotationComposer a) f) {
+    final $$CircuitsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> circuitExercisesRefs<T extends Object>(
+    Expression<T> Function($$CircuitExercisesTableAnnotationComposer a) f,
+  ) {
+    final $$CircuitExercisesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuitExercises,
+      getReferencedColumn: (t) => t.profileId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitExercisesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuitExercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> workoutsRefs<T extends Object>(Expression<T> Function($$WorkoutsTableAnnotationComposer a) f) {
     final $$WorkoutsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -6913,6 +8113,8 @@ class $$ProfilesTableTableManager
             bool tontinesRefs,
             bool loansRefs,
             bool sportSettingsTableRefs,
+            bool circuitsRefs,
+            bool circuitExercisesRefs,
             bool workoutsRefs,
           })
         > {
@@ -7014,6 +8216,8 @@ class $$ProfilesTableTableManager
                 tontinesRefs = false,
                 loansRefs = false,
                 sportSettingsTableRefs = false,
+                circuitsRefs = false,
+                circuitExercisesRefs = false,
                 workoutsRefs = false,
               }) {
                 return PrefetchHooks(
@@ -7028,6 +8232,8 @@ class $$ProfilesTableTableManager
                     if (tontinesRefs) db.tontines,
                     if (loansRefs) db.loans,
                     if (sportSettingsTableRefs) db.sportSettingsTable,
+                    if (circuitsRefs) db.circuits,
+                    if (circuitExercisesRefs) db.circuitExercises,
                     if (workoutsRefs) db.workouts,
                   ],
                   addJoins: null,
@@ -7130,6 +8336,29 @@ class $$ProfilesTableTableManager
                           referencedColumn: 'profile_id',
                           typedResults: items,
                         ),
+                      if (circuitsRefs)
+                        await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, CircuitRow, $CircuitsTable>(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._circuitsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).circuitsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
+                      if (circuitExercisesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          ProfileRow,
+                          $ProfilesTable,
+                          CircuitExerciseRow,
+                          $CircuitExercisesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProfilesTableReferences._circuitExercisesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$ProfilesTableReferences(db, table, p0).circuitExercisesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'profile_id',
+                          typedResults: items,
+                        ),
                       if (workoutsRefs)
                         await $_getPrefetchedDataByColumns<ProfileRow, $ProfilesTable, WorkoutRow, $WorkoutsTable>(
                           currentTable: table,
@@ -7169,6 +8398,8 @@ typedef $$ProfilesTableProcessedTableManager =
         bool tontinesRefs,
         bool loansRefs,
         bool sportSettingsTableRefs,
+        bool circuitsRefs,
+        bool circuitExercisesRefs,
         bool workoutsRefs,
       })
     >;
@@ -12003,6 +13234,853 @@ typedef $$SportSettingsTableTableProcessedTableManager =
       SportSettingsRow,
       PrefetchHooks Function({bool profileId})
     >;
+typedef $$CircuitsTableCreateCompanionBuilder = CircuitsCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required String name,
+  required int rounds,
+  Value<int> roundRestSeconds,
+  Value<int> position,
+  Value<int> rowid,
+});
+typedef $$CircuitsTableUpdateCompanionBuilder = CircuitsCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<String> name,
+  Value<int> rounds,
+  Value<int> roundRestSeconds,
+  Value<int> position,
+  Value<int> rowid,
+});
+
+final class $$CircuitsTableReferences extends BaseReferences<_$PalierDatabase, $CircuitsTable, CircuitRow> {
+  $$CircuitsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('circuits__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$CircuitExercisesTable, List<CircuitExerciseRow>> _circuitExercisesRefsTable(
+    _$PalierDatabase db,
+  ) => MultiTypedResultKey.fromTable(db.circuitExercises, aliasName: 'circuits__id__circuit_exercises__circuit_id');
+
+  $$CircuitExercisesTableProcessedTableManager get circuitExercisesRefs {
+    final manager = $$CircuitExercisesTableTableManager(
+      $_db,
+      $_db.circuitExercises,
+    ).filter((f) => f.circuitId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_circuitExercisesRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$WorkoutsTable, List<WorkoutRow>> _workoutsRefsTable(_$PalierDatabase db) =>
+      MultiTypedResultKey.fromTable(db.workouts, aliasName: 'circuits__id__workouts__circuit_id');
+
+  $$WorkoutsTableProcessedTableManager get workoutsRefs {
+    final manager = $$WorkoutsTableTableManager(
+      $_db,
+      $_db.workouts,
+    ).filter((f) => f.circuitId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_workoutsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$CircuitsTableFilterComposer extends Composer<_$PalierDatabase, $CircuitsTable> {
+  $$CircuitsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rounds =>
+      $composableBuilder(column: $table.rounds, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get roundRestSeconds =>
+      $composableBuilder(column: $table.roundRestSeconds, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> circuitExercisesRefs(Expression<bool> Function($$CircuitExercisesTableFilterComposer f) f) {
+    final $$CircuitExercisesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuitExercises,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitExercisesTableFilterComposer(
+            $db: $db,
+            $table: $db.circuitExercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> workoutsRefs(Expression<bool> Function($$WorkoutsTableFilterComposer f) f) {
+    final $$WorkoutsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workouts,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$WorkoutsTableFilterComposer(
+            $db: $db,
+            $table: $db.workouts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CircuitsTableOrderingComposer extends Composer<_$PalierDatabase, $CircuitsTable> {
+  $$CircuitsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rounds =>
+      $composableBuilder(column: $table.rounds, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get roundRestSeconds =>
+      $composableBuilder(column: $table.roundRestSeconds, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CircuitsTableAnnotationComposer extends Composer<_$PalierDatabase, $CircuitsTable> {
+  $$CircuitsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get rounds => $composableBuilder(column: $table.rounds, builder: (column) => column);
+
+  GeneratedColumn<int> get roundRestSeconds =>
+      $composableBuilder(column: $table.roundRestSeconds, builder: (column) => column);
+
+  GeneratedColumn<int> get position => $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> circuitExercisesRefs<T extends Object>(
+    Expression<T> Function($$CircuitExercisesTableAnnotationComposer a) f,
+  ) {
+    final $$CircuitExercisesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.circuitExercises,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitExercisesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuitExercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> workoutsRefs<T extends Object>(Expression<T> Function($$WorkoutsTableAnnotationComposer a) f) {
+    final $$WorkoutsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workouts,
+      getReferencedColumn: (t) => t.circuitId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$WorkoutsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.workouts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CircuitsTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $CircuitsTable,
+          CircuitRow,
+          $$CircuitsTableFilterComposer,
+          $$CircuitsTableOrderingComposer,
+          $$CircuitsTableAnnotationComposer,
+          $$CircuitsTableCreateCompanionBuilder,
+          $$CircuitsTableUpdateCompanionBuilder,
+          (CircuitRow, $$CircuitsTableReferences),
+          CircuitRow,
+          PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool workoutsRefs})
+        > {
+  $$CircuitsTableTableManager(_$PalierDatabase db, $CircuitsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$CircuitsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$CircuitsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$CircuitsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> rounds = const Value.absent(),
+                Value<int> roundRestSeconds = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CircuitsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                name: name,
+                rounds: rounds,
+                roundRestSeconds: roundRestSeconds,
+                position: position,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required String name,
+                required int rounds,
+                Value<int> roundRestSeconds = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CircuitsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                name: name,
+                rounds: rounds,
+                roundRestSeconds: roundRestSeconds,
+                position: position,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable<$CircuitsTable, CircuitRow>(table), $$CircuitsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({profileId = false, circuitExercisesRefs = false, workoutsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (circuitExercisesRefs) db.circuitExercises, if (workoutsRefs) db.workouts],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$CircuitsTableReferences._profileIdTable(db),
+                        referencedColumn: $$CircuitsTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (circuitExercisesRefs)
+                    await $_getPrefetchedDataByColumns<
+                      CircuitRow,
+                      $CircuitsTable,
+                      CircuitExerciseRow,
+                      $CircuitExercisesTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CircuitsTableReferences._circuitExercisesRefsTable(db),
+                      managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).circuitExercisesRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'circuit_id',
+                      typedResults: items,
+                    ),
+                  if (workoutsRefs)
+                    await $_getPrefetchedDataByColumns<CircuitRow, $CircuitsTable, WorkoutRow, $WorkoutsTable>(
+                      currentTable: table,
+                      referencedTable: $$CircuitsTableReferences._workoutsRefsTable(db),
+                      managerFromTypedResult: (p0) => $$CircuitsTableReferences(db, table, p0).workoutsRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'circuit_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CircuitsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $CircuitsTable,
+      CircuitRow,
+      $$CircuitsTableFilterComposer,
+      $$CircuitsTableOrderingComposer,
+      $$CircuitsTableAnnotationComposer,
+      $$CircuitsTableCreateCompanionBuilder,
+      $$CircuitsTableUpdateCompanionBuilder,
+      (CircuitRow, $$CircuitsTableReferences),
+      CircuitRow,
+      PrefetchHooks Function({bool profileId, bool circuitExercisesRefs, bool workoutsRefs})
+    >;
+typedef $$CircuitExercisesTableCreateCompanionBuilder = CircuitExercisesCompanion Function({
+  required String id,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<DateTime?> deletedAt,
+  required String profileId,
+  required String circuitId,
+  required int position,
+  required String name,
+  Value<int?> reps,
+  Value<int?> seconds,
+  Value<int> restSeconds,
+  Value<int> rowid,
+});
+typedef $$CircuitExercisesTableUpdateCompanionBuilder = CircuitExercisesCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> profileId,
+  Value<String> circuitId,
+  Value<int> position,
+  Value<String> name,
+  Value<int?> reps,
+  Value<int?> seconds,
+  Value<int> restSeconds,
+  Value<int> rowid,
+});
+
+final class $$CircuitExercisesTableReferences
+    extends BaseReferences<_$PalierDatabase, $CircuitExercisesTable, CircuitExerciseRow> {
+  $$CircuitExercisesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProfilesTable _profileIdTable(_$PalierDatabase db) =>
+      db.profiles.createAlias('circuit_exercises__profile_id__profiles__id');
+
+  $$ProfilesTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $CircuitsTable _circuitIdTable(_$PalierDatabase db) =>
+      db.circuits.createAlias('circuit_exercises__circuit_id__circuits__id');
+
+  $$CircuitsTableProcessedTableManager get circuitId {
+    final $_column = $_itemColumn<String>('circuit_id')!;
+
+    final manager = $$CircuitsTableTableManager($_db, $_db.circuits).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_circuitIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CircuitExercisesTableFilterComposer extends Composer<_$PalierDatabase, $CircuitExercisesTable> {
+  $$CircuitExercisesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get reps => $composableBuilder(column: $table.reps, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get seconds =>
+      $composableBuilder(column: $table.seconds, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get restSeconds =>
+      $composableBuilder(column: $table.restSeconds, builder: (column) => ColumnFilters(column));
+
+  $$ProfilesTableFilterComposer get profileId {
+    final $$ProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableFilterComposer get circuitId {
+    final $$CircuitsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableFilterComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CircuitExercisesTableOrderingComposer extends Composer<_$PalierDatabase, $CircuitExercisesTable> {
+  $$CircuitExercisesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get reps =>
+      $composableBuilder(column: $table.reps, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get seconds =>
+      $composableBuilder(column: $table.seconds, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get restSeconds =>
+      $composableBuilder(column: $table.restSeconds, builder: (column) => ColumnOrderings(column));
+
+  $$ProfilesTableOrderingComposer get profileId {
+    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableOrderingComposer get circuitId {
+    final $$CircuitsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableOrderingComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CircuitExercisesTableAnnotationComposer extends Composer<_$PalierDatabase, $CircuitExercisesTable> {
+  $$CircuitExercisesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt => $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get position => $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get reps => $composableBuilder(column: $table.reps, builder: (column) => column);
+
+  GeneratedColumn<int> get seconds => $composableBuilder(column: $table.seconds, builder: (column) => column);
+
+  GeneratedColumn<int> get restSeconds => $composableBuilder(column: $table.restSeconds, builder: (column) => column);
+
+  $$ProfilesTableAnnotationComposer get profileId {
+    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profiles,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$ProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableAnnotationComposer get circuitId {
+    final $$CircuitsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CircuitExercisesTableTableManager
+    extends
+        RootTableManager<
+          _$PalierDatabase,
+          $CircuitExercisesTable,
+          CircuitExerciseRow,
+          $$CircuitExercisesTableFilterComposer,
+          $$CircuitExercisesTableOrderingComposer,
+          $$CircuitExercisesTableAnnotationComposer,
+          $$CircuitExercisesTableCreateCompanionBuilder,
+          $$CircuitExercisesTableUpdateCompanionBuilder,
+          (CircuitExerciseRow, $$CircuitExercisesTableReferences),
+          CircuitExerciseRow,
+          PrefetchHooks Function({bool profileId, bool circuitId})
+        > {
+  $$CircuitExercisesTableTableManager(_$PalierDatabase db, $CircuitExercisesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$CircuitExercisesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$CircuitExercisesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$CircuitExercisesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> circuitId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int?> reps = const Value.absent(),
+                Value<int?> seconds = const Value.absent(),
+                Value<int> restSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CircuitExercisesCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                circuitId: circuitId,
+                position: position,
+                name: name,
+                reps: reps,
+                seconds: seconds,
+                restSeconds: restSeconds,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String profileId,
+                required String circuitId,
+                required int position,
+                required String name,
+                Value<int?> reps = const Value.absent(),
+                Value<int?> seconds = const Value.absent(),
+                Value<int> restSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CircuitExercisesCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                profileId: profileId,
+                circuitId: circuitId,
+                position: position,
+                name: name,
+                reps: reps,
+                seconds: seconds,
+                restSeconds: restSeconds,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CircuitExercisesTable, CircuitExerciseRow>(table),
+                  $$CircuitExercisesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({profileId = false, circuitId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$CircuitExercisesTableReferences._profileIdTable(db),
+                        referencedColumn: $$CircuitExercisesTableReferences._profileIdTable(db).id,
+                      ) as T;
+                    }
+                    if (circuitId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.circuitId,
+                        referencedTable: $$CircuitExercisesTableReferences._circuitIdTable(db),
+                        referencedColumn: $$CircuitExercisesTableReferences._circuitIdTable(db).id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CircuitExercisesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$PalierDatabase,
+      $CircuitExercisesTable,
+      CircuitExerciseRow,
+      $$CircuitExercisesTableFilterComposer,
+      $$CircuitExercisesTableOrderingComposer,
+      $$CircuitExercisesTableAnnotationComposer,
+      $$CircuitExercisesTableCreateCompanionBuilder,
+      $$CircuitExercisesTableUpdateCompanionBuilder,
+      (CircuitExerciseRow, $$CircuitExercisesTableReferences),
+      CircuitExerciseRow,
+      PrefetchHooks Function({bool profileId, bool circuitId})
+    >;
 typedef $$WorkoutsTableCreateCompanionBuilder = WorkoutsCompanion Function({
   required String id,
   required DateTime createdAt,
@@ -12015,6 +14093,7 @@ typedef $$WorkoutsTableCreateCompanionBuilder = WorkoutsCompanion Function({
   Value<int?> distanceMeters,
   Value<WorkoutEffort?> effort,
   Value<String?> note,
+  Value<String?> circuitId,
   Value<int> rowid,
 });
 typedef $$WorkoutsTableUpdateCompanionBuilder = WorkoutsCompanion Function({
@@ -12029,6 +14108,7 @@ typedef $$WorkoutsTableUpdateCompanionBuilder = WorkoutsCompanion Function({
   Value<int?> distanceMeters,
   Value<WorkoutEffort?> effort,
   Value<String?> note,
+  Value<String?> circuitId,
   Value<int> rowid,
 });
 
@@ -12043,6 +14123,18 @@ final class $$WorkoutsTableReferences extends BaseReferences<_$PalierDatabase, $
 
     final manager = $$ProfilesTableTableManager($_db, $_db.profiles).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $CircuitsTable _circuitIdTable(_$PalierDatabase db) =>
+      db.circuits.createAlias('workouts__circuit_id__circuits__id');
+
+  $$CircuitsTableProcessedTableManager? get circuitId {
+    final $_column = $_itemColumn<String>('circuit_id');
+    if ($_column == null) return null;
+    final manager = $$CircuitsTableTableManager($_db, $_db.circuits).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_circuitIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
@@ -12094,6 +14186,24 @@ class $$WorkoutsTableFilterComposer extends Composer<_$PalierDatabase, $Workouts
           $$ProfilesTableFilterComposer(
             $db: $db,
             $table: $db.profiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CircuitsTableFilterComposer get circuitId {
+    final $$CircuitsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableFilterComposer(
+            $db: $db,
+            $table: $db.circuits,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
@@ -12157,6 +14267,24 @@ class $$WorkoutsTableOrderingComposer extends Composer<_$PalierDatabase, $Workou
     );
     return composer;
   }
+
+  $$CircuitsTableOrderingComposer get circuitId {
+    final $$CircuitsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableOrderingComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$WorkoutsTableAnnotationComposer extends Composer<_$PalierDatabase, $WorkoutsTable> {
@@ -12209,6 +14337,24 @@ class $$WorkoutsTableAnnotationComposer extends Composer<_$PalierDatabase, $Work
     );
     return composer;
   }
+
+  $$CircuitsTableAnnotationComposer get circuitId {
+    final $$CircuitsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.circuitId,
+      referencedTable: $db.circuits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CircuitsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.circuits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$WorkoutsTableTableManager
@@ -12224,7 +14370,7 @@ class $$WorkoutsTableTableManager
           $$WorkoutsTableUpdateCompanionBuilder,
           (WorkoutRow, $$WorkoutsTableReferences),
           WorkoutRow,
-          PrefetchHooks Function({bool profileId})
+          PrefetchHooks Function({bool profileId, bool circuitId})
         > {
   $$WorkoutsTableTableManager(_$PalierDatabase db, $WorkoutsTable table)
     : super(
@@ -12247,6 +14393,7 @@ class $$WorkoutsTableTableManager
                 Value<int?> distanceMeters = const Value.absent(),
                 Value<WorkoutEffort?> effort = const Value.absent(),
                 Value<String?> note = const Value.absent(),
+                Value<String?> circuitId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutsCompanion(
                 id: id,
@@ -12260,6 +14407,7 @@ class $$WorkoutsTableTableManager
                 distanceMeters: distanceMeters,
                 effort: effort,
                 note: note,
+                circuitId: circuitId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12275,6 +14423,7 @@ class $$WorkoutsTableTableManager
                 Value<int?> distanceMeters = const Value.absent(),
                 Value<WorkoutEffort?> effort = const Value.absent(),
                 Value<String?> note = const Value.absent(),
+                Value<String?> circuitId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutsCompanion.insert(
                 id: id,
@@ -12288,12 +14437,13 @@ class $$WorkoutsTableTableManager
                 distanceMeters: distanceMeters,
                 effort: effort,
                 note: note,
+                circuitId: circuitId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable<$WorkoutsTable, WorkoutRow>(table), $$WorkoutsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({profileId = false}) {
+          prefetchHooksCallback: ({profileId = false, circuitId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -12321,6 +14471,14 @@ class $$WorkoutsTableTableManager
                         referencedColumn: $$WorkoutsTableReferences._profileIdTable(db).id,
                       ) as T;
                     }
+                    if (circuitId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.circuitId,
+                        referencedTable: $$WorkoutsTableReferences._circuitIdTable(db),
+                        referencedColumn: $$WorkoutsTableReferences._circuitIdTable(db).id,
+                      ) as T;
+                    }
 
                     return state;
                   },
@@ -12345,7 +14503,7 @@ typedef $$WorkoutsTableProcessedTableManager =
       $$WorkoutsTableUpdateCompanionBuilder,
       (WorkoutRow, $$WorkoutsTableReferences),
       WorkoutRow,
-      PrefetchHooks Function({bool profileId})
+      PrefetchHooks Function({bool profileId, bool circuitId})
     >;
 
 class $PalierDatabaseManager {
@@ -12363,5 +14521,8 @@ class $PalierDatabaseManager {
   $$LoansTableTableManager get loans => $$LoansTableTableManager(_db, _db.loans);
   $$SportSettingsTableTableTableManager get sportSettingsTable =>
       $$SportSettingsTableTableTableManager(_db, _db.sportSettingsTable);
+  $$CircuitsTableTableManager get circuits => $$CircuitsTableTableManager(_db, _db.circuits);
+  $$CircuitExercisesTableTableManager get circuitExercises =>
+      $$CircuitExercisesTableTableManager(_db, _db.circuitExercises);
   $$WorkoutsTableTableManager get workouts => $$WorkoutsTableTableManager(_db, _db.workouts);
 }

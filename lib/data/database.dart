@@ -243,6 +243,43 @@ class SportSettingsTable extends Table with SyncColumns {
   IntColumn get weeklyGoalMinutes => integer().nullable().check(weeklyGoalMinutes.isBiggerThanValue(0))();
 }
 
+/// Un circuit de renforcement composé par la personne.
+@DataClassName('CircuitRow')
+class Circuits extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+
+  // ignore: recursive_getters
+  IntColumn get rounds => integer().check(rounds.isBetweenValues(1, 20))();
+
+  /// Repos entre deux tours, en secondes ; 0 pour enchaîner.
+  IntColumn get roundRestSeconds =>
+      // ignore: recursive_getters
+      integer().withDefault(const Constant(60)).check(roundRestSeconds.isBetweenValues(0, 600))();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+}
+
+/// Un exercice d'un circuit, en répétitions ou en durée (l'un ou l'autre).
+/// Modifier un circuit remplace ses exercices : les anciens sont supprimés en douceur.
+@DataClassName('CircuitExerciseRow')
+class CircuitExercises extends Table with SyncColumns {
+  TextColumn get profileId => text().references(Profiles, #id)();
+  TextColumn get circuitId => text().references(Circuits, #id)();
+  IntColumn get position => integer()();
+  TextColumn get name => text().withLength(min: 1, max: 40)();
+  // ignore: recursive_getters
+  IntColumn get reps => integer().nullable().check(reps.isBiggerThanValue(0))();
+  // ignore: recursive_getters
+  IntColumn get seconds => integer().nullable().check(seconds.isBiggerThanValue(0))();
+
+  /// Repos après l'exercice, en secondes ; 0 pour enchaîner.
+  // ignore: recursive_getters
+  IntColumn get restSeconds => integer().withDefault(const Constant(30)).check(restSeconds.isBetweenValues(0, 600))();
+
+  @override
+  List<String> get customConstraints => ['CHECK ((reps IS NULL) <> (seconds IS NULL))'];
+}
+
 /// Une séance de sport notée.
 @DataClassName('WorkoutRow')
 @TableIndex(name: 'workouts_profile_date', columns: {#profileId, #occurredAt})
@@ -262,6 +299,9 @@ class Workouts extends Table with SyncColumns {
   IntColumn get distanceMeters => integer().nullable().check(distanceMeters.isBiggerThanValue(0))();
   TextColumn get effort => textEnum<WorkoutEffort>().nullable()();
   TextColumn get note => text().withLength(max: 120).nullable()();
+
+  /// Le circuit suivi pour une séance guidée ; `null` pour une séance notée à la main.
+  TextColumn get circuitId => text().nullable().references(Circuits, #id)();
 }
 
 @DriftDatabase(
@@ -276,6 +316,8 @@ class Workouts extends Table with SyncColumns {
     Tontines,
     Loans,
     SportSettingsTable,
+    Circuits,
+    CircuitExercises,
     Workouts,
   ],
 )
@@ -286,7 +328,7 @@ class PalierDatabase extends _$PalierDatabase {
   factory PalierDatabase.device() => PalierDatabase(driftDatabase(name: 'palier'));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -320,6 +362,11 @@ class PalierDatabase extends _$PalierDatabase {
         await m.createTable(schema.sportSettings);
         await m.createTable(schema.workouts);
         await m.createIndex(schema.workoutsProfileDate);
+      },
+      from8To9: (m, schema) async {
+        await m.createTable(schema.circuits);
+        await m.createTable(schema.circuitExercises);
+        await m.addColumn(schema.workouts, schema.workouts.circuitId);
       },
     ),
     // SQLite n'applique les clés étrangères que si on le lui demande, à chaque ouverture.

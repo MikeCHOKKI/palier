@@ -13,6 +13,7 @@ import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
 import 'generated/schema_v7.dart' as v7;
+import 'generated/schema_v8.dart' as v8;
 
 /// Les instantanés de `drift_schemas/` figent chaque version du schéma : ces tests
 /// partent d'une vraie base ancienne, pas de la base actuelle.
@@ -369,6 +370,58 @@ void main() {
     await db.into(db.sportSettingsTable).insert(settings('r1'));
     // Une seule ligne de réglages par profil.
     await expectLater(db.into(db.sportSettingsTable).insert(settings('r2')), throwsA(isA<SqliteException>()));
+  });
+
+  test('v8 → v9 garde les séances, et un exercice est en répétitions ou en durée', () async {
+    const at = '2026-11-12T09:00:00.000Z';
+    final schema = await verifier.schemaAt(8);
+    final oldDb = v8.DatabaseAtV8(schema.newConnection());
+    for (final sql in [
+      "INSERT INTO profiles (id, created_at, updated_at, name, accent) VALUES ('p', '$at', '$at', 'Ama', 'cyan')",
+      'INSERT INTO workouts (id, created_at, updated_at, profile_id, activity, occurred_at, duration_seconds) '
+          "VALUES ('w', '$at', '$at', 'p', 'run', '$at', 1800)",
+    ]) {
+      await oldDb.customStatement(sql);
+    }
+    await oldDb.close();
+
+    final db = PalierDatabase(schema.newConnection());
+    addTearDown(db.close);
+    final workout = await db.select(db.workouts).getSingle();
+    expect(workout.durationSeconds, 1800);
+    expect(workout.circuitId, equals(null));
+
+    final now = DateTime.utc(2026, 11, 12);
+    await db
+        .into(db.circuits)
+        .insert(
+          CircuitsCompanion.insert(id: 'c', createdAt: now, updatedAt: now, profileId: 'p', name: 'Maison', rounds: 3),
+        );
+    CircuitExercisesCompanion exercise(String id, {int? reps, int? seconds}) => CircuitExercisesCompanion.insert(
+      id: id,
+      createdAt: now,
+      updatedAt: now,
+      profileId: 'p',
+      circuitId: 'c',
+      position: 0,
+      name: 'Pompes',
+      reps: Value(reps),
+      seconds: Value(seconds),
+    );
+    await expectLater(db.into(db.circuitExercises).insert(exercise('ni-l-un')), throwsA(isA<SqliteException>()));
+    await expectLater(
+      db.into(db.circuitExercises).insert(exercise('les-deux', reps: 10, seconds: 30)),
+      throwsA(isA<SqliteException>()),
+    );
+    await db.into(db.circuitExercises).insert(exercise('ok', reps: 10));
+    await expectLater(
+      db
+          .into(db.circuits)
+          .insert(
+            CircuitsCompanion.insert(id: 'z', createdAt: now, updatedAt: now, profileId: 'p', name: 'Zéro', rounds: 0),
+          ),
+      throwsA(isA<SqliteException>()),
+    );
   });
 
   test('les clés étrangères sont appliquées', () async {

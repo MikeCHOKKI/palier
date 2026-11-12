@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../data/database.dart';
+import '../domain/circuits.dart';
 import '../domain/sport.dart';
 
 /// Réglages et séances de sport d'un profil.
@@ -114,6 +115,7 @@ class SportRepository {
             distanceMeters: Value(draft.distanceMeters),
             effort: Value(draft.effort),
             note: Value(note),
+            circuitId: Value(draft.circuitId),
           ),
         );
     return Workout(
@@ -124,6 +126,7 @@ class SportRepository {
       distanceMeters: draft.distanceMeters,
       effort: draft.effort,
       note: note,
+      circuitId: draft.circuitId,
     );
   }
 
@@ -151,6 +154,145 @@ class SportRepository {
     _db.workouts,
   )..where((w) => w.id.equals(id))).write(WorkoutsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
 
+  // ---------------------------------------------------------------- circuits
+
+  /// Les circuits du profil avec leurs exercices, dans l'ordre choisi.
+  Stream<List<Circuit>> watchCircuits(String profileId) {
+    // Relancée à chaque changement d'un circuit ou d'un exercice.
+    final trigger = _db.customSelect(
+      'SELECT COUNT(*) FROM circuits WHERE profile_id = ?',
+      variables: [Variable.withString(profileId)],
+      readsFrom: {_db.circuits, _db.circuitExercises},
+    );
+    return trigger.watch().asyncMap((_) => _loadCircuits(profileId));
+  }
+
+  Future<List<Circuit>> _loadCircuits(String profileId, {String? onlyId}) async {
+    final rows =
+        await (_db.select(_db.circuits)
+              ..where((c) {
+                final mine = c.profileId.equals(profileId) & c.deletedAt.isNull();
+                return onlyId == null ? mine : mine & c.id.equals(onlyId);
+              })
+              ..orderBy([(c) => OrderingTerm.asc(c.position), (c) => OrderingTerm.asc(c.createdAt)]))
+            .get();
+    if (rows.isEmpty) return const [];
+    final exercises =
+        await (_db.select(_db.circuitExercises)
+              ..where((e) => e.circuitId.isIn([for (final row in rows) row.id]) & e.deletedAt.isNull())
+              ..orderBy([(e) => OrderingTerm.asc(e.position)]))
+            .get();
+    return [
+      for (final row in rows)
+        Circuit(
+          id: row.id,
+          name: row.name,
+          rounds: row.rounds,
+          roundRestSeconds: row.roundRestSeconds,
+          exercises: [
+            for (final e in exercises)
+              if (e.circuitId == row.id)
+                CircuitExercise(name: e.name, reps: e.reps, seconds: e.seconds, restSeconds: e.restSeconds),
+          ],
+        ),
+    ];
+  }
+
+  Future<Circuit?> findCircuit(String id) async {
+    final row = await (_db.select(
+      _db.circuits,
+    )..where((c) => c.id.equals(id) & c.deletedAt.isNull())).getSingleOrNull();
+    if (row == null) return null;
+    return (await _loadCircuits(row.profileId, onlyId: id)).singleOrNull;
+  }
+
+  Future<Circuit> createCircuit(String profileId, CircuitDraft draft) {
+    assert(draft.problem == null, 'circuit incomplet : ${draft.problem}');
+    return _db.transaction(() async {
+      final now = _clock();
+      final id = _uuid.v4();
+      final last =
+          await (_db.selectOnly(_db.circuits)
+                ..addColumns([_db.circuits.position.max()])
+                ..where(_db.circuits.profileId.equals(profileId)))
+              .map((r) => r.read(_db.circuits.position.max()))
+              .getSingle();
+      await _db
+          .into(_db.circuits)
+          .insert(
+            CircuitsCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              name: draft.name.trim(),
+              rounds: draft.rounds,
+              roundRestSeconds: Value(draft.roundRestSeconds),
+              position: Value((last ?? -1) + 1),
+            ),
+          );
+      await _insertExercises(profileId, id, draft.exercises, now);
+      return (await findCircuit(id))!;
+    });
+  }
+
+  /// Remplace le circuit et ses exercices ; les anciens exercices sont supprimés en douceur.
+  Future<void> updateCircuit(String id, CircuitDraft draft) {
+    assert(draft.problem == null, 'circuit incomplet : ${draft.problem}');
+    return _db.transaction(() async {
+      final now = _clock();
+      final row = await (_db.select(_db.circuits)..where((c) => c.id.equals(id))).getSingle();
+      await (_db.update(_db.circuits)..where((c) => c.id.equals(id))).write(
+        CircuitsCompanion(
+          name: Value(draft.name.trim()),
+          rounds: Value(draft.rounds),
+          roundRestSeconds: Value(draft.roundRestSeconds),
+          updatedAt: Value(now),
+        ),
+      );
+      await (_db.update(_db.circuitExercises)..where((e) => e.circuitId.equals(id) & e.deletedAt.isNull())).write(
+        CircuitExercisesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+      );
+      await _insertExercises(row.profileId, id, draft.exercises, now);
+    });
+  }
+
+  Future<void> _insertExercises(
+    String profileId,
+    String circuitId,
+    List<CircuitExercise> exercises,
+    DateTime now,
+  ) async {
+    for (final (position, e) in exercises.indexed) {
+      await _db
+          .into(_db.circuitExercises)
+          .insert(
+            CircuitExercisesCompanion.insert(
+              id: _uuid.v4(),
+              createdAt: now,
+              updatedAt: now,
+              profileId: profileId,
+              circuitId: circuitId,
+              position: position,
+              name: e.name.trim(),
+              reps: Value(e.reps),
+              seconds: Value(e.seconds),
+              restSeconds: Value(e.restSeconds),
+            ),
+          );
+    }
+  }
+
+  /// Suppression douce : « Annuler » la rattrape par [restoreCircuit]. Les
+  /// séances déjà faites gardent leur lien vers le circuit.
+  Future<void> deleteCircuit(String id) => _setCircuitDeleted(id, _clock());
+
+  Future<void> restoreCircuit(String id) => _setCircuitDeleted(id, null);
+
+  Future<void> _setCircuitDeleted(String id, DateTime? at) => (_db.update(
+    _db.circuits,
+  )..where((c) => c.id.equals(id))).write(CircuitsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
+
   static String? _clean(String? note) {
     final trimmed = note?.trim();
     return trimmed == null || trimmed.isEmpty ? null : trimmed;
@@ -164,5 +306,6 @@ class SportRepository {
     distanceMeters: row.distanceMeters,
     effort: row.effort,
     note: row.note,
+    circuitId: row.circuitId,
   );
 }
