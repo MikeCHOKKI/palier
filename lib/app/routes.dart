@@ -37,6 +37,9 @@ abstract final class Routes {
   /// Régler l'échéance [day] (« 2026-11-05 ») d'une récurrence.
   static String expensesDue(String recurringId, String day) => '/depenses/echeances/$recurringId/$day';
   static const sport = '/sport';
+  static const sportNew = '/sport/noter';
+  static String sportWorkout(String id) => '/sport/seances/$id';
+  static const sportSettings = '/sport/reglages';
   static const settings = '/reglages';
   static const settingsProfile = '/reglages/profil';
   static const settingsLock = '/reglages/verrou';

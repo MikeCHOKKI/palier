@@ -12,7 +12,6 @@ import '../features/expenses/ui/operation_screen.dart';
 import '../features/expenses/ui/recurrings_screen.dart';
 import '../features/expenses/ui/tontines_screen.dart';
 import '../features/home/home_screen.dart';
-import '../features/placeholders/coming_soon_screen.dart';
 import '../features/profiles/ui/loading_screen.dart';
 import '../features/profiles/ui/lock_settings_screen.dart';
 import '../features/profiles/ui/profile_form_screen.dart';
@@ -22,6 +21,9 @@ import '../features/profiles/ui/unlock_screen.dart';
 import '../features/profiles/ui/welcome_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/shell/home_shell.dart';
+import '../features/sport/ui/sport_screen.dart';
+import '../features/sport/ui/sport_settings_screen.dart';
+import '../features/sport/ui/workout_screen.dart';
 import 'providers.dart';
 import 'routes.dart';
 
@@ -145,7 +147,17 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           StatefulShellBranch(
-            routes: [GoRoute(path: Routes.sport, builder: (_, _) => const ComingSoonScreen.sport())],
+            routes: [
+              GoRoute(
+                path: Routes.sport,
+                builder: (_, _) => const SportScreen(),
+                routes: [
+                  fullScreen('noter', (_) => const WorkoutScreen()),
+                  fullScreen('seances/:id', (s) => WorkoutScreen(workoutId: s.pathParameters['id'])),
+                  fullScreen('reglages', (_) => const SportSettingsScreen()),
+                ],
+              ),
+            ],
           ),
           StatefulShellBranch(
             routes: [

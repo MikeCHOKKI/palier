@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../expenses/ui/expenses_providers.dart';
 import '../expenses/ui/expenses_screen.dart';
+import '../sport/ui/sport_screen.dart';
 
 /// Les onglets du profil ouvert. Un module désactivé n'a pas d'onglet.
 class HomeShell extends ConsumerWidget {
@@ -78,6 +79,7 @@ class HomeShell extends ConsumerWidget {
       // Porté ici pour que les messages du bas passent au-dessus du bouton.
       floatingActionButton: switch (shell.currentIndex) {
         _expenses => ExpensesScreen.addButton(context),
+        _sport => SportScreen.addButton(context),
         _ => null,
       },
       bottomNavigationBar: NavigationBar(

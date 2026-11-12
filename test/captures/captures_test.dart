@@ -14,6 +14,8 @@ import 'package:palier/features/expenses/domain/tontines.dart';
 import 'package:palier/features/expenses/ui/amount_pad.dart';
 import 'package:palier/features/profiles/data/profiles_repository.dart';
 import 'package:palier/features/profiles/domain/profile.dart';
+import 'package:palier/features/sport/data/sport_repository.dart';
+import 'package:palier/features/sport/domain/sport.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -183,6 +185,76 @@ void main() {
     await app.settle(tester);
     await capture(tester, '14-repeter');
   });
+
+  testWidgets('sport, séance, réglages', (tester) async {
+    final app = await TestApp.pump(tester, now: _day, seed: family);
+    await tester.tap(find.text('Kofi'));
+    await app.settle(tester);
+    await tester.runAsync(() => _kofiSport(app));
+    await tester.tap(find.text('Sport'));
+    await app.settle(tester);
+    await capture(tester, '19-sport');
+
+    await tester.tap(find.text('Noter une séance'));
+    await app.settle(tester);
+    await tester.tap(find.text('Course'));
+    await tester.enterText(find.byKey(const ValueKey('duree')), '30');
+    await tester.enterText(find.byKey(const ValueKey('distance')), '5,2');
+    await tester.tap(find.text('Correct'));
+    await app.settle(tester);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await app.settle(tester);
+    await capture(tester, '20-seance');
+
+    await tester.tap(find.byTooltip('Fermer'));
+    await app.settle(tester);
+    await tester.tap(find.byTooltip('Régler mon sport'));
+    await app.settle(tester);
+    await capture(tester, '21-sport-reglages');
+  });
+}
+
+/// Une semaine fictive de Kofi : ses réglages (trois jours, 150 minutes) et quatre séances,
+/// dont une la semaine d'avant.
+Future<void> _kofiSport(TestApp app) async {
+  final repo = SportRepository(app.db, clock: () => DateTime.utc(2026, 11, 1, 8));
+  final kofi = (await app.profiles.watchAll().first).firstWhere((p) => p.name == 'Kofi').id;
+  await repo.saveSettings(
+    kofi,
+    const SportSettings(
+      activities: {WorkoutActivity.walk, WorkoutActivity.run, WorkoutActivity.strength},
+      trainingDays: {1, 3, 5},
+      weeklyGoalMinutes: 150,
+    ),
+  );
+  DateTime at(int daysAgo, int hour) => DateTime(_day.year, _day.month, _day.day - daysAgo, hour);
+  for (final draft in [
+    WorkoutDraft(
+      activity: WorkoutActivity.run,
+      occurredAt: at(9, 6),
+      durationSeconds: 28 * 60,
+      distanceMeters: 5000,
+      effort: WorkoutEffort.hard,
+    ),
+    WorkoutDraft(
+      activity: WorkoutActivity.run,
+      occurredAt: at(5, 6),
+      durationSeconds: 32 * 60,
+      distanceMeters: 5400,
+      effort: WorkoutEffort.easy,
+      note: 'Bord de mer',
+    ),
+    WorkoutDraft(
+      activity: WorkoutActivity.strength,
+      occurredAt: at(3, 19),
+      durationSeconds: 25 * 60,
+      effort: WorkoutEffort.ok,
+      note: 'Pompes, squats, gainage',
+    ),
+    WorkoutDraft(activity: WorkoutActivity.walk, occurredAt: at(1, 18), durationSeconds: 45 * 60, distanceMeters: 3800),
+  ]) {
+    await repo.createWorkout(kofi, draft);
+  }
 }
 
 /// Un mois fictif de Kofi : deux comptes et une épargne, un salaire, quelques dépenses, un

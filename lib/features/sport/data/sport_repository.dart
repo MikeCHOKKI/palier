@@ -147,8 +147,9 @@ class SportRepository {
 
   Future<void> restoreWorkout(String id) => _setDeleted(id, null);
 
-  Future<void> _setDeleted(String id, DateTime? at) => (_db.update(_db.workouts)..where((w) => w.id.equals(id)))
-      .write(WorkoutsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
+  Future<void> _setDeleted(String id, DateTime? at) => (_db.update(
+    _db.workouts,
+  )..where((w) => w.id.equals(id))).write(WorkoutsCompanion(deletedAt: Value(at), updatedAt: Value(_clock())));
 
   static String? _clean(String? note) {
     final trimmed = note?.trim();
